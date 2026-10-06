@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>for Laya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --plum: #2a1230;
+    --rose: #ff8fa8;
+    --blush: #ffe3ea;
+    --glow: #ffb36b;
+    /* Put your image file in the same folder and name it bg.jpg */
+    --bg-image: url("bg.jpg");
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "DM Sans", system-ui, sans-serif;
+    color: var(--blush);
+    background: var(--page-bg);
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+  main { width: 100%; max-width: 520px; text-align: center; }
+  h1 {
+    font-family: "Fraunces", serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 8vw, 3.4rem);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  h1 em { color: var(--rose); }
+  .sub { opacity: .8; margin-bottom: 32px; }
+  .options { display: grid; gap: 12px; }
+  .opt {
+    font: inherit;
+    font-weight: 500;
+    color: var(--blush);
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,227,234,.35);
+    border-radius: 999px;
+    padding: 16px 24px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: transform .15s, background .15s, border-color .15s;
+  }
+  .opt:hover { background: rgba(255,143,168,.3); border-color: var(--rose); transform: translateY(-2px); }
+  .opt:focus-visible, .back:focus-visible { outline: 3px solid var(--glow); outline-offset: 3px; }
+
+  .notes { display: grid; gap: 12px; margin: 0 0 24px; text-align: left; }
+  .note { background: rgba(255,255,255,.1); border: 1px solid rgba(255,227,234,.3); border-radius: 18px; padding: 16px 20px; backdrop-filter: blur(8px); }
+  .note small { display: block; opacity: .65; margin-bottom: 6px; }
+  .note p { margin: 0; opacity: 1; white-space: pre-wrap; }
+  .hugbtn { font-size: 3.5rem; background: none; border: none; cursor: pointer; transition: transform .15s; margin-bottom: 8px; }
+  .hugbtn:active { transform: scale(1.3); }
+  .count { opacity: .8; margin-bottom: 24px !important; }
+  .pair { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+  .pair .opt { flex: 1; }
+
+  .chat { text-align: left; }
+  .chat-log { display: grid; gap: 10px; max-height: 45vh; overflow-y: auto; margin-bottom: 14px; padding: 4px; }
+  .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; white-space: pre-wrap; line-height: 1.45; }
+  .msg.ai { background: rgba(255,255,255,.14); border: 1px solid rgba(255,227,234,.25); justify-self: start; }
+  .msg.me { background: rgba(255,143,168,.4); justify-self: end; }
+  .chat-form { display: flex; gap: 8px; }
+  .chat-form input { flex: 1; font: inherit; color: var(--blush); background: rgba(255,255,255,.1); border: 1px solid rgba(255,227,234,.35); border-radius: 999px; padding: 14px 18px; }
+  .chat-form input::placeholder { color: rgba(255,227,234,.6); }
+  .chat-form input:focus-visible { outline: 3px solid var(--glow); outline-offset: 2px; }
+  .chat-form .opt { padding: 14px 20px; }
+  .fine { font-size: .8rem; opacity: .65; margin: 12px 0 20px !important; text-align: center; }
+
+  .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; margin: 16px 0; }
+  .thumbs div { position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden; background: rgba(255,255,255,.1); }
+  .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumbs span { position: absolute; inset: auto 4px 4px auto; font-size: .75rem; background: rgba(42,18,48,.75); padding: 2px 8px; border-radius: 999px; }
+  .upmsg { min-height: 1.4em; opacity: .85; margin-bottom: 20px !important; }
+
+  .shade { position: fixed; inset: 0; background: var(--shade); z-index: -1; }
+  .wall { position: fixed; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.6s ease; z-index: -2; }
+  .cursor { position: fixed; top: 0; left: 0; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%;
+    background: hsl(var(--hue, 340) 90% 70%); box-shadow: 0 0 14px hsl(var(--hue, 340) 90% 70%);
+    pointer-events: none; z-index: 9999; opacity: 0; transition: background .25s, box-shadow .25s, transform .12s; }
+  .cursor.on { opacity: 1; }
+  .cursor.down { transform: scale(.7); }
+  html.has-cursor, html.has-cursor * { cursor: none !important; }
+  .ripple { position: fixed; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; pointer-events: none; z-index: 9998;
+    border: 2px solid hsl(var(--rh) 90% 72%); animation: ripple .7s ease-out forwards; }
+  @keyframes ripple { to { transform: scale(7); opacity: 0; } }
+
+  /* Light theme (default): dark text on soft white glass so it reads on white wallpapers */
+  :root {
+    --blush: #3a1a40; --rose: #c2255c;
+    --page-bg: linear-gradient(160deg, #ffffff, #ffe9ef);
+    --shade: rgba(255,255,255,.4);
+  }
+  /* Dark theme: no wallpaper */
+  html[data-theme="dark"] {
+    --blush: #ffe3ea; --rose: #ff8fa8;
+    --page-bg: radial-gradient(circle at 30% 20%, #4a1f4f, #1d0d22 75%);
+    --shade: transparent;
+  }
+  html[data-theme="dark"] .wall, html[data-theme="dark"] .shade { display: none; }
+
+  html:not([data-theme="dark"]) .opt,
+  html:not([data-theme="dark"]) .note,
+  html:not([data-theme="dark"]) .msg.ai,
+  html:not([data-theme="dark"]) .chat-form input,
+  html:not([data-theme="dark"]) .thumbs div,
+  html:not([data-theme="dark"]) .theme-toggle { background: rgba(255,255,255,.72); border-color: rgba(58,26,64,.28); }
+  html:not([data-theme="dark"]) .opt:hover { background: rgba(255,143,168,.35); border-color: var(--rose); }
+  html:not([data-theme="dark"]) .chat-form input::placeholder { color: rgba(58,26,64,.55); }
+  html:not([data-theme="dark"]) .msg.me { background: rgba(255,143,168,.5); }
+  html:not([data-theme="dark"]) .thumbs span { color: #fff; }
+  html:not([data-theme="dark"]) .sub, html:not([data-theme="dark"]) .fine { opacity: .85; }
+
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 50;
+    font: inherit; font-size: .9rem; font-weight: 500; color: var(--blush);
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,227,234,.35);
+    border-radius: 999px; padding: 8px 16px; cursor: pointer; backdrop-filter: blur(8px);
+  }
+  .theme-toggle:focus-visible { outline: 3px solid var(--glow); outline-offset: 3px; }
+  .catpic img { max-width: 100%; border-radius: 18px; margin-top: 14px; }
+  .result { display: none; }
+  .result h2 { font-family: "Fraunces", serif; font-weight: 400; font-size: clamp(1.8rem, 6vw, 2.6rem); margin-bottom: 12px; }
+  .result p { opacity: .85; margin-bottom: 28px; }
+  .back {
+    font: inherit; color: var(--blush); background: none;
+    border: none; text-decoration: underline; cursor: pointer;
+  }
+  body.picked .choose { display: none; }
+  body.picked .result { display: block; animation: pop .5s ease; }
+  @keyframes pop { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wall"></div>
+<div class="wall"></div>
+<div class="shade"></div>
+<div class="cursor" id="cursor"></div>
+<button class="theme-toggle" id="themeBtn" type="button">Dark mode</button>
+<main>
+  <section class="choose">
+    <h1>Hi <em>Laya</em>,<br>what do you wanna do?</h1>
+    <p class="sub">Pick one.</p>
+    <div class="options" id="options"></div>
+  </section>
+
+  <section class="result" aria-live="polite">
+    <h2 id="resultTitle"></h2>
+    <p id="resultText"></p>
+    <div id="extra"></div>
+    <button class="back" id="back">Pick something else</button>
+  </section>
+</main>
+
+<script src="notes.js"></script>
+<script>
+  // After you deploy worker.js, paste its URL here (see setup steps)
+  const CHAT_URL = "https://laya-site.manilimelight769.workers.dev";
+
+  // Tells your Worker to send you a phone alert (and email, if set up)
+  function notify(event, extra) {
+    if (!CHAT_URL) return;
+    fetch(CHAT_URL.replace(/\/$/, "") + "/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event, ...extra })
+    }).catch(() => {});
+  }
+
+
+
+  // Wallpapers: put 3 pictures in the repo and list their names. They fade from one to the next.
+  const WALLPAPERS = ["bg1.jpg", "bg2.jpg", "bg3.jpg"];
+  (() => {
+    const layers = [...document.querySelectorAll(".wall")], ok = [];
+    let finished = 0, top = 0, i = 0;
+    const show = k => {
+      layers[top].style.backgroundImage = 'url("' + ok[k] + '")';
+      layers[top].style.opacity = 1; layers[1 - top].style.opacity = 0; top = 1 - top;
+    };
+    const done = () => {
+      if (++finished < WALLPAPERS.length || !ok.length) return;
+      ok.sort((a, b) => WALLPAPERS.indexOf(a) - WALLPAPERS.indexOf(b));
+      show(0);
+      if (ok.length > 1) setInterval(() => { i = (i + 1) % ok.length; show(i); }, 8000);
+    };
+    WALLPAPERS.forEach(src => { const im = new Image(); im.onload = () => { ok.push(src); done(); }; im.onerror = done; im.src = src; });
+  })();
+
+  // Light / dark mode. Dark mode removes the wallpaper.
+  (() => {
+    const root = document.documentElement, btn = document.getElementById("themeBtn");
+    const set = t => {
+      root.dataset.theme = t;
+      btn.textContent = t === "dark" ? "Light mode" : "Dark mode";
+      try { localStorage.setItem("theme", t); } catch (e) {}
+    };
+    let saved = null; try { saved = localStorage.getItem("theme"); } catch (e) {}
+    set(saved === "dark" ? "dark" : "light");
+    btn.onclick = () => set(root.dataset.theme === "dark" ? "light" : "dark");
+  })();
+
+  // Cursor that changes color on every click, plus a ripple where she clicks
+  (() => {
+    const cur = document.getElementById("cursor");
+    const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+    let hue = 340;
+    if (fine) document.documentElement.classList.add("has-cursor");
+    document.addEventListener("pointermove", e => {
+      if (!fine) return;
+      cur.classList.add("on");
+      cur.style.transform = "translate(" + e.clientX + "px," + e.clientY + "px)" + (cur.classList.contains("down") ? " scale(.7)" : "");
+    });
+    document.addEventListener("pointerdown", e => {
+      hue = (hue + 55) % 360;
+      document.documentElement.style.setProperty("--hue", hue);
+      cur.classList.add("down");
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const r = document.createElement("div");
+        r.className = "ripple";
+        r.style.left = e.clientX + "px"; r.style.top = e.clientY + "px";
+        r.style.setProperty("--rh", hue);
+        document.body.appendChild(r);
+        setTimeout(() => r.remove(), 700);
+      }
+    });
+    document.addEventListener("pointerup", () => cur.classList.remove("down"));
+    document.addEventListener("pointerleave", () => cur.classList.remove("on"));
+  })();
+
+  const box = document.getElementById("options");
+  const extra = document.getElementById("extra");
+  const title = document.getElementById("resultTitle");
+  const text = document.getElementById("resultText");
+
+  const screens = [
+    { label: "Are you missing Kimchi?", show() {
+        notify("missing");
+        title.textContent = "Are you?";
+        text.textContent = "Be honest.";
+        extra.innerHTML = '<div class="pair"><button class="opt" id="yes">Yes</button><button class="opt" id="alot">A lot</button></div>';
+        const reply = kind => { notify(kind); title.textContent = "Kimchi misses you too."; text.textContent = "Probably more. Don't tell him I said that."; extra.innerHTML = ""; };
+        document.getElementById("yes").onclick = () => reply("yes");
+        document.getElementById("alot").onclick = () => reply("alot");
+    }},
+    { label: "What Kimchi wrote for you", show() {
+        title.textContent = "From Kimchi";
+        text.textContent = "";
+        extra.innerHTML = '<div class="notes"></div>';
+        const list = extra.firstChild;
+        const fmt = d => /^\d{4}-\d\d-\d\d/.test(d || "") ? new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) : (d || "");
+        const render = all => {
+          list.innerHTML = "";
+          text.textContent = all.length ? "" : "Nothing here yet, check back soon.";
+          all.slice().reverse().forEach(n => {
+            const d = document.createElement("div");
+            d.className = "note";
+            const date = document.createElement("small"); date.textContent = fmt(n.date);
+            const p = document.createElement("p"); p.textContent = n.text;
+            d.append(date, p);
+            list.appendChild(d);
+          });
+        };
+        // Notes you post from admin.html come first; notes.js is the backup
+        const local = (typeof notes !== "undefined" ? notes : []);
+        if (!CHAT_URL) { render(local); return; }
+        text.textContent = "Loading...";
+        fetch(CHAT_URL.replace(/\/$/, "") + "/notes")
+          .then(r => r.ok ? r.json() : Promise.reject())
+          .then(d => render(d.notes && d.notes.length ? d.notes : local))
+          .catch(() => render(local));
+    }},
+    { label: "Do you want to give Kimchi a hug?", show() {
+        let n = 0;
+        title.textContent = "Come here.";
+        text.textContent = "Tap to send a hug.";
+        extra.innerHTML = '<button class="hugbtn" aria-label="Send a hug">🤗</button><p class="count"></p>';
+        const count = extra.querySelector(".count");
+        extra.querySelector(".hugbtn").onclick = () => {
+          n++;
+          if (n === 1) notify("hug");
+          count.textContent = n === 1 ? "Hug sent. Kimchi got it." : "Hugs sent: " + n;
+        };
+    }},
+    { label: "What food would you like?", show() {
+        title.textContent = "Hungry?";
+        text.textContent = "What are you craving?";
+        extra.innerHTML = '<div class="options" id="foods"></div>';
+
+        const fb = document.getElementById("foods");
+
+        const mainFoods = [
+          "Zinger",
+          "Fried rice",
+          "Noodles",
+          "Biryani",
+          "Pizza",
+          "Burger",
+          "Pasta",
+          "Something sweet",
+          "Something else"
+        ];
+
+        const sweets = [
+          "Cupcakes",
+          "Pastries",
+          "Red velvet cake",
+          "Cheesecake",
+          "Fruit",
+          "Candies",
+          "Cookies",
+          "Donuts",
+          "Brownies",
+          "Ice cream",
+          "Something else"
+        ];
+
+        const chooseFood = f => {
+          notify("food", { choice: f });
+          title.textContent = "Noted.";
+          text.textContent = "Kimchi knows what you're craving: " + f + ".";
+          extra.innerHTML = "";
+        };
+
+        const showMainFoods = () => {
+          title.textContent = "Hungry?";
+          text.textContent = "What are you craving?";
+          fb.innerHTML = "";
+
+          mainFoods.forEach(f => {
+            const b = document.createElement("button");
+            b.className = "opt";
+            b.textContent = f;
+
+            b.onclick = () => {
+              if (f === "Something sweet") {
+                showSweets();
+              } else if (f === "Something else") {
+                const answer = prompt("What are you craving?");
+                if (answer && answer.trim()) {
+                  chooseFood(answer.trim().slice(0, 40));
+                }
+              } else {
+                chooseFood(f);
+              }
+            };
+
+            fb.appendChild(b);
+          });
+        };
+
+        const showSweets = () => {
+          title.textContent = "Something sweet";
+          text.textContent = "Pick your sweet craving.";
+          fb.innerHTML = "";
+
+          const back = document.createElement("button");
+          back.className = "opt";
+          back.textContent = "← Back to food";
+          back.onclick = showMainFoods;
+          fb.appendChild(back);
+
+          sweets.forEach(f => {
+            const b = document.createElement("button");
+            b.className = "opt";
+            b.textContent = f;
+
+            b.onclick = () => {
+              if (f === "Something else") {
+                const answer = prompt("What sweet are you craving?");
+                if (answer && answer.trim()) {
+                  chooseFood(answer.trim().slice(0, 40));
+                }
+              } else {
+                chooseFood(f);
+              }
+            };
+
+            fb.appendChild(b);
+          });
+        };
+
+        showMainFoods();
+    }},
+    { label: "Cat time", show() {
+        title.textContent = "Meow.";
+        text.textContent = "Pet the cat.";
+        extra.innerHTML = '<button class="hugbtn" aria-label="Pet the cat">🐱</button><p class="count"></p><button class="opt" id="realcat" style="width:100%">Show me a real cat</button><div class="catpic" id="catpic"></div>';
+        const lines = ["Purr...", "The cat loves you.", "Kimchi is jealous of the cat.", "More. The cat demands more.", "Slow blink. That means I love you."];
+        let n = 0;
+        const count = extra.querySelector(".count");
+        extra.querySelector(".hugbtn").onclick = () => { n++; count.textContent = lines[(n - 1) % lines.length] + " (" + n + ")"; };
+        document.getElementById("realcat").onclick = () => {
+          const box = document.getElementById("catpic"); box.textContent = "";
+          const im = new Image(); im.alt = "A cat";
+          im.onerror = () => { box.textContent = "The cat is hiding. Try again."; };
+          im.src = "https://cataas.com/cat?width=500&t=" + Date.now();
+          box.appendChild(im);
+        };
+    }},
+    { label: "A cute note from your twin", show() {
+        title.textContent = "From your twin";
+        text.textContent = "";
+        extra.innerHTML = '<div class="notes"><div class="note"><p id="cuteText"></p></div></div><button class="opt" id="anotherCute" style="width:100%">Another one</button>';
+        const ct = document.getElementById("cuteText");
+        const load = () => {
+          if (!CHAT_URL) { ct.textContent = "Not switched on yet. Tell Kimchi!"; return; }
+          ct.textContent = "...";
+          fetch(CHAT_URL.replace(/\/$/, "") + "/cute", { cache: "no-store" })
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(d => { ct.textContent = d.text || "No cute notes yet, check back soon."; })
+            .catch(() => { ct.textContent = "Couldn't load a note. Try again."; });
+        };
+        document.getElementById("anotherCute").onclick = load;
+        load();
+    }},
+    { label: "What's your twin listening to?", show() {
+        title.textContent = "Twin's music";
+        text.textContent = "Loading...";
+        extra.innerHTML = '<div id="songbox"></div><button class="opt" id="anotherSong" style="width:100%;margin-top:12px">Another song</button>';
+        const box = document.getElementById("songbox"), more = document.getElementById("anotherSong");
+        const load = () => {
+          if (!CHAT_URL) { text.textContent = "Not switched on yet. Tell Kimchi!"; more.style.display = "none"; return; }
+          fetch(CHAT_URL.replace(/\/$/, "") + "/song", { cache: "no-store" })
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(d => {
+              if (d.kind === "none" || !/^[A-Za-z0-9]{22}$/.test(d.id || "")) { text.textContent = "No songs picked yet, check back soon."; more.style.display = "none"; box.innerHTML = ""; return; }
+              text.textContent = d.kind === "now" ? "Your twin is listening to this right now." : "Nothing playing right now, so here's one your twin loves.";
+              more.style.display = d.kind === "now" ? "none" : "block";
+              box.innerHTML = '<iframe title="Spotify song" src="https://open.spotify.com/embed/track/' + d.id + '" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:14px"></iframe>';
+            })
+            .catch(() => { text.textContent = "Couldn't load a song. Try again."; });
+        };
+        more.onclick = load;
+        load();
+    }},
+    { label: "Are you feeling sad or overwhelmed?", show() {
+        title.textContent = "I'm here.";
+        text.textContent = "You can talk to this AI about anything. Take your time.";
+        extra.innerHTML = '<div class="chat"><div class="chat-log" id="log"></div><form class="chat-form" id="cform"><input id="cin" autocomplete="off" placeholder="Type here..." aria-label="Your message"><button class="opt" type="submit">Send</button></form><p class="fine">This is an AI, not Kimchi and not a therapist. If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust right now.</p></div>';
+        const log = document.getElementById("log"), form = document.getElementById("cform"), input = document.getElementById("cin");
+        const history = [];
+        const add = (who, t) => { const d = document.createElement("div"); d.className = "msg " + who; d.textContent = t; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; };
+        add("ai", "Hey Laya. What's going on? You can tell me as much or as little as you want.");
+        form.onsubmit = async e => {
+          e.preventDefault();
+          const t = input.value.trim(); if (!t) return;
+          input.value = ""; add("me", t); history.push({ role: "user", content: t });
+          const wait = add("ai", "...");
+          try {
+            if (!CHAT_URL) throw new Error("not set up");
+            const r = await fetch(CHAT_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history.slice(-20) }) });
+            if (!r.ok) throw new Error("bad response");
+            const data = await r.json();
+            wait.textContent = data.reply; history.push({ role: "assistant", content: data.reply });
+          } catch (err) {
+            history.pop();
+            wait.textContent = "I can't connect right now. Try again in a bit, or message Kimchi, he'd want to hear from you.";
+          }
+        };
+    }},
+    { label: "Upload your pics", show() {
+        title.textContent = "Upload your pics";
+        text.textContent = "Pick up to 10 photos at a time. They go straight to Kimchi.";
+        extra.innerHTML = '<input type="file" id="pics" accept="image/*" multiple hidden><button class="opt" id="pick" style="width:100%">Choose photos</button><div class="thumbs" id="thumbs"></div><p class="upmsg" id="upmsg" aria-live="polite"></p>';
+        const pics = document.getElementById("pics"), thumbs = document.getElementById("thumbs"), msg = document.getElementById("upmsg");
+        document.getElementById("pick").onclick = () => pics.click();
+
+        // Shrink big phone photos before sending
+        const shrink = file => new Promise((res, rej) => {
+          const img = new Image(), url = URL.createObjectURL(file);
+          img.onload = () => {
+            const max = 1800, k = Math.min(1, max / Math.max(img.width, img.height));
+            const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+            c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            c.toBlob(b => b ? res(b) : rej(), "image/jpeg", 0.88);
+          };
+          img.onerror = rej; img.src = url;
+        });
+
+        pics.onchange = async () => {
+          let files = [...pics.files]; if (!files.length) return;
+          if (!CHAT_URL) { msg.textContent = "Uploads aren't switched on yet. Tell Kimchi!"; pics.value = ""; return; }
+          if (files.length > 10) { files = files.slice(0, 10); }
+          const tags = files.map(f => {
+            const box = document.createElement("div"), im = document.createElement("img"), tag = document.createElement("span");
+            im.src = URL.createObjectURL(f); tag.textContent = "..."; box.append(im, tag); thumbs.appendChild(box);
+            return tag;
+          });
+          msg.textContent = "Sending " + files.length + " photo" + (files.length > 1 ? "s" : "") + "...";
+          try {
+            const data = new FormData();
+            for (const f of files) data.append("photos", await shrink(f), "photo.jpg");
+            const r = await fetch(CHAT_URL.replace(/\/$/, "") + "/upload", { method: "POST", body: data });
+            if (!r.ok) throw 0;
+            tags.forEach(t => t.textContent = "sent");
+            msg.textContent = "All sent. Kimchi got them.";
+          } catch (e) {
+            tags.forEach(t => t.textContent = "failed");
+            msg.textContent = "Couldn't send. Try again in a bit.";
+          }
+          pics.value = "";
+        };
+    }}
+  ];
+
+  screens.forEach(sc => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = sc.label;
+    b.onclick = () => { sc.show(); document.body.classList.add("picked"); window.scrollTo(0, 0); };
+    box.appendChild(b);
+  });
+  document.getElementById("back").onclick = () => document.body.classList.remove("picked");
+</script>
+</body>
+</html>
