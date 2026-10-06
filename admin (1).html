@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Kimchi's notes</title>
+<style>
+  :root { --text: #3a1a40; --accent: #c2255c; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: system-ui, sans-serif; color: var(--text); background: linear-gradient(160deg, #fff, #ffe9ef); min-height: 100vh; padding: 24px; display: grid; justify-items: center; align-content: start; }
+  main { width: 100%; max-width: 560px; display: grid; gap: 14px; }
+  h1 { font-size: 1.6rem; font-weight: 600; }
+  input, textarea, button { font: inherit; border-radius: 14px; border: 1px solid rgba(58,26,64,.3); padding: 12px 14px; background: #fff; color: var(--text); }
+  textarea { min-height: 160px; resize: vertical; }
+  button { background: var(--accent); color: #fff; border: none; cursor: pointer; font-weight: 600; }
+  button.small { background: none; color: var(--accent); border: 1px solid var(--accent); padding: 6px 12px; font-weight: 500; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #ffb36b; outline-offset: 2px; }
+  .status { min-height: 1.4em; }
+  .note { background: #fff; border: 1px solid rgba(58,26,64,.2); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; }
+  .note small { opacity: .65; }
+  .note p { white-space: pre-wrap; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .pic { background: #fff; border: 1px solid rgba(58,26,64,.2); border-radius: 16px; padding: 8px; display: grid; gap: 6px; }
+  .pic img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; background: #eee; }
+  .pic small { opacity: .65; }
+  .pic .row { display: flex; gap: 6px; }
+  .pic a, .pic button { flex: 1; text-align: center; font-size: .85rem; padding: 6px 8px; }
+  .pic a { border: 1px solid var(--accent); color: var(--accent); border-radius: 14px; text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Write a note for Laya</h1>
+  <input id="pw" type="password" placeholder="Your admin password" autocomplete="current-password" aria-label="Admin password">
+  <textarea id="text" placeholder="Type your note here..." aria-label="Note"></textarea>
+  <button id="post">Post note</button>
+  <p class="status" id="status" aria-live="polite"></p>
+  <h2>Posted notes</h2>
+  <div id="list" style="display:grid;gap:10px"></div>
+
+  <h2>Laya's photos</h2>
+  <button id="loadPics">Load her photos</button>
+  <p class="status" id="picStatus" aria-live="polite"></p>
+  <div class="grid" id="pics"></div>
+</main>
+<script>
+  // Paste your Cloudflare Worker URL here (same one as CHAT_URL in index.html)
+  const WORKER_URL = "";
+
+  const api = p => WORKER_URL.replace(/\/$/, "") + p;
+  const pw = document.getElementById("pw"), text = document.getElementById("text"),
+        status = document.getElementById("status"), list = document.getElementById("list");
+  try { pw.value = sessionStorage.getItem("pw") || ""; } catch (e) {}
+
+  const fmt = d => /^\d{4}-\d\d-\d\d/.test(d || "") ? new Date(d).toLocaleString() : (d || "");
+  function render(notes) {
+    list.innerHTML = "";
+    if (!notes.length) { list.textContent = "No notes posted yet."; return; }
+    notes.slice().reverse().forEach(n => {
+      const d = document.createElement("div"); d.className = "note";
+      const s = document.createElement("small"); s.textContent = fmt(n.date);
+      const p = document.createElement("p"); p.textContent = n.text;
+      const b = document.createElement("button"); b.className = "small"; b.textContent = "Delete";
+      b.onclick = () => send("/admin/delete", { id: n.id }, "Deleted.");
+      d.append(s, p, b); list.appendChild(d);
+    });
+  }
+  async function load() {
+    try { const r = await fetch(api("/notes")); render((await r.json()).notes || []); }
+    catch (e) { status.textContent = WORKER_URL ? "Couldn't load notes." : "Paste your Worker URL at the top of this file first."; }
+  }
+  async function send(path, extra, okMsg) {
+    if (!WORKER_URL) { status.textContent = "Paste your Worker URL at the top of this file first."; return; }
+    status.textContent = "Working...";
+    try {
+      const r = await fetch(api(path), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw.value, ...extra }) });
+      if (r.status === 401) { status.textContent = "Wrong password."; return; }
+      if (!r.ok) throw 0;
+      try { sessionStorage.setItem("pw", pw.value); } catch (e) {}
+      status.textContent = okMsg; render((await r.json()).notes || []);
+      return true;
+    } catch (e) { status.textContent = "Something went wrong. Try again."; }
+  }
+  document.getElementById("post").onclick = async () => {
+    if (!text.value.trim()) { status.textContent = "Write something first."; return; }
+    if (await send("/admin/add", { text: text.value }, "Posted. Laya can see it now.")) text.value = "";
+  };
+
+  // ---- Her photos ----
+  const picsBox = document.getElementById("pics"), picStatus = document.getElementById("picStatus");
+  async function loadPics() {
+    if (!WORKER_URL) { picStatus.textContent = "Paste your Worker URL at the top of this file first."; return; }
+    picStatus.textContent = "Loading...";
+    picsBox.innerHTML = "";
+    try {
+      const r = await fetch(api("/admin/photos"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw.value }) });
+      if (r.status === 401) { picStatus.textContent = "Wrong password."; return; }
+      if (!r.ok) throw 0;
+      try { sessionStorage.setItem("pw", pw.value); } catch (e) {}
+      const photos = (await r.json()).photos || [];
+      picStatus.textContent = photos.length ? "" : "No photos yet.";
+      for (const ph of photos.slice().reverse()) {
+        const card = document.createElement("div"); card.className = "pic";
+        const img = document.createElement("img"); img.alt = "Photo from Laya";
+        const small = document.createElement("small"); small.textContent = fmt(ph.date);
+        const row = document.createElement("div"); row.className = "row";
+        const dl = document.createElement("a"); dl.textContent = "Save"; dl.download = "laya-" + ph.id.replace("photo:", "") + ".jpg";
+        const del = document.createElement("button"); del.className = "small"; del.textContent = "Delete";
+        del.onclick = async () => {
+          if (!confirm("Delete this photo for good?")) return;
+          await fetch(api("/admin/photo-delete"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw.value, id: ph.id }) });
+          card.remove();
+        };
+        row.append(dl, del); card.append(img, small, row); picsBox.appendChild(card);
+        fetch(api("/admin/photo"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pw.value, id: ph.id }) })
+          .then(x => x.blob()).then(b => { const u = URL.createObjectURL(b); img.src = u; dl.href = u; }).catch(() => {});
+      }
+    } catch (e) { picStatus.textContent = "Couldn't load photos. Try again."; }
+  }
+  document.getElementById("loadPics").onclick = loadPics;
+  load();
+</script>
+</body>
+</html>
