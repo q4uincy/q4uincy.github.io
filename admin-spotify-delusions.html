@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Kimchi's notes</title>
+<style>
+  :root { --text: #3a1a40; --accent: #c2255c; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: system-ui, sans-serif; color: var(--text); background: linear-gradient(160deg, #fff, #ffe9ef); min-height: 100vh; padding: 24px; display: grid; justify-items: center; align-content: start; }
+  main { width: 100%; max-width: 560px; display: grid; gap: 14px; }
+  h1 { font-size: 1.6rem; font-weight: 600; }
+  h2 { margin-top: 8px; }
+  input, textarea, button { font: inherit; border-radius: 14px; border: 1px solid rgba(58,26,64,.3); padding: 12px 14px; background: #fff; color: var(--text); }
+  textarea { min-height: 160px; resize: vertical; }
+  button { background: var(--accent); color: #fff; border: none; cursor: pointer; font-weight: 600; }
+  button.small { background: none; color: var(--accent); border: 1px solid var(--accent); padding: 6px 12px; font-weight: 500; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #ffb36b; outline-offset: 2px; }
+  .status { min-height: 1.4em; }
+  .note { background: #fff; border: 1px solid rgba(58,26,64,.2); border-radius: 16px; padding: 14px 16px; display: grid; gap: 8px; }
+  .note small { opacity: .65; }
+  .note p { white-space: pre-wrap; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .pic { background: #fff; border: 1px solid rgba(58,26,64,.2); border-radius: 16px; padding: 8px; display: grid; gap: 6px; }
+  .pic img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; background: #eee; }
+  .pic small { opacity: .65; }
+  .pic .row { display: flex; gap: 6px; }
+  .pic a, .pic button { flex: 1; text-align: center; font-size: .85rem; padding: 6px 8px; }
+  .pic a { border: 1px solid var(--accent); color: var(--accent); border-radius: 14px; text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Write a note for Laya</h1>
+  <input id="pw" type="password" placeholder="Your admin password" autocomplete="current-password" aria-label="Admin password">
+  <textarea id="text" placeholder="Type your note here..." aria-label="Note"></textarea>
+  <button id="post">Post note</button>
+  <p class="status" id="status" aria-live="polite"></p>
+  <h2>Posted notes</h2>
+  <div id="list" style="display:grid;gap:10px"></div>
+
+  <h2>💕 Cute notes for Laya</h2>
+  <textarea id="cuteText" placeholder="Write a cute note for Laya..." aria-label="Cute note"></textarea>
+  <button id="addCute">Add cute note 💕</button>
+  <p class="status" id="cuteStatus" aria-live="polite"></p>
+  <div id="cuteList" style="display:grid;gap:10px"></div>
+
+  <h2>🎵 Spotify</h2>
+  <p>Connect Kimchi's Spotify account once. The site can then show Laya what he's listening to and pick random songs from the <strong>delusions</strong> playlist only.</p>
+  <button id="spotifyConnect">Connect Kimchi's Spotify</button>
+  <button id="spotifyDisconnect" class="small" style="margin-top:8px">Disconnect Spotify</button>
+  <p class="status" id="spotifyStatus" aria-live="polite"></p>
+
+  <h2>Laya's photos</h2>
+  <button id="loadPics">Load her photos</button>
+  <p class="status" id="picStatus" aria-live="polite"></p>
+  <div class="grid" id="pics"></div>
+</main>
+<script>
+  const WORKER_URL = "https://laya-site.manilimelight769.workers.dev";
+  const api = p => WORKER_URL.replace(/\/$/, "") + p;
+  const pw = document.getElementById("pw"), text = document.getElementById("text"),
+        status = document.getElementById("status"), list = document.getElementById("list");
+  const cuteText = document.getElementById("cuteText"), addCute = document.getElementById("addCute"),
+        cuteStatus = document.getElementById("cuteStatus"), cuteList = document.getElementById("cuteList");
+  try { pw.value = sessionStorage.getItem("pw") || ""; } catch (e) {}
+  const fmt = d => /^\d{4}-\d\d-\d\d/.test(d || "") ? new Date(d).toLocaleString() : (d || "");
+
+  function render(notes) {
+    list.innerHTML = "";
+    if (!notes.length) { list.textContent = "No notes posted yet."; return; }
+    notes.slice().reverse().forEach(n => {
+      const d = document.createElement("div"); d.className = "note";
+      const s = document.createElement("small"); s.textContent = fmt(n.date);
+      const p = document.createElement("p"); p.textContent = n.text;
+      const b = document.createElement("button"); b.className = "small"; b.textContent = "Delete";
+      b.onclick = () => send("/admin/delete", { id: n.id }, "Deleted.");
+      d.append(s, p, b); list.appendChild(d);
+    });
+  }
+  async function load() {
+    try { const r = await fetch(api("/notes")); render((await r.json()).notes || []); }
+    catch (e) { status.textContent = "Couldn't load notes."; }
+  }
+  async function send(path, extra, okMsg) {
+    status.textContent = "Working...";
+    try {
+      const r = await fetch(api(path), { method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password:pw.value,...extra}) });
+      if (r.status === 401) { status.textContent = "Wrong password."; return; }
+      if (!r.ok) throw 0;
+      try { sessionStorage.setItem("pw", pw.value); } catch (e) {}
+      status.textContent = okMsg; render((await r.json()).notes || []); return true;
+    } catch (e) { status.textContent = "Something went wrong. Try again."; }
+  }
+  document.getElementById("post").onclick = async () => {
+    if (!text.value.trim()) { status.textContent = "Write something first."; return; }
+    if (await send("/admin/add",{text:text.value},"Posted. Laya can see it now.")) text.value="";
+  };
+
+  // Cute notes use the Worker's separate "cutes" list.
+  function renderCutes(items) {
+    cuteList.innerHTML = "";
+    if (!items.length) { cuteList.textContent = "No cute notes yet."; return; }
+    items.slice().reverse().forEach((value, reversedIndex) => {
+      const index = items.length - 1 - reversedIndex;
+      const d=document.createElement("div"); d.className="note";
+      const p=document.createElement("p"); p.textContent=value;
+      const b=document.createElement("button"); b.className="small"; b.textContent="Delete";
+      b.onclick=async()=>{
+        if(!confirm("Delete this cute note?")) return;
+        await cuteSend("/admin/list-delete",{list:"cutes",index},"Cute note deleted.");
+      };
+      d.append(p,b); cuteList.appendChild(d);
+    });
+  }
+  async function cuteSend(path, extra, okMsg) {
+    cuteStatus.textContent="Working...";
+    try {
+      const r=await fetch(api(path),{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password:pw.value,...extra})});
+      if(r.status===401){cuteStatus.textContent="Wrong password.";return false;}
+      if(!r.ok)throw 0;
+      try{sessionStorage.setItem("pw",pw.value);}catch(e){}
+      const data=await r.json(); renderCutes(data.list||[]); cuteStatus.textContent=okMsg; return true;
+    } catch(e){cuteStatus.textContent="Something went wrong. Try again.";return false;}
+  }
+  async function loadCutes() {
+    try {
+      const r=await fetch(api("/admin/lists"),{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password:pw.value})});
+      if(r.status===401){cuteStatus.textContent="Wrong password.";return;}
+      if(!r.ok)throw 0;
+      const data=await r.json(); renderCutes(data.cutes||[]);
+    } catch(e){cuteStatus.textContent="Couldn't load cute notes. Try again.";}
+  }
+  addCute.onclick=async()=>{
+    const value=cuteText.value.trim();
+    if(!value){cuteStatus.textContent="Write something first.";return;}
+    if(await cuteSend("/admin/list-add",{list:"cutes",value},"Added. Laya can get a cute note now. 💕")) cuteText.value="";
+  };
+
+  const spotifyConnect=document.getElementById("spotifyConnect");
+  const spotifyDisconnect=document.getElementById("spotifyDisconnect");
+  const spotifyStatus=document.getElementById("spotifyStatus");
+
+  async function spotifyStatusLoad(){
+    spotifyStatus.textContent="Checking...";
+    try{
+      const r=await fetch(api("/admin/spotify-status"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw.value})});
+      if(r.status===401){spotifyStatus.textContent="Enter your admin password first.";return;}
+      if(!r.ok)throw 0;
+      const d=await r.json();
+      spotifyStatus.textContent=d.connected?"Spotify is connected.":"Spotify is not connected yet.";
+    }catch(e){spotifyStatus.textContent="Couldn't check Spotify. Try again.";}
+  }
+
+  spotifyConnect.onclick=async()=>{
+    spotifyStatus.textContent="Opening Spotify...";
+    try{
+      const r=await fetch(api("/admin/spotify-start"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw.value})});
+      if(r.status===401){spotifyStatus.textContent="Wrong password.";return;}
+      if(!r.ok)throw 0;
+      try{sessionStorage.setItem("pw",pw.value);}catch(e){}
+      const d=await r.json();
+      if(!d.url)throw 0;
+      window.location.href=d.url;
+    }catch(e){spotifyStatus.textContent="Couldn't start Spotify connection. Try again.";}
+  };
+
+  spotifyDisconnect.onclick=async()=>{
+    if(!confirm("Disconnect Kimchi's Spotify from the site?"))return;
+    spotifyStatus.textContent="Disconnecting...";
+    try{
+      const r=await fetch(api("/admin/spotify-disconnect"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pw.value})});
+      if(r.status===401){spotifyStatus.textContent="Wrong password.";return;}
+      if(!r.ok)throw 0;
+      spotifyStatus.textContent="Spotify disconnected.";
+    }catch(e){spotifyStatus.textContent="Couldn't disconnect Spotify.";}
+  };
+
+  spotifyStatusLoad();
+
+  const picsBox=document.getElementById("pics"), picStatus=document.getElementById("picStatus");
+  async function loadPics(){
+    picStatus.textContent="Loading..."; picsBox.innerHTML="";
+    try{
+      const r=await fetch(api("/admin/photos"),{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password:pw.value})});
+      if(r.status===401){picStatus.textContent="Wrong password.";return;}
+      if(!r.ok)throw 0;
+      try{sessionStorage.setItem("pw",pw.value);}catch(e){}
+      const photos=(await r.json()).photos||[];
+      picStatus.textContent=photos.length?"":"No photos yet.";
+      for(const ph of photos.slice().reverse()){
+        const card=document.createElement("div");card.className="pic";
+        const img=document.createElement("img");img.alt="Photo from Laya";
+        const small=document.createElement("small");small.textContent=fmt(ph.date);
+        const row=document.createElement("div");row.className="row";
+        const dl=document.createElement("a");dl.textContent="Save";dl.download="laya-"+ph.id.replace("photo:","")+".jpg";
+        const del=document.createElement("button");del.className="small";del.textContent="Delete";
+        del.onclick=async()=>{if(!confirm("Delete this photo for good?"))return;
+          await fetch(api("/admin/photo-delete"),{method:"POST",headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({password:pw.value,id:ph.id})});card.remove();};
+        row.append(dl,del);card.append(img,small,row);picsBox.appendChild(card);
+        fetch(api("/admin/photo"),{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({password:pw.value,id:ph.id})}).then(x=>x.blob()).then(b=>{
+            const u=URL.createObjectURL(b);img.src=u;dl.href=u;}).catch(()=>{});
+      }
+    }catch(e){picStatus.textContent="Couldn't load photos. Try again.";}
+  }
+  document.getElementById("loadPics").onclick=loadPics;
+  load(); loadCutes();
+</script>
+</body>
+</html>
