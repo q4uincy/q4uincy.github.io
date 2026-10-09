@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Private admin · Laya's site</title>
+<style>
+  :root { color-scheme: dark; --text:#f4eaf2; --muted:#c5b3c7; --accent:#b75b8b; --line:rgba(220,160,195,.23); }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; padding:24px 16px 48px; font-family:system-ui,sans-serif; color:var(--text); background:radial-gradient(ellipse at top,#2b1732 0%,#100b15 48%,#08060b 100%); }
+  main { width:100%; max-width:720px; margin:0 auto; }
+  .panel { background:rgba(19,13,25,.94); border:1px solid var(--line); border-radius:22px; padding:22px; box-shadow:0 18px 60px #0005; }
+  h1 { font-size:1.55rem; font-weight:650; margin:0 0 8px; }
+  h2 { font-size:1.15rem; margin:24px 0 10px; }
+  p { line-height:1.5; }
+  .muted { color:var(--muted); }
+  .stack { display:grid; gap:12px; }
+  input,textarea,button { width:100%; font:inherit; border-radius:13px; border:1px solid var(--line); padding:12px 14px; background:#17111d; color:var(--text); }
+  textarea { min-height:135px; resize:vertical; }
+  button { background:var(--accent); color:white; border:0; cursor:pointer; font-weight:650; }
+  button.secondary { background:transparent; color:#e9b7d2; border:1px solid var(--accent); }
+  button:focus-visible,input:focus-visible,textarea:focus-visible { outline:3px solid #f7c4e2; outline-offset:2px; }
+  .status { min-height:1.4em; margin:0; color:#f2cce0; overflow-wrap:anywhere; }
+  .hidden { display:none !important; }
+  .note { background:rgba(24,16,30,.92); border:1px solid var(--line); border-radius:16px; padding:14px 16px; display:grid; gap:8px; }
+  .note small,.pic small { color:var(--muted); }
+  .note p { white-space:pre-wrap; overflow-wrap:anywhere; margin:0; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); gap:12px; }
+  .pic { background:rgba(24,16,30,.92); border:1px solid var(--line); border-radius:16px; padding:8px; display:grid; gap:8px; min-width:0; }
+  .pic img { width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px; display:block; background:#211927; }
+  .pic .row { display:flex; gap:6px; }
+  .pic a,.pic .row button { flex:1; text-align:center; font-size:.85rem; padding:7px 8px; }
+  .pic a { border:1px solid var(--accent); color:#e9b7d2; border-radius:13px; text-decoration:none; }
+  .toprow { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+  .toprow button { width:auto; }
+  .lock { font-size:2rem; margin-bottom:10px; }
+  @media(max-width:480px){ .panel{padding:18px} body{padding:14px 10px 36px} }
+</style>
+</head>
+<body>
+<main>
+  <!-- This is the only panel shown until the server verifies the login. -->
+  <section id="loginPanel" class="panel stack" aria-labelledby="loginTitle">
+    <div class="lock" aria-hidden="true">☾ ♡</div>
+    <h1 id="loginTitle">Private admin area</h1>
+    <p class="muted">Only sign in if you're authorized. Notes and admin tools stay hidden until your login is verified.</p>
+    <form id="loginForm" class="stack">
+      <input id="user" type="text" placeholder="Admin username" autocomplete="username" aria-label="Admin username" required>
+      <input id="pw" type="password" placeholder="Admin password" autocomplete="current-password" aria-label="Admin password" required>
+      <button id="loginButton" type="submit">Unlock admin</button>
+    </form>
+    <button class="secondary" id="forgot" type="button">Forgot password? Email a reset link</button>
+    <p class="status" id="loginStatus" role="status" aria-live="polite"></p>
+    <form id="resetForm" class="stack hidden">
+      <p class="muted">Choose a new password. Use at least 12 characters.</p>
+      <input id="newPassword" type="password" autocomplete="new-password" minlength="12" maxlength="256" placeholder="New password (12+ characters)" required>
+      <input id="confirmPassword" type="password" autocomplete="new-password" minlength="12" maxlength="256" placeholder="Confirm new password" required>
+      <button type="submit">Reset password</button>
+      <p id="resetStatus" class="status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section id="adminPanel" class="panel hidden">
+    <div class="toprow">
+      <div><h1>Write a note for Laya</h1><p class="muted">Signed in to the private admin area.</p></div>
+      <button class="secondary" id="logout" type="button">Lock</button>
+    </div>
+    <div class="stack">
+      <textarea id="text" placeholder="Type your note here..." aria-label="Note"></textarea>
+      <button id="post" type="button">Post note</button>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </div>
+    <h2>Posted notes</h2>
+    <div id="list" class="stack"></div>
+
+    <h2>💕 Cute notes for Laya</h2>
+    <div class="stack">
+      <textarea id="cuteText" placeholder="Write a cute note for Laya..." aria-label="Cute note"></textarea>
+      <button id="addCute" type="button">Add cute note 💕</button>
+      <p class="status" id="cuteStatus" role="status" aria-live="polite"></p>
+      <div id="cuteList" class="stack"></div>
+    </div>
+
+    <h2>Laya's photos</h2>
+    <div class="stack">
+      <button class="secondary" id="loadPics" type="button">Load her photos</button>
+      <p class="status" id="picStatus" role="status" aria-live="polite"></p>
+      <div class="grid" id="pics"></div>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const WORKER_URL = 'https://laya-site.manilimelight769.workers.dev';
+  const api = path => WORKER_URL.replace(/\/$/, '') + path;
+  const $ = id => document.getElementById(id);
+  const loginPanel = $('loginPanel'), adminPanel = $('adminPanel');
+  const user = $('user'), pw = $('pw');
+  const loginStatus = $('loginStatus'), loginForm = $('loginForm');
+  const status = $('status'), list = $('list');
+  const cuteText = $('cuteText'), cuteStatus = $('cuteStatus'), cuteList = $('cuteList');
+  const picsBox = $('pics'), picStatus = $('picStatus');
+  let credentials = null;
+  let resetToken = new URLSearchParams(location.search).get('reset');
+
+  const fmt = value => /^\d{4}-\d\d-\d\d/.test(value || '') ? new Date(value).toLocaleString() : (value || '');
+  const request = async (path, payload) => fetch(api(path), {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({...payload, ...(credentials || {})})
+  });
+
+  function lockAdmin() {
+    credentials = null;
+    adminPanel.classList.add('hidden');
+    loginPanel.classList.remove('hidden');
+    $('text').value = '';
+    $('cuteText').value = '';
+    list.replaceChildren(); cuteList.replaceChildren(); picsBox.replaceChildren();
+    status.textContent = ''; cuteStatus.textContent = ''; picStatus.textContent = '';
+    pw.value = '';
+    user.focus();
+  }
+
+  function renderNotes(notes) {
+    list.replaceChildren();
+    if (!notes.length) { list.textContent = 'No notes posted yet.'; return; }
+    notes.slice().reverse().forEach(note => {
+      const card=document.createElement('article'); card.className='note';
+      const date=document.createElement('small'); date.textContent=fmt(note.date);
+      const body=document.createElement('p'); body.textContent=note.text;
+      const del=document.createElement('button'); del.className='secondary'; del.textContent='Delete';
+      del.onclick=async()=>{ if(!confirm('Delete this note?')) return; await send('/admin/delete',{id:note.id},'Deleted.'); };
+      card.append(date,body,del); list.append(card);
+    });
+  }
+
+  function renderCutes(items) {
+    cuteList.replaceChildren();
+    if (!items.length) { cuteList.textContent='No cute notes yet.'; return; }
+    items.slice().reverse().forEach((value, reversedIndex) => {
+      const index=items.length-1-reversedIndex;
+      const card=document.createElement('article'); card.className='note';
+      const body=document.createElement('p'); body.textContent=value;
+      const del=document.createElement('button'); del.className='secondary'; del.textContent='Delete';
+      del.onclick=async()=>{ if(!confirm('Delete this cute note?')) return; await cuteSend('/admin/list-delete',{list:'cutes',index},'Cute note deleted.'); };
+      card.append(body,del); cuteList.append(card);
+    });
+  }
+
+  async function send(path, extra, okMessage) {
+    status.textContent='Working…';
+    try {
+      const response=await request(path,extra);
+      if(response.status===401){ status.textContent='Your session was rejected. Please sign in again.'; lockAdmin(); loginStatus.textContent='Please sign in again.'; return false; }
+      if(!response.ok) throw new Error('Request failed');
+      const data=await response.json();
+      if(data.notes) renderNotes(data.notes);
+      status.textContent=okMessage;
+      return true;
+    } catch { status.textContent='Something went wrong. Try again.'; return false; }
+  }
+
+  async function cuteSend(path, extra, okMessage) {
+    cuteStatus.textContent='Working…';
+    try {
+      const response=await request(path,extra);
+      if(response.status===401){ lockAdmin(); loginStatus.textContent='Please sign in again.'; return false; }
+      if(!response.ok) throw new Error('Request failed');
+      const data=await response.json(); renderCutes(data.list||[]); cuteStatus.textContent=okMessage; return true;
+    } catch { cuteStatus.textContent='Something went wrong. Try again.'; return false; }
+  }
+
+  async function loadPics() {
+    picStatus.textContent='Loading…'; picsBox.replaceChildren();
+    try {
+      const response=await request('/admin/photos',{});
+      if(response.status===401){ lockAdmin(); loginStatus.textContent='Please sign in again.'; return; }
+      if(!response.ok) throw new Error('Request failed');
+      const photos=(await response.json()).photos||[];
+      picStatus.textContent=photos.length?'':'No photos yet.';
+      for(const photo of photos.slice().reverse()) {
+        const card=document.createElement('div'); card.className='pic';
+        const img=document.createElement('img'); img.alt='Photo from Laya';
+        const date=document.createElement('small'); date.textContent=fmt(photo.date);
+        const row=document.createElement('div'); row.className='row';
+        const save=document.createElement('a'); save.textContent='Save'; save.download='laya-photo.jpg';
+        const del=document.createElement('button'); del.className='secondary'; del.textContent='Delete';
+        del.onclick=async()=>{
+          if(!confirm('Delete this photo permanently?')) return;
+          const result=await request('/admin/photo-delete',{id:photo.id});
+          if(result.ok) card.remove(); else picStatus.textContent='Could not delete photo.';
+        };
+        row.append(save,del); card.append(img,date,row); picsBox.append(card);
+        request('/admin/photo',{id:photo.id}).then(r=>{if(!r.ok)throw 0;return r.blob();}).then(blob=>{
+          const url=URL.createObjectURL(blob); img.src=url; save.href=url;
+        }).catch(()=>{ img.alt='Could not load photo'; });
+      }
+    } catch { picStatus.textContent='Could not load photos. Try again.'; }
+  }
+
+
+  loginForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const username=user.value.trim(), password=pw.value;
+    if(!username || !password) return;
+    $('loginButton').disabled=true; $('loginButton').textContent='Checking…'; loginStatus.textContent='';
+    credentials={username,password};
+    try {
+      const response=await request('/admin/lists',{});
+      if(response.status===401){ credentials=null; loginStatus.textContent='Incorrect username or password.'; pw.value=''; pw.focus(); return; }
+      if(!response.ok) throw new Error('Could not verify login');
+      const data=await response.json();
+      adminPanel.classList.remove('hidden'); loginPanel.classList.add('hidden');
+      renderCutes(data.cutes||[]);
+      // Only fetch public notes after the private login check succeeds.
+      const notesResponse=await fetch(api('/notes'));
+      renderNotes((await notesResponse.json()).notes||[]);
+      status.textContent='Signed in.';
+      user.value=username; pw.value='';
+    } catch {
+      credentials=null; loginStatus.textContent='Could not connect to the admin service. Try again.';
+    } finally {
+      $('loginButton').disabled=false; $('loginButton').textContent='Unlock admin';
+    }
+  });
+
+  $('post').onclick=async()=>{
+    if(!$('text').value.trim()){status.textContent='Write something first.';return;}
+    if(await send('/admin/add',{text:$('text').value},'Posted. Laya can see it now.')) $('text').value='';
+  };
+  $('addCute').onclick=async()=>{
+    const value=cuteText.value.trim(); if(!value){cuteStatus.textContent='Write something first.';return;}
+    if(await cuteSend('/admin/list-add',{list:'cutes',value},'Added. Laya can get a cute note now. 💕')) cuteText.value='';
+  };
+  $('loadPics').onclick=loadPics;
+  $('logout').onclick=lockAdmin;
+  $('forgot').onclick=async()=>{
+    const email=prompt('Enter the recovery email connected to your admin account:'); if(!email)return;
+    loginStatus.textContent='Requesting reset link…';
+    try {
+      const response=await fetch(api('/admin/reset-request'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+      loginStatus.textContent=response.ok?'If the recovery email is configured, a reset link will be sent.':'Could not request a reset link.';
+    } catch { loginStatus.textContent='Could not connect. Try again.'; }
+  };
+
+  if(resetToken) {
+    $('resetForm').classList.remove('hidden');
+    loginStatus.textContent='Use the one-time reset link to choose a new password.';
+    $('resetForm').addEventListener('submit',async event=>{
+      event.preventDefault(); const next=$('newPassword').value, confirm=$('confirmPassword').value;
+      if(next.length<12){$('resetStatus').textContent='Use at least 12 characters.';return;}
+      if(next!==confirm){$('resetStatus').textContent='The passwords do not match.';return;}
+      $('resetStatus').textContent='Resetting password…';
+      try {
+        const response=await fetch(api('/admin/reset-complete'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:resetToken,password:next})});
+        if(!response.ok) throw new Error('The reset link expired or is invalid.');
+        resetToken=null; history.replaceState({},document.title,location.pathname);
+        $('resetForm').classList.add('hidden'); $('resetStatus').textContent=''; loginStatus.textContent='Password changed. Sign in with your new password.';
+      } catch(error) {$('resetStatus').textContent=error.message||'Could not reset password.';}
+    });
+  }
+  // Do not read notes, cutes, or photos until the user successfully signs in.
+})();
+</script>
+</body>
+</html>
