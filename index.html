@@ -150,16 +150,28 @@ textarea{min-height:140px;resize:vertical}
 .wallpaper-float .status{margin:0 4px;font-size:.72rem}
 
 /* Welcome veil + discreet admin entry */
-#welcomeVeil{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,rgba(72,26,66,.94),rgba(8,5,12,.99) 68%);opacity:1;visibility:visible;transition:opacity .85s ease,visibility .85s ease;}
+#welcomeVeil{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,rgba(72,26,66,.94),rgba(8,5,12,.99) 68%);opacity:1;visibility:visible;transition:opacity .85s ease,visibility .85s ease}
 #welcomeVeil.dismissed{opacity:0;visibility:hidden;pointer-events:none}
 .welcome-card{position:relative;text-align:center;padding:36px 28px;max-width:min(90vw,440px);animation:welcomeRise 1.05s cubic-bezier(.2,.75,.25,1) both}
 .welcome-card:before,.welcome-card:after{content:'✦';position:absolute;color:#c58cae;opacity:.7;font-size:18px;animation:twinkle 2s ease-in-out infinite alternate}
 .welcome-card:before{top:5px;left:8px}.welcome-card:after{bottom:8px;right:8px;animation-delay:.6s}
 .welcome-moon{font-size:28px;color:#d8a6c5;letter-spacing:.5em;margin:0 0 20px 8px;text-shadow:0 0 22px rgba(193,115,164,.55)}
 
-/* Small welcome mascot image */
-.welcome-kuromi{display:block;width:70px;height:70px;object-fit:contain;margin:0 auto 16px;position:relative;filter:drop-shadow(0 0 10px rgba(187,104,157,.28));animation:kuromiFloat 3s ease-in-out infinite}
-@keyframes kuromiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+/* Small animated Kuromi-style mascot — drawn directly in SVG */
+.welcome-kuromi{
+  display:block;width:82px;height:94px;margin:0 auto 14px;overflow:visible;
+  filter:drop-shadow(0 5px 12px rgba(187,104,157,.3));
+  animation:kuromiFloat 2.8s ease-in-out infinite;
+}
+.welcome-kuromi .ear-left{transform-box:fill-box;transform-origin:100% 100%;animation:kuromiEarLeft 3s ease-in-out infinite}
+.welcome-kuromi .ear-right{transform-box:fill-box;transform-origin:0% 100%;animation:kuromiEarRight 3s ease-in-out infinite}
+.welcome-kuromi .eye{transform-box:fill-box;transform-origin:center;animation:kuromiBlink 4.5s infinite}
+@keyframes kuromiFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(1deg)}}
+@keyframes kuromiEarLeft{0%,85%,100%{transform:rotate(0)}90%{transform:rotate(-7deg)}95%{transform:rotate(3deg)}}
+@keyframes kuromiEarRight{0%,85%,100%{transform:rotate(0)}90%{transform:rotate(7deg)}95%{transform:rotate(-3deg)}}
+@keyframes kuromiBlink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.12)}}
+@media(prefers-reduced-motion:reduce){.welcome-kuromi,.welcome-kuromi .ear-left,.welcome-kuromi .ear-right,.welcome-kuromi .eye{animation:none!important}}
+
 .welcome-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(2.6rem,9vw,4.3rem);line-height:1;color:#f3dce9;letter-spacing:.02em;text-shadow:0 0 28px rgba(184,96,151,.3)}
 .welcome-sub{margin-top:15px;color:#c9b2c4;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase}
 .welcome-skip{margin-top:28px;border:1px solid rgba(214,162,195,.28);border-radius:999px;background:rgba(255,255,255,.035);color:#ead8e5;padding:8px 16px;font-size:.72rem;cursor:pointer}
@@ -169,8 +181,13 @@ textarea{min-height:140px;resize:vertical}
 .admin-open{background:rgba(19,12,24,.68);color:#e9d5e4;border:1px solid rgba(194,137,176,.28);border-radius:999px;padding:10px 17px;font-size:.78rem;letter-spacing:.06em;cursor:pointer;transition:background .25s,border-color .25s}
 .admin-open:hover{background:rgba(75,35,67,.7);border-color:rgba(219,165,200,.6)}
 .admin-panel{display:none;margin:14px auto 0;padding:18px;max-width:350px;text-align:left;background:rgba(12,8,17,.88);border:1px solid rgba(194,137,176,.28);border-radius:18px;box-shadow:0 15px 50px #0005;backdrop-filter:blur(15px)}
-.admin-panel.open{display:grid;gap:10px;animation:welcomeRise .35s ease both}.admin-panel label{font-size:.75rem;color:#d7bed0}.admin-panel input{width:100%;padding:11px 12px;border-radius:11px;background:#100c16;border:1px solid #493044;color:#f6eaf2;font:inherit}.admin-panel button[type=submit]{width:100%;padding:11px;border-radius:11px;border:1px solid #8d587d;background:#45243f;color:#f8eaf3;cursor:pointer}.admin-hint{font-size:.7rem;color:#aa94a8;line-height:1.5}.admin-status{min-height:1.2em;font-size:.75rem;color:#e4c3d8}
-@media(prefers-reduced-motion:reduce){#welcomeVeil,.welcome-card,.welcome-card:before,.welcome-card:after,.admin-panel.open,.welcome-kuromi{animation:none!important;transition:none!important}}
+.admin-panel.open{display:grid;gap:10px;animation:welcomeRise .35s ease both}
+.admin-panel label{font-size:.75rem;color:#d7bed0}
+.admin-panel input{width:100%;padding:11px 12px;border-radius:11px;background:#100c16;border:1px solid #493044;color:#f6eaf2;font:inherit}
+.admin-panel button[type=submit]{width:100%;padding:11px;border-radius:11px;border:1px solid #8d587d;background:#45243f;color:#f8eaf3;cursor:pointer}
+.admin-hint{font-size:.7rem;color:#aa94a8;line-height:1.5}
+.admin-status{min-height:1.2em;font-size:.75rem;color:#e4c3d8}
+@media(prefers-reduced-motion:reduce){#welcomeVeil,.welcome-card,.welcome-card:before,.welcome-card:after,.admin-panel.open{animation:none!important;transition:none!important}}
 
 /* Private login gate */
 .login-gate{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 42%,rgba(69,27,63,.96),rgba(6,4,9,.985) 72%);backdrop-filter:blur(18px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;isolation:isolate;overflow:hidden}
@@ -212,7 +229,45 @@ body.auth-locked{overflow:hidden}
 <div id="welcomeVeil" role="dialog" aria-label="Welcome Laya" aria-modal="true">
   <div class="welcome-card">
     <div class="welcome-moon">☾ ✦ ☽</div>
-    <img class="welcome-kuromi" src="assets/kuromi-welcome.png" alt="" width="70" height="70" aria-hidden="true">
+
+    <!-- Animated mascot is embedded directly in the HTML -->
+    <svg class="welcome-kuromi" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A cute animated Kuromi-style mascot">
+      <path d="M81 108 C106 115 113 92 102 78" fill="none" stroke="#17131d" stroke-width="7" stroke-linecap="round"/>
+      <path d="M99 78 L111 78 L105 66 Z" fill="#17131d"/>
+
+      <path d="M47 92 C34 103 39 120 52 126 C61 131 69 123 63 115 L59 104 L78 116 C88 123 98 113 91 103 L79 90" fill="#fff8fb" stroke="#17131d" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M43 76 C29 68 15 71 13 81 C12 90 27 92 40 87" fill="#fff8fb" stroke="#17131d" stroke-width="2.5"/>
+      <path d="M78 76 C91 66 105 69 108 80 C110 89 97 94 83 87" fill="#fff8fb" stroke="#17131d" stroke-width="2.5"/>
+
+      <g class="ear-left">
+        <path d="M43 39 L17 12 L24 52 L43 61 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
+        <circle cx="16" cy="11" r="5.5" fill="#d7a0eb" stroke="#17131d" stroke-width="2"/>
+      </g>
+      <g class="ear-right">
+        <path d="M77 39 L103 12 L96 52 L77 61 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
+        <circle cx="104" cy="11" r="5.5" fill="#d7a0eb" stroke="#17131d" stroke-width="2"/>
+      </g>
+
+      <path d="M19 58 C19 33 38 24 60 24 C82 24 101 33 101 58 C101 79 83 91 60 92 C37 91 19 79 19 58 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
+      <path d="M29 62 C30 47 43 43 52 50 L60 55 L68 50 C78 43 91 47 91 62 C91 78 77 85 60 85 C43 85 29 78 29 62 Z" fill="#fff8fb" stroke="#17131d" stroke-width="2"/>
+
+      <path d="M48 43 C45 35 51 30 60 30 C69 30 75 35 72 43 L68 48 L65 48 L64 44 L61 44 L60 49 L57 49 L56 44 L53 44 L52 48 L49 48 Z" fill="#e991c3" stroke="#17131d" stroke-width="1"/>
+      <g fill="#211a28">
+        <ellipse cx="55" cy="40" rx="2" ry="3"/>
+        <ellipse cx="65" cy="40" rx="2" ry="3"/>
+      </g>
+
+      <ellipse class="eye" cx="46" cy="61" rx="5" ry="8" fill="#17131d"/>
+      <ellipse class="eye" cx="74" cy="61" rx="5" ry="8" fill="#17131d"/>
+      <ellipse cx="60" cy="70" rx="3.5" ry="2.5" fill="#e991c3"/>
+      <path d="M54 75 Q60 83 66 75" fill="#f18bb8" stroke="#17131d" stroke-width="1.8" stroke-linecap="round"/>
+
+      <path d="M37 87 L83 87 L77 97 L68 92 L60 100 L52 92 L43 97 Z" fill="#211a28" stroke="#17131d" stroke-width="2"/>
+      <circle cx="43" cy="97" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
+      <circle cx="60" cy="100" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
+      <circle cx="77" cy="97" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
+    </svg>
+
     <h1 class="welcome-title">welcome laya</h1>
     <p class="welcome-sub">Kimchi Loves You</p>
     <button class="welcome-skip" id="welcomeEnter" type="button">enter softly ✦</button>
@@ -229,7 +284,8 @@ body.auth-locked{overflow:hidden}
     <span class="kuromi-eye eye-right"></span>
     <span class="kuromi-skull"><i></i><b></b></span>
   </div>
-</div><div class="toast" id="toast"></div>
+</div>
+<div class="toast" id="toast"></div>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -607,7 +663,6 @@ const plushies=[
     "Panda is now sitting beside you."
   ]}
 ];
-
 const plushGrid=$("plushGrid");
 const plushMsg=$("plushMsg");
 plushies.forEach(plush=>{
@@ -618,8 +673,7 @@ plushies.forEach(plush=>{
   button.innerHTML=
     (plush.kuromi
       ? `<svg class="kuromi-art" viewBox="0 0 120 120" aria-label="Kuromi plush" role="img">
-          <path class="hood" d="M31 48 L18 9 Q17 3 23 7 L47 25 Q60 19 73 25 L97 7 Q103 3 102 10 L89 48
-            Q101 57 96 77 Q91 98 60 102 Q29 98 24 77 Q19 57 31 48Z"/>
+          <path class="hood" d="M31 48 L18 9 Q17 3 23 7 L47 25 Q60 19 73 25 L97 7 Q103 3 102 10 L89 48 Q101 57 96 77 Q91 98 60 102 Q29 98 24 77 Q19 57 31 48Z"/>
           <path class="inner" d="M25 13 L45 29 L34 42Z M95 13 L75 29 L86 42Z"/>
           <ellipse class="face" cx="60" cy="61" rx="31" ry="27"/>
           <ellipse class="eye" cx="48" cy="62" rx="4.2" ry="6.5"/>
@@ -751,7 +805,8 @@ function applySongColor(url){
   const img=new Image();img.crossOrigin="anonymous";
   img.onload=()=>{
     try{
-      const c=document.createElement("canvas"),ctx=c.getContext("2d");c.width=1;c.height=1;ctx.drawImage(img,0,0,1,1);
+      const c=document.createElement("canvas"),ctx=c.getContext("2d");
+      c.width=1;c.height=1;ctx.drawImage(img,0,0,1,1);
       const d=ctx.getImageData(0,0,1,1).data;let r=d[0],g=d[1],b=d[2];
       const mx=Math.max(r,g,b),mn=Math.min(r,g,b),f=mx<100?1.5:.85;
       r=Math.min(255,r*f);g=Math.min(255,g*f);b=Math.min(255,b*f);
