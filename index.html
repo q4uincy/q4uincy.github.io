@@ -919,12 +919,11 @@ input { padding: 10px 12px; border-radius: 12px; }
         <p>One tap = one hug delivered.</p>
         <button class="action" id="hugBtn" style="font-size:2rem">🤗</button>
         <div class="resultbox" id="hugResult">No hugs sent yet.</div>
-        <div class="hug-extra">
-          <div class="card-title">Send a kiss ♡</div>
-          <p>Or find a little GIF or sticker for Kimchi.</p>
-          <button class="action" id="kissKimchiBtn" type="button">Send a kiss ♡</button>
-          <div class="status" id="kissStatus" role="status" aria-live="polite"></div>
-          <label for="giphySearch" class="status" style="display:block;margin:10px 0 6px">Search GIFs or stickers</label>
+        <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+        <div class="card-title">Send Kimchi a GIF or sticker</div>
+        <p>Find something cute and send it straight to Kimchi.</p>
+        <div style="margin-top:12px">
+          <label for="giphySearch" class="status" style="display:block;margin-bottom:6px">Search GIFs or stickers</label>
           <div class="chat-form">
             <input id="giphySearch" type="search" maxlength="100" placeholder="Search cute GIFs or stickers">
             <button class="action" id="giphySearchBtn" type="button">Search</button>
@@ -935,35 +934,7 @@ input { padding: 10px 12px; border-radius: 12px; }
           </div>
           <div id="giphyResults" class="thumbs" aria-live="polite"></div>
           <div class="status" id="giphyStatus">Search for something cute, then choose one to send.</div>
-          <button class="action" id="sendGiphyBtn" type="button" disabled>Send selected GIF or sticker</button>
-          <div class="hug-upload">
-            <label for="kissImageUpload" class="status" style="display:block;margin:10px 0 6px">Or upload an image</label>
-            <input type="file" id="kissImageUpload" accept="image/*" hidden>
-            <button class="action" id="pickKissImage" type="button">Choose an image</button>
-            <div class="thumbs" id="kissImagePreview"></div>
-            <div class="status" id="kissImageStatus"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" id="kissKimchiCard">
-        <div class="card-title">Give Kimchi a kiss</div>
-        <p>Send him a little kiss, a GIF, or a sticker.</p>
-        <button class="action" id="kissKimchiBtn" type="button">Give Kimchi a kiss</button>
-        <div class="status" id="kissStatus" role="status" aria-live="polite"></div>
-        <div style="margin-top:14px">
-          <label for="giphySearch" class="status" style="display:block;margin-bottom:6px">Find a GIF or sticker</label>
-          <div class="chat-form">
-            <input id="giphySearch" type="search" maxlength="100" placeholder="Search cute GIFs or stickers">
-            <button class="action" id="giphySearchBtn" type="button">Search</button>
-          </div>
-          <div class="controls">
-            <button class="smallbtn active" type="button" data-giphy-kind="gifs">GIFs</button>
-            <button class="smallbtn" type="button" data-giphy-kind="stickers">Stickers</button>
-          </div>
-          <div id="giphyResults" class="thumbs" aria-live="polite"></div>
-          <div class="status" id="giphyStatus">Search for something cute, then choose one to send.</div>
-          <button class="action" id="sendGiphyBtn" type="button" disabled>Send selected GIF or sticker</button>
+          <button class="action" id="sendGiphyBtn" type="button" disabled>Send to Kimchi</button>
         </div>
         <div style="margin-top:14px">
           <label for="kissImageUpload" class="status" style="display:block;margin-bottom:6px">Or upload an image</label>
@@ -2335,31 +2306,10 @@ $("pics").onchange = async () => {
   $("pics").value = "";
 };
 
-/* Give Kimchi a kiss, send a GIPHY GIF/sticker, or upload a separate image. */
+/* Send Kimchi a GIPHY GIF/sticker or upload an image from the hug card. */
 const GIPHY_API_KEY = "j0Mx5XH6nEDBz1jfBVAjkcAOYnbIrH3X";
 let giphyKind = "gifs";
 let selectedGiphy = null;
-
-$("kissKimchiBtn").addEventListener("click", async () => {
-  const button = $("kissKimchiBtn");
-  const status = $("kissStatus");
-  button.disabled = true;
-  status.textContent = "Sending Kimchi a kiss...";
-  try {
-    const response = await api("/message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: "Kimchi, you just got a kiss from Laya. ♡" })
-    });
-    if (!response.ok) throw new Error("Could not send kiss");
-    notify("kiss");
-    status.textContent = "A kiss has been sent to Kimchi. ♡";
-  } catch (error) {
-    status.textContent = "Couldn't send the kiss right now. Please try again.";
-  } finally {
-    button.disabled = false;
-  }
-});
 
 document.querySelectorAll("[data-giphy-kind]").forEach(button => {
   button.addEventListener("click", () => {
