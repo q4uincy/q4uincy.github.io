@@ -2065,6 +2065,37 @@ body.login-live.live-rain .card-rain { display: block; opacity: .6; }
   -webkit-mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%);
   mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%); }
 body:not(.login-live):not(.login-snow):not(.snow-off) .rain-layer { display: block; }
+
+/* Video wallpaper only shows in the Live look */
+.login-wallpaper { display: none; }
+body.login-live .login-wallpaper { display: block; }
+
+/* Snow look: icy blue instead of burgundy/purple */
+body.login-snow .login-gate {
+  background: radial-gradient(ellipse at 50% 42%, rgba(28,58,98,.96), rgba(4,8,16,.985) 72%);
+}
+body.login-snow .login-card {
+  background: rgba(6,10,18,.78);
+  border-color: rgba(150,200,240,.32);
+}
+body.login-snow .login-symbol,
+body.login-snow .gothic-rule { color: #9cc6ec; }
+body.login-snow .gothic-rule::before,
+body.login-snow .gothic-rule::after {
+  background: linear-gradient(90deg, transparent, rgba(150,200,240,.55), transparent);
+}
+body.login-snow .login-title,
+body.login-snow .gothic-text { color: #e4f1ff; }
+body.login-snow .gothic-text { text-shadow: 0 0 14px rgba(150,200,240,.4); }
+body.login-snow .login-sub { color: #b4c8dc; }
+body.login-snow .login-form label { color: #c3d8ec; }
+body.login-snow .login-form button {
+  border-color: rgba(150,200,240,.45);
+  background: linear-gradient(135deg, rgba(40,90,150,.9), rgba(25,45,90,.9));
+  color: #f0f8ff;
+}
+body.login-snow .login-status { color: #a8cdee; }
+body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 </style>
 
 <canvas class="rain-layer" id="rainCanvas" aria-hidden="true"></canvas>
@@ -2079,6 +2110,14 @@ body:not(.login-live):not(.login-snow):not(.snow-off) .rain-layer { display: blo
     document.body.classList.toggle("login-live", name === "live");
     document.body.classList.toggle("login-snow", name === "snow");
     document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.dataset.theme === name));
+
+    // Video only plays in the Live look; paused (and hidden by CSS) otherwise
+    const vid = document.querySelector(".login-wallpaper");
+    if (vid) {
+      if (name === "live") vid.play().catch(() => {});
+      else vid.pause();
+    }
+
     try { localStorage.setItem("layaTheme", name); } catch (e) {}
   }
   document.querySelectorAll(".theme-btn").forEach(b => b.addEventListener("click", () => setTheme(b.dataset.theme)));
