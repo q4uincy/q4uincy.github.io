@@ -528,6 +528,29 @@ textarea { min-height: 140px; resize: vertical; }
 }
 #welcomeVeil.dismissed { opacity: 0; visibility: hidden; pointer-events: none; }
 
+/* Snow theme: make the welcome screen match the icy login design */
+body.login-snow #welcomeVeil {
+  background: radial-gradient(ellipse at 50% 42%, rgba(28,58,98,.94), rgba(4,8,16,.99) 70%);
+}
+body.login-snow .welcome-card:before,
+body.login-snow .welcome-card:after { color: #b9ddff; text-shadow: 0 0 14px rgba(150,200,240,.55); }
+body.login-snow .welcome-moon {
+  color: #c7e5ff;
+  text-shadow: 0 0 22px rgba(125,190,245,.65);
+}
+body.login-snow .welcome-kuromi { filter: drop-shadow(0 5px 12px rgba(125,190,245,.35)); }
+body.login-snow .welcome-title {
+  color: #e4f1ff;
+  text-shadow: 0 0 28px rgba(125,190,245,.38);
+}
+body.login-snow .welcome-sub { color: #b4cce3; }
+body.login-snow .welcome-skip {
+  border-color: rgba(150,200,240,.38);
+  background: rgba(190,225,255,.06);
+  color: #e4f1ff;
+}
+body.login-snow .welcome-skip:hover { background: rgba(100,160,220,.16); border-color: rgba(180,220,255,.65); }
+
 .welcome-card {
   position: relative;
   text-align: center;
