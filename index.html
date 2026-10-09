@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,10 +156,10 @@ textarea{min-height:140px;resize:vertical}
 .welcome-card:before,.welcome-card:after{content:'✦';position:absolute;color:#c58cae;opacity:.7;font-size:18px;animation:twinkle 2s ease-in-out infinite alternate}
 .welcome-card:before{top:5px;left:8px}.welcome-card:after{bottom:8px;right:8px;animation-delay:.6s}
 .welcome-moon{font-size:28px;color:#d8a6c5;letter-spacing:.5em;margin:0 0 20px 8px;text-shadow:0 0 22px rgba(193,115,164,.55)}
-.welcome-kitty{width:76px;height:64px;margin:0 auto 18px;position:relative;filter:drop-shadow(0 0 18px rgba(187,104,157,.25))}
-.welcome-kitty:before{content:'';position:absolute;left:12px;right:12px;bottom:0;height:48px;border-radius:48% 48% 44% 44%;background:#17131d;border:1px solid #88617f}
-.welcome-kitty:after{content:'♥';position:absolute;left:31px;top:27px;color:#e6c3d7;font-size:10px}
-.welcome-ear{position:absolute;top:0;width:25px;height:30px;background:#17131d;border:1px solid #88617f;z-index:-1}.welcome-ear.left{left:10px;transform:rotate(-22deg);clip-path:polygon(0 0,100% 25%,75% 100%,20% 80%)}.welcome-ear.right{right:10px;transform:rotate(22deg);clip-path:polygon(0 25%,100% 0,80% 80%,25% 100%)}
+
+/* Small welcome mascot image */
+.welcome-kuromi{display:block;width:70px;height:70px;object-fit:contain;margin:0 auto 16px;position:relative;filter:drop-shadow(0 0 10px rgba(187,104,157,.28));animation:kuromiFloat 3s ease-in-out infinite}
+@keyframes kuromiFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .welcome-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(2.6rem,9vw,4.3rem);line-height:1;color:#f3dce9;letter-spacing:.02em;text-shadow:0 0 28px rgba(184,96,151,.3)}
 .welcome-sub{margin-top:15px;color:#c9b2c4;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase}
 .welcome-skip{margin-top:28px;border:1px solid rgba(214,162,195,.28);border-radius:999px;background:rgba(255,255,255,.035);color:#ead8e5;padding:8px 16px;font-size:.72rem;cursor:pointer}
@@ -169,13 +170,11 @@ textarea{min-height:140px;resize:vertical}
 .admin-open:hover{background:rgba(75,35,67,.7);border-color:rgba(219,165,200,.6)}
 .admin-panel{display:none;margin:14px auto 0;padding:18px;max-width:350px;text-align:left;background:rgba(12,8,17,.88);border:1px solid rgba(194,137,176,.28);border-radius:18px;box-shadow:0 15px 50px #0005;backdrop-filter:blur(15px)}
 .admin-panel.open{display:grid;gap:10px;animation:welcomeRise .35s ease both}.admin-panel label{font-size:.75rem;color:#d7bed0}.admin-panel input{width:100%;padding:11px 12px;border-radius:11px;background:#100c16;border:1px solid #493044;color:#f6eaf2;font:inherit}.admin-panel button[type=submit]{width:100%;padding:11px;border-radius:11px;border:1px solid #8d587d;background:#45243f;color:#f8eaf3;cursor:pointer}.admin-hint{font-size:.7rem;color:#aa94a8;line-height:1.5}.admin-status{min-height:1.2em;font-size:.75rem;color:#e4c3d8}
-@media(prefers-reduced-motion:reduce){#welcomeVeil,.welcome-card,.welcome-card:before,.welcome-card:after,.admin-panel.open{animation:none!important;transition:none!important}}
+@media(prefers-reduced-motion:reduce){#welcomeVeil,.welcome-card,.welcome-card:before,.welcome-card:after,.admin-panel.open,.welcome-kuromi{animation:none!important;transition:none!important}}
 
-
-/* Private login gate (keeps the existing site's visual style) */
+/* Private login gate */
 .login-gate{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;padding:22px;background:radial-gradient(ellipse at 50% 42%,rgba(69,27,63,.96),rgba(6,4,9,.985) 72%);backdrop-filter:blur(18px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease;isolation:isolate;overflow:hidden}
 .login-gate.show{opacity:1;visibility:visible;pointer-events:auto}
-/* The media sits behind the card; the original gradient remains as a fallback. */
 .login-wallpaper{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
 .login-gate::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(5,3,8,.28),rgba(5,3,8,.68))}
 .login-card{position:relative;z-index:2;width:min(420px,100%);padding:30px 25px;border:1px solid rgba(217,141,165,.3);border-radius:22px;background:rgba(9,7,12,.78);backdrop-filter:blur(12px);box-shadow:0 24px 80px rgba(0,0,0,.55);text-align:center}
@@ -190,7 +189,6 @@ textarea{min-height:140px;resize:vertical}
 .login-status{min-height:1.35em;margin-top:2px;color:#e6b5c9;font-size:.78rem;line-height:1.45}
 body.auth-locked{overflow:hidden}
 @media(prefers-reduced-motion:reduce){.login-gate{transition:none}}
-
 </style>
 </head>
 <body>
@@ -211,9 +209,14 @@ body.auth-locked{overflow:hidden}
   </section>
 </div>
 
-
 <div id="welcomeVeil" role="dialog" aria-label="Welcome Laya" aria-modal="true">
-  <div class="welcome-card"><div class="welcome-moon">☾ ✦ ☽</div><div class="welcome-kitty" aria-hidden="true"><span class="welcome-ear left"></span><span class="welcome-ear right"></span></div><h1 class="welcome-title">welcome laya</h1><p class="welcome-sub">Kimchi Loves You</p><button class="welcome-skip" id="welcomeEnter" type="button">enter softly ✦</button></div>
+  <div class="welcome-card">
+    <div class="welcome-moon">☾ ✦ ☽</div>
+    <img class="welcome-kuromi" src="assets/kuromi-welcome.png" alt="" width="70" height="70" aria-hidden="true">
+    <h1 class="welcome-title">welcome laya</h1>
+    <p class="welcome-sub">Kimchi Loves You</p>
+    <button class="welcome-skip" id="welcomeEnter" type="button">enter softly ✦</button>
+  </div>
 </div>
 
 <div class="wall" id="wallA"></div><div class="wall" id="wallB"></div>
@@ -366,7 +369,6 @@ body.auth-locked{overflow:hidden}
 </section>
 
 <script>
-
 /* Welcome animation and existing admin login handoff */
 (()=>{
  const veil=document.getElementById('welcomeVeil'),enter=document.getElementById('welcomeEnter');
@@ -394,7 +396,6 @@ function storeToken(value){
     if(value){sessionStorage.setItem(AUTH_KEY,value);sessionStorage.setItem(LAST_ACTIVITY_KEY,String(Date.now()))}
     else{sessionStorage.removeItem(AUTH_KEY);sessionStorage.removeItem(LAST_ACTIVITY_KEY)}
   }catch(e){}
-  // Remove the old persistent token key, if an earlier version created it.
   try{localStorage.removeItem(AUTH_KEY)}catch(e){}
   if(value)scheduleIdleLogout();else clearTimeout(idleTimer);
 }
@@ -434,19 +435,77 @@ function checkIdleOnReturn(){
   if(last&&Date.now()-last>=IDLE_TIMEOUT_MS)lockForInactivity();
   else scheduleIdleLogout();
 }
-// The token is tab-scoped: closing this tab clears the session storage.
 try{localStorage.removeItem(AUTH_KEY)}catch(e){}
 ["pointerdown","keydown","touchstart","scroll","wheel","click"].forEach(type=>document.addEventListener(type,recordActivity,{passive:true}));
 document.addEventListener("pointermove",recordActivity,{passive:true});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkIdleOnReturn()});
-async function api(path,opts={}){const headers=new Headers(opts.headers||{});const token=getToken();if(token)headers.set("Authorization","Bearer "+token);const response=await fetch(CHAT_URL.replace(/\/$/,"")+path,{...opts,headers});if(response.status===401&&path!=="/login"){storeToken("");if(!$("loginGate").classList.contains("show"))showLogin("Your sign-in expired. Please sign in again.")}return response}
-(()=>{const form=$("loginForm"),status=$("loginStatus"),submit=$("loginSubmit");if(getToken()){const last=readLastActivity();if(last&&Date.now()-last>=IDLE_TIMEOUT_MS)lockForInactivity();else{if(!last){try{sessionStorage.setItem(LAST_ACTIVITY_KEY,String(Date.now()))}catch(e){}}scheduleIdleLogout();hideLogin()}}else showLogin();form.addEventListener("submit",async e=>{e.preventDefault();status.textContent="Signing in…";submit.disabled=true;try{const response=await fetch(CHAT_URL.replace(/\/$/,"")+"/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("loginEmail").value.trim(),password:$("loginPass").value})});const data=await response.json().catch(()=>({}));if(!response.ok||!data.token){status.textContent=data.error||"Couldn’t sign in. Check the email and password.";return}storeToken(data.token);$("loginPass").value="";status.textContent="";hideLogin();const params=new URLSearchParams(location.search);if(params.has("code")&&params.has("state")){const callback=await api("/spotify/callback?code="+encodeURIComponent(params.get("code"))+"&state="+encodeURIComponent(params.get("state")),{cache:"no-store"});history.replaceState({},document.title,location.pathname+location.hash)}location.reload()}catch(error){status.textContent="Couldn’t connect. Check your internet and try again."}finally{submit.disabled=false}})})();
+async function api(path,opts={}){
+  const headers=new Headers(opts.headers||{});
+  const token=getToken();
+  if(token)headers.set("Authorization","Bearer "+token);
+  const response=await fetch(CHAT_URL.replace(/\/$/,"")+path,{...opts,headers});
+  if(response.status===401&&path!=="/login"){
+    storeToken("");
+    if(!$("loginGate").classList.contains("show"))showLogin("Your sign-in expired. Please sign in again.");
+  }
+  return response;
+}
+(()=>{
+  const form=$("loginForm"),status=$("loginStatus"),submit=$("loginSubmit");
+  if(getToken()){
+    const last=readLastActivity();
+    if(last&&Date.now()-last>=IDLE_TIMEOUT_MS)lockForInactivity();
+    else{
+      if(!last){try{sessionStorage.setItem(LAST_ACTIVITY_KEY,String(Date.now()))}catch(e){}}
+      scheduleIdleLogout();
+      hideLogin();
+    }
+  }else showLogin();
+
+  form.addEventListener("submit",async e=>{
+    e.preventDefault();
+    status.textContent="Signing in…";
+    submit.disabled=true;
+    try{
+      const response=await fetch(CHAT_URL.replace(/\/$/,"")+"/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          email:$("loginEmail").value.trim(),
+          password:$("loginPass").value
+        })
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.token){
+        status.textContent=data.error||"Couldn’t sign in. Check the email and password.";
+        return;
+      }
+      storeToken(data.token);
+      $("loginPass").value="";
+      status.textContent="";
+      hideLogin();
+      const params=new URLSearchParams(location.search);
+      if(params.has("code")&&params.has("state")){
+        await api("/spotify/callback?code="+encodeURIComponent(params.get("code"))+"&state="+encodeURIComponent(params.get("state")),{cache:"no-store"});
+        history.replaceState({},document.title,location.pathname+location.hash);
+      }
+      location.reload();
+    }catch(error){
+      status.textContent="Couldn’t connect. Check your internet and try again.";
+    }finally{submit.disabled=false}
+  });
+})();
 function toast(t){const x=$("toast");x.textContent=t;x.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove("show"),2200)}
 function notify(event,extra={}){api("/notify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({event,...extra})}).catch(()=>{})}
 
-/* Spotify OAuth callback: process immediately only when a site session already exists.
-   If the visitor is signed out, the login form handles it after successful sign-in. */
-(()=>{const params=new URLSearchParams(location.search),code=params.get("code"),state=params.get("state");if(!code||!state||!getToken())return;api("/spotify/callback?code="+encodeURIComponent(code)+"&state="+encodeURIComponent(state),{cache:"no-store"}).then(()=>history.replaceState({},document.title,location.pathname+location.hash)).catch(()=>{})})();
+/* Spotify OAuth callback */
+(()=>{
+  const params=new URLSearchParams(location.search),code=params.get("code"),state=params.get("state");
+  if(!code||!state||!getToken())return;
+  api("/spotify/callback?code="+encodeURIComponent(code)+"&state="+encodeURIComponent(state),{cache:"no-store"})
+    .then(()=>history.replaceState({},document.title,location.pathname+location.hash))
+    .catch(()=>{});
+})();
 
 /* Navigation */
 document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>$(b.dataset.go).scrollIntoView({behavior:"smooth"}));
@@ -458,11 +517,20 @@ $("signOutBtn").addEventListener("click",()=>{
   showLogin("You’ve signed out. Sign in to continue.");
 });
 
-
 /* Kuromi-inspired desktop cursor + touch/click sparkle */
-(()=>{const c=$("cursor"),fine=matchMedia("(hover:hover) and (pointer:fine)").matches;if(fine)document.documentElement.classList.add("has-cursor");
-document.addEventListener("pointermove",e=>{if(!fine)return;c.classList.add("on");c.style.left=e.clientX+"px";c.style.top=e.clientY+"px"});
-document.addEventListener("pointerdown",e=>{c.classList.add("down");setTimeout(()=>c.classList.remove("down"),130);const r=document.createElement("div");r.className="ripple";r.style.left=e.clientX+"px";r.style.top=e.clientY+"px";document.body.appendChild(r);setTimeout(()=>r.remove(),700)});
+(()=>{
+  const c=$("cursor"),fine=matchMedia("(hover:hover) and (pointer:fine)").matches;
+  if(fine)document.documentElement.classList.add("has-cursor");
+  document.addEventListener("pointermove",e=>{
+    if(!fine)return;
+    c.classList.add("on");c.style.left=e.clientX+"px";c.style.top=e.clientY+"px";
+  });
+  document.addEventListener("pointerdown",e=>{
+    c.classList.add("down");setTimeout(()=>c.classList.remove("down"),130);
+    const r=document.createElement("div");r.className="ripple";
+    r.style.left=e.clientX+"px";r.style.top=e.clientY+"px";
+    document.body.appendChild(r);setTimeout(()=>r.remove(),700);
+  });
 })();
 
 /* Wallpaper assets */
@@ -484,7 +552,8 @@ function showStill(i){
    wallVideo=document.createElement("video");wallVideo.src=w.video;wallVideo.autoplay=true;wallVideo.muted=true;wallVideo.loop=true;wallVideo.playsInline=true;
    Object.assign(wallVideo.style,{position:"fixed",inset:"0",width:"100%",height:"100%",objectFit:"cover",zIndex:"-5",opacity:"0",filter:"saturate(.82) brightness(.88)",transition:"opacity 1.2s ease"});
    document.body.insertBefore(wallVideo,document.body.firstChild);
-   wallVideo.oncanplay=()=>{wallVideo.style.opacity="var(--wall-opacity)";layer.classList.remove("visible")};wallVideo.play().catch(()=>{});
+   wallVideo.oncanplay=()=>{wallVideo.style.opacity="var(--wall-opacity)";layer.classList.remove("visible")};
+   wallVideo.play().catch(()=>{});
  }
  $("wallStatus").textContent=liveOn&&w.video?"🌊 "+w.name:"🕯️ "+w.name;
 }
@@ -496,58 +565,57 @@ $("wallPrev").onclick=()=>nextWall(-1);
 $("wallNext").onclick=()=>nextWall(1);
 
 /* Plushie room */
-const plushies = [
-  {emoji:"", name:"Kuromi", kuromi:true, lines:[
+const plushies=[
+  {emoji:"",name:"Kuromi",kuromi:true,lines:[
     "Kuromi gives you a tiny grumpy hug. 🖤",
     "She pretends she doesn't care. She absolutely cares.",
     "Head pats accepted. More head pats required."
   ]},
-  {emoji:"🐰", name:"Bunbun", lines:[
+  {emoji:"🐰",name:"Bunbun",lines:[
     "Bunbun wiggles their little ears at you. 🐰",
     "A very soft bunny has chosen you.",
     "Bunbun says: stay cozy."
   ]},
-  {emoji:"🧸", name:"Teddy", lines:[
+  {emoji:"🧸",name:"Teddy",lines:[
     "Teddy is ready for maximum cuddles. 🧸",
     "Emergency teddy bear deployed.",
     "Teddy has decided you deserve a nap."
   ]},
-  {emoji:"🐱", name:"Mochi", lines:[
+  {emoji:"🐱",name:"Mochi",lines:[
     "Mochi gives you the slow blink. 🐱",
     "Mochi has judged you. The verdict is: adorable.",
     "Mochi would like snacks."
   ]},
-  {emoji:"🐧", name:"Pip", lines:[
+  {emoji:"🐧",name:"Pip",lines:[
     "Pip waddles over for attention. 🐧",
     "Pip is doing their best little penguin dance.",
     "Pip says hello and refuses to elaborate."
   ]},
-  {emoji:"🐸", name:"Froggy", lines:[
+  {emoji:"🐸",name:"Froggy",lines:[
     "Froggy has been gently booped. 🐸",
     "Froggy says: everything will be okay.",
     "Froggy has acquired one tiny leaf."
   ]},
-  {emoji:"🦦", name:"Noodle", lines:[
+  {emoji:"🦦",name:"Noodle",lines:[
     "Noodle has entered cuddle mode. 🦦",
     "Noodle is extremely pleased to see you.",
     "Noodle has absolutely no thoughts, only vibes."
   ]},
-  {emoji:"🐼", name:"Panda", lines:[
+  {emoji:"🐼",name:"Panda",lines:[
     "Panda gives you the softest little hug. 🐼",
     "Panda recommends snacks and blankets.",
     "Panda is now sitting beside you."
   ]}
 ];
 
-const plushGrid = $("plushGrid");
-const plushMsg = $("plushMsg");
-
-plushies.forEach((plush, index) => {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "plush";
-  button.setAttribute("aria-label", "Pet " + plush.name);
-  button.innerHTML =
+const plushGrid=$("plushGrid");
+const plushMsg=$("plushMsg");
+plushies.forEach(plush=>{
+  const button=document.createElement("button");
+  button.type="button";
+  button.className="plush";
+  button.setAttribute("aria-label","Pet "+plush.name);
+  button.innerHTML=
     (plush.kuromi
       ? `<svg class="kuromi-art" viewBox="0 0 120 120" aria-label="Kuromi plush" role="img">
           <path class="hood" d="M31 48 L18 9 Q17 3 23 7 L47 25 Q60 19 73 25 L97 7 Q103 3 102 10 L89 48
@@ -565,100 +633,226 @@ plushies.forEach((plush, index) => {
             <path class="skull-cross" d="M11 12 L11 16 M8.5 14 L13.5 14"/>
           </g>
         </svg>`
-      : '<span class="emoji">' + plush.emoji + '</span>') +
-    '<span class="name">' + plush.name + '</span>';
+      : '<span class="emoji">'+plush.emoji+'</span>')+
+    '<span class="name">'+plush.name+'</span>';
 
-  button.addEventListener("click", () => {
-    const line = plush.lines[Math.floor(Math.random() * plush.lines.length)];
-    plushMsg.textContent = line;
-
-    // Little plushie reaction.
-    const emoji = button.querySelector(".emoji, .kuromi-art");
-    emoji.animate(
-      [
-        {transform:"scale(1) rotate(0deg)"},
-        {transform:"scale(1.28) rotate(-5deg)"},
-        {transform:"scale(1.08) rotate(4deg)"},
-        {transform:"scale(1) rotate(0deg)"}
-      ],
-      {duration:420, easing:"ease-out"}
-    );
-
-    // Tiny hearts around the plushie.
+  button.addEventListener("click",()=>{
+    const line=plush.lines[Math.floor(Math.random()*plush.lines.length)];
+    plushMsg.textContent=line;
+    const emoji=button.querySelector(".emoji, .kuromi-art");
+    emoji.animate([
+      {transform:"scale(1) rotate(0deg)"},
+      {transform:"scale(1.28) rotate(-5deg)"},
+      {transform:"scale(1.08) rotate(4deg)"},
+      {transform:"scale(1) rotate(0deg)"}
+    ],{duration:420,easing:"ease-out"});
     for(let i=0;i<3;i++){
-      const heart = document.createElement("span");
-      heart.textContent = ["♡","✦","♥"][i];
-      heart.style.position = "absolute";
-      heart.style.left = (38 + Math.random()*24) + "%";
-      heart.style.top = (34 + Math.random()*16) + "%";
-      heart.style.pointerEvents = "none";
-      heart.style.color = "var(--pink)";
-      heart.style.fontSize = ".9rem";
-      heart.style.animation = "plushHeart .75s ease-out forwards";
+      const heart=document.createElement("span");
+      heart.textContent=["♡","✦","♥"][i];
+      heart.style.position="absolute";
+      heart.style.left=(38+Math.random()*24)+"%";
+      heart.style.top=(34+Math.random()*16)+"%";
+      heart.style.pointerEvents="none";
+      heart.style.color="var(--pink)";
+      heart.style.fontSize=".9rem";
+      heart.style.animation="plushHeart .75s ease-out forwards";
       button.appendChild(heart);
-      setTimeout(() => heart.remove(), 800);
+      setTimeout(()=>heart.remove(),800);
     }
   });
-
   plushGrid.appendChild(button);
 });
 
 /* Food */
 const mainFoods=["Zinger","Fried rice","Noodles","Biryani","Pizza","Burger","Pasta","Something sweet","Something else"];
 const sweets=["Cupcakes","Pastries","Red velvet cake","Cheesecake","Fruit","Candies","Cookies","Donuts","Brownies","Ice cream","Something else"];
-function foodButtons(list){const b=$("foodBox");b.innerHTML="";list.forEach(f=>{const x=document.createElement("button");x.className="action";x.textContent=f;x.onclick=()=>{if(f==="Something sweet")return foodButtons(["← Back to food",...sweets]);if(f==="← Back to food")return foodButtons(mainFoods);if(f==="Something else"){const a=prompt("What are you craving?");if(!a||!a.trim())return f=undefined;return chooseFood(a.trim().slice(0,40))}chooseFood(f)};b.appendChild(x)})}
+function foodButtons(list){
+  const b=$("foodBox");b.innerHTML="";
+  list.forEach(f=>{
+    const x=document.createElement("button");x.className="action";x.textContent=f;
+    x.onclick=()=>{
+      if(f==="Something sweet")return foodButtons(["← Back to food",...sweets]);
+      if(f==="← Back to food")return foodButtons(mainFoods);
+      if(f==="Something else"){
+        const a=prompt("What are you craving?");
+        if(!a||!a.trim())return;
+        return chooseFood(a.trim().slice(0,40));
+      }
+      chooseFood(f);
+    };
+    b.appendChild(x);
+  });
+}
 function chooseFood(f){notify("food",{choice:f});$("foodResult").textContent="Noted. Kimchi knows you're craving "+f+"."; $("foodBox").innerHTML=""}
 foodButtons(mainFoods);
 
 /* Missing + hug */
 function miss(kind){notify(kind);$("missResult").textContent="Kimchi misses you too. Probably more. Don't tell him I said that."}
-$("yesBtn").onclick=()=>miss("yes");$("alotBtn").onclick=()=>miss("alot");
-let hugs=0;$("hugBtn").onclick=()=>{hugs++;if(hugs===1)notify("hug");$("hugResult").textContent=hugs===1?"Hug sent. Kimchi got it.":"Hugs sent: "+hugs+" ♡"};
+$("yesBtn").onclick=()=>miss("yes");
+$("alotBtn").onclick=()=>miss("alot");
+let hugs=0;
+$("hugBtn").onclick=()=>{hugs++;if(hugs===1)notify("hug");$("hugResult").textContent=hugs===1?"Hug sent. Kimchi got it.":"Hugs sent: "+hugs+" ♡"};
 
 /* Notes */
-(()=>{const list=$("notesList"),local=(typeof notes!=="undefined"?notes:[]),fmt=d=>/^\d{4}-\d\d-\d\d/.test(d||"")?new Date(d).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):(d||"");
-function render(all){list.innerHTML="";if(!all.length){$("notesIntro").textContent="Nothing here yet. Check back soon.";return}$("notesIntro").textContent="A few words from Kimchi.";all.slice().reverse().forEach(n=>{const d=document.createElement("div");d.className="note";d.innerHTML="<small></small><p></p>";d.querySelector("small").textContent=fmt(n.date);d.querySelector("p").textContent=n.text;list.appendChild(d)})}
-api("/notes").then(r=>r.ok?r.json():Promise.reject()).then(d=>render(d.notes&&d.notes.length?d.notes:local)).catch(()=>render(local))})();
+(()=>{
+  const list=$("notesList"),local=(typeof notes!=="undefined"?notes:[]);
+  const fmt=d=>/^\d{4}-\d\d-\d\d/.test(d||"")?new Date(d).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):(d||"");
+  function render(all){
+    list.innerHTML="";
+    if(!all.length){$("notesIntro").textContent="Nothing here yet. Check back soon.";return}
+    $("notesIntro").textContent="A few words from Kimchi.";
+    all.slice().reverse().forEach(n=>{
+      const d=document.createElement("div");d.className="note";d.innerHTML="<small></small><p></p>";
+      d.querySelector("small").textContent=fmt(n.date);
+      d.querySelector("p").textContent=n.text;
+      list.appendChild(d);
+    });
+  }
+  api("/notes").then(r=>r.ok?r.json():Promise.reject()).then(d=>render(d.notes&&d.notes.length?d.notes:local)).catch(()=>render(local));
+})();
 
 /* Message */
-$("sendMsg").onclick=async()=>{const input=$("kimchiMsg"),status=$("msgStatus"),btn=$("sendMsg"),message=input.value.trim();if(!message){status.textContent="Write something first ♡";input.focus();return}btn.disabled=true;btn.textContent="Sending...";status.textContent="";
-try{const r=await api("/message",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message})});if(!r.ok)throw 0;input.value="";status.textContent="Sent 💌 Kimchi will get it.";btn.textContent="Send another 💌"}catch(e){status.textContent="Couldn't send it right now. Try again in a bit.";btn.textContent="Try again 💌"}btn.disabled=false};
+$("sendMsg").onclick=async()=>{
+  const input=$("kimchiMsg"),status=$("msgStatus"),btn=$("sendMsg"),message=input.value.trim();
+  if(!message){status.textContent="Write something first ♡";input.focus();return}
+  btn.disabled=true;btn.textContent="Sending...";status.textContent="";
+  try{
+    const r=await api("/message",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message})});
+    if(!r.ok)throw 0;
+    input.value="";status.textContent="Sent 💌 Kimchi will get it.";btn.textContent="Send another 💌";
+  }catch(e){status.textContent="Couldn't send it right now. Try again in a bit.";btn.textContent="Try again 💌"}
+  btn.disabled=false;
+};
 
 /* Cute */
-function loadCute(){$("cuteText").textContent="...";api("/cute",{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(d=>$("cuteText").textContent=d.text||"No cute notes yet.").catch(()=>$("cuteText").textContent="Couldn't load a note. Try again.")}
-$("anotherCute").onclick=loadCute;loadCute();
+function loadCute(){
+  $("cuteText").textContent="...";
+  api("/cute",{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(d=>$("cuteText").textContent=d.text||"No cute notes yet.").catch(()=>$("cuteText").textContent="Couldn't load a note. Try again.");
+}
+$("anotherCute").onclick=loadCute;
+loadCute();
 
 /* Cat */
-const catLines=["Purr...","The cat loves you.","Kimchi is jealous of the cat.","More. The cat demands more.","Slow blink. That means I love you."];let catN=0;
+const catLines=["Purr...","The cat loves you.","Kimchi is jealous of the cat.","More. The cat demands more.","Slow blink. That means I love you."];
+let catN=0;
 $("catBtn").onclick=()=>{$("catResult").textContent=catLines[catN++%catLines.length]};
-$("realCat").onclick=()=>{const box=$("catPic");box.textContent="";const im=new Image();im.alt="A cat";im.style.maxWidth="100%";im.style.borderRadius="15px";im.onerror=()=>box.textContent="The cat is hiding. Try again.";im.src="https://cataas.com/cat?width=500&t="+Date.now();box.appendChild(im)};
+$("realCat").onclick=()=>{
+  const box=$("catPic");box.textContent="";
+  const im=new Image();im.alt="A cat";im.style.maxWidth="100%";im.style.borderRadius="15px";
+  im.onerror=()=>box.textContent="The cat is hiding. Try again.";
+  im.src="https://cataas.com/cat?width=500&t="+Date.now();
+  box.appendChild(im);
+};
 
 /* Spotify + adaptive colors */
 let adaptive=true,lastArt="";
-function applySongColor(url){if(!adaptive||!url)return;const img=new Image();img.crossOrigin="anonymous";img.onload=()=>{try{const c=document.createElement("canvas"),ctx=c.getContext("2d");c.width=1;c.height=1;ctx.drawImage(img,0,0,1,1);const d=ctx.getImageData(0,0,1,1).data;let r=d[0],g=d[1],b=d[2];const mx=Math.max(r,g,b),mn=Math.min(r,g,b);const f=mx<100?1.5:.85;r=Math.min(255,r*f);g=Math.min(255,g*f);b=Math.min(255,b*f);document.documentElement.style.setProperty("--song-rgb",`${r},${g},${b}`);document.documentElement.style.setProperty("--burg",`rgb(${Math.min(140,r+25)},${Math.max(15,g*.45)},${Math.max(25,b*.55)})`)}catch(e){}};img.src=CHAT_URL.replace(/\/$/,"")+"/spotify-art?url="+encodeURIComponent(url)}
-async function loadSong(){const title=$("songTitle"),txt=$("songText"),box=$("songBox"),more=$("anotherSong"),art=$("songArt");more.disabled=true;title.textContent="Loading...";try{const r=await api("/song",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();if(d.kind==="none"||!/^[A-Za-z0-9]{22}$/.test(d.id||"")){title.textContent="No Spotify song available";txt.textContent="Kimchi may need to connect Spotify.";box.innerHTML="";more.style.display="none";return}
-title.textContent=d.title||"A song";txt.textContent=d.kind==="now"?"Your twin is listening to this right now.":"Nothing playing right now, so here's a random song from the delusions playlist.";more.style.display=d.kind==="now"?"none":"block";
-if(d.image){art.src=CHAT_URL.replace(/\/$/,"")+"/spotify-art?url="+encodeURIComponent(d.image);art.style.display="block";if(d.image!==lastArt){lastArt=d.image;applySongColor(d.image)}}
-box.innerHTML='<iframe class="music-embed" title="Spotify song" src="https://open.spotify.com/embed/track/'+d.id+'" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'}
-catch(e){title.textContent="Couldn't load a song";txt.textContent="Try again in a moment."}finally{more.disabled=false}}
-$("anotherSong").onclick=loadSong;$("colorToggle").onclick=()=>{adaptive=!adaptive;$("colorToggle").classList.toggle("on",adaptive);if(!adaptive){document.documentElement.style.removeProperty("--song-rgb");document.documentElement.style.removeProperty("--burg") }else if(lastArt)applySongColor(lastArt)};loadSong();
+function applySongColor(url){
+  if(!adaptive||!url)return;
+  const img=new Image();img.crossOrigin="anonymous";
+  img.onload=()=>{
+    try{
+      const c=document.createElement("canvas"),ctx=c.getContext("2d");c.width=1;c.height=1;ctx.drawImage(img,0,0,1,1);
+      const d=ctx.getImageData(0,0,1,1).data;let r=d[0],g=d[1],b=d[2];
+      const mx=Math.max(r,g,b),mn=Math.min(r,g,b),f=mx<100?1.5:.85;
+      r=Math.min(255,r*f);g=Math.min(255,g*f);b=Math.min(255,b*f);
+      document.documentElement.style.setProperty("--song-rgb",`${r},${g},${b}`);
+      document.documentElement.style.setProperty("--burg",`rgb(${Math.min(140,r+25)},${Math.max(15,g*.45)},${Math.max(25,b*.55)})`);
+    }catch(e){}
+  };
+  img.src=CHAT_URL.replace(/\/$/,"")+"/spotify-art?url="+encodeURIComponent(url);
+}
+async function loadSong(){
+  const title=$("songTitle"),txt=$("songText"),box=$("songBox"),more=$("anotherSong"),art=$("songArt");
+  more.disabled=true;title.textContent="Loading...";
+  try{
+    const r=await api("/song",{cache:"no-store"});if(!r.ok)throw 0;
+    const d=await r.json();
+    if(d.kind==="none"||!/^[A-Za-z0-9]{22}$/.test(d.id||"")){
+      title.textContent="No Spotify song available";txt.textContent="Kimchi may need to connect Spotify.";
+      box.innerHTML="";more.style.display="none";return;
+    }
+    title.textContent=d.title||"A song";
+    txt.textContent=d.kind==="now"?"Your twin is listening to this right now.":"Nothing playing right now, so here's a random song from the delusions playlist.";
+    more.style.display=d.kind==="now"?"none":"block";
+    if(d.image){
+      art.src=CHAT_URL.replace(/\/$/,"")+"/spotify-art?url="+encodeURIComponent(d.image);
+      art.style.display="block";
+      if(d.image!==lastArt){lastArt=d.image;applySongColor(d.image)}
+    }
+    box.innerHTML='<iframe class="music-embed" title="Spotify song" src="https://open.spotify.com/embed/track/'+d.id+'" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+  }catch(e){title.textContent="Couldn't load a song";txt.textContent="Try again in a moment."}
+  finally{more.disabled=false}
+}
+$("anotherSong").onclick=loadSong;
+$("colorToggle").onclick=()=>{
+  adaptive=!adaptive;$("colorToggle").classList.toggle("on",adaptive);
+  if(!adaptive){document.documentElement.style.removeProperty("--song-rgb");document.documentElement.style.removeProperty("--burg")}
+  else if(lastArt)applySongColor(lastArt);
+};
+loadSong();
 
 /* Random fact */
-async function loadFact(){const f=$("factText"),s=$("factStatus"),b=$("factBtn");b.disabled=true;f.textContent="Finding something weird...";s.textContent="";
-try{const r=await api("/fact",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();f.textContent=d.fact||"No fact today.";s.textContent="Today's fact ✦"}catch(e){const fallback=["A day on Venus is longer than a Venusian year.","Octopuses have three hearts.","Bananas are berries, but strawberries are not botanically berries.","Wombat poop is cube-shaped.","Some turtles can breathe through specialized tissue near their rear end."];f.textContent=fallback[Math.floor(Math.random()*fallback.length)];s.textContent="Offline fact ✦"}finally{b.disabled=false}}
-$("factBtn").onclick=loadFact;loadFact();
+async function loadFact(){
+  const f=$("factText"),s=$("factStatus"),b=$("factBtn");
+  b.disabled=true;f.textContent="Finding something weird...";s.textContent="";
+  try{
+    const r=await api("/fact",{cache:"no-store"});if(!r.ok)throw 0;
+    const d=await r.json();f.textContent=d.fact||"No fact today.";s.textContent="Today's fact ✦";
+  }catch(e){
+    const fallback=["A day on Venus is longer than a Venusian year.","Octopuses have three hearts.","Bananas are berries, but strawberries are not botanically berries.","Wombat poop is cube-shaped.","Some turtles can breathe through specialized tissue near their rear end."];
+    f.textContent=fallback[Math.floor(Math.random()*fallback.length)];s.textContent="Offline fact ✦";
+  }finally{b.disabled=false}
+}
+$("factBtn").onclick=loadFact;
+loadFact();
 
 /* AI chat */
-const history=[],log=$("log");function addMsg(who,t){const d=document.createElement("div");d.className="msg "+who;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+const history=[],log=$("log");
+function addMsg(who,t){const d=document.createElement("div");d.className="msg "+who;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
 addMsg("ai","Hey Laya. What's going on? You can tell me as much or as little as you want.");
-$("cform").onsubmit=async e=>{e.preventDefault();const input=$("cin"),t=input.value.trim();if(!t)return;input.value="";addMsg("me",t);history.push({role:"user",content:t});const wait=addMsg("ai","...");
-try{const r=await api("",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:history.slice(-20)})});if(!r.ok)throw 0;const d=await r.json();wait.textContent=d.reply||"I'm here.";history.push({role:"assistant",content:d.reply||""})}catch(e){history.pop();wait.textContent="I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you."}};
+$("cform").onsubmit=async e=>{
+  e.preventDefault();
+  const input=$("cin"),t=input.value.trim();if(!t)return;
+  input.value="";addMsg("me",t);history.push({role:"user",content:t});
+  const wait=addMsg("ai","...");
+  try{
+    const r=await api("",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:history.slice(-20)})});
+    if(!r.ok)throw 0;
+    const d=await r.json();wait.textContent=d.reply||"I'm here.";history.push({role:"assistant",content:d.reply||""});
+  }catch(e){
+    history.pop();wait.textContent="I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you.";
+  }
+};
 
 /* Uploads */
 $("pickPics").onclick=()=>$("pics").click();
-const shrink=file=>new Promise((res,rej)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{const max=1800,k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>b?res(b):rej(),"image/jpeg",.88)};img.onerror=rej;img.src=url});
-$("pics").onchange=async()=>{let files=[...$("pics").files];if(!files.length)return;if(files.length>10)files=files.slice(0,10);const tags=files.map(f=>{const box=document.createElement("div"),im=document.createElement("img"),tag=document.createElement("span");im.src=URL.createObjectURL(f);tag.textContent="...";box.append(im,tag);$("thumbs").appendChild(box);return tag});$("upmsg").textContent="Sending "+files.length+" photo"+(files.length>1?"s":"")+"...";
-try{const data=new FormData();for(const f of files)data.append("photos",await shrink(f),"photo.jpg");const r=await api("/upload",{method:"POST",body:data});if(!r.ok)throw 0;tags.forEach(t=>t.textContent="sent");$("upmsg").textContent="All sent. Kimchi got them."}catch(e){tags.forEach(t=>t.textContent="failed");$("upmsg").textContent="Couldn't send. Try again in a bit."}$("pics").value=""};
+const shrink=file=>new Promise((res,rej)=>{
+  const img=new Image(),url=URL.createObjectURL(file);
+  img.onload=()=>{
+    const max=1800,k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");
+    c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+    c.toBlob(b=>b?res(b):rej(),"image/jpeg",.88);
+  };
+  img.onerror=rej;img.src=url;
+});
+$("pics").onchange=async()=>{
+  let files=[...$("pics").files];if(!files.length)return;if(files.length>10)files=files.slice(0,10);
+  const tags=files.map(f=>{
+    const box=document.createElement("div"),im=document.createElement("img"),tag=document.createElement("span");
+    im.src=URL.createObjectURL(f);tag.textContent="...";box.append(im,tag);$("thumbs").appendChild(box);return tag;
+  });
+  $("upmsg").textContent="Sending "+files.length+" photo"+(files.length>1?"s":"")+"...";
+  try{
+    const data=new FormData();
+    for(const f of files)data.append("photos",await shrink(f),"photo.jpg");
+    const r=await api("/upload",{method:"POST",body:data});if(!r.ok)throw 0;
+    tags.forEach(t=>t.textContent="sent");$("upmsg").textContent="All sent. Kimchi got them.";
+  }catch(e){
+    tags.forEach(t=>t.textContent="failed");$("upmsg").textContent="Couldn't send. Try again in a bit.";
+  }
+  $("pics").value="";
+};
 </script>
 </body>
 </html>
