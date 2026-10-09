@@ -703,6 +703,52 @@ body.auth-locked { overflow: hidden; }
     transition: none !important;
   }
 }
+
+/* Compact layout pass: reduce empty space while keeping the wallpaper area intentionally roomy */
+.app { padding-top: 54px; padding-bottom: 22px; }
+.hero { min-height: 25vh; padding: 18px 4px 14px; }
+.hero p { margin-top: 12px; line-height: 1.55; }
+.orn { margin: 16px 0 20px; }
+.section { margin: 12px 0 25px; }
+.section-head { margin-bottom: 9px; }
+.section-head p { font-size: .88rem; }
+.grid { gap: 9px; }
+.card { padding: 12px; }
+.card-title { margin-bottom: 3px; }
+.action { padding: 10px 13px; margin-top: 10px; border-radius: 12px; }
+.pair { gap: 8px; }
+.resultbox { min-height: 30px; margin-top: 8px; }
+.notes { gap: 7px; margin-top: 10px; }
+.note { padding: 11px; }
+.notes-actions { margin-top: 9px; }
+textarea { min-height: 92px; padding: 10px 12px; border-radius: 12px; }
+input { padding: 10px 12px; border-radius: 12px; }
+.music-art { width: min(170px,38vw); margin-bottom: 7px; }
+.music-embed { height: 82px; }
+.plush-grid { gap: 9px; }
+.plush { min-height: 125px; border-radius: 17px; padding: 10px; }
+.plush .emoji { font-size: 3.3rem; }
+.plush .kuromi-art { width: 78px; height: 78px; }
+.wallpaper-grid { gap: 8px; }
+.chat-log { max-height: 300px; gap: 7px; }
+.gothic-place-card { margin-top: 9px; padding: 14px; }
+.gothic-place-description { margin-top: 8px; line-height: 1.55; }
+.gothic-place-actions { gap: 7px; }
+.gothic-place-actions .action { flex-basis: 190px; }
+.fact { min-height: 55px; }
+.toggle-row { margin-top: 10px; padding-top: 10px; }
+.admin-entry { margin-bottom: 28px; }
+.footer { padding-bottom: 12px; }
+/* The wallpaper section is intentionally left tall so the background can be enjoyed. */
+.wallpaper-only { min-height: calc(100svh - 52px); margin-bottom: 34px; }
+@media(max-width:760px) {
+  .hero { min-height: 28vh; padding: 18px 3px 12px; }
+  .section { margin: 10px 0 21px; }
+  .section-head { margin-bottom: 8px; }
+  .card { padding: 11px; }
+  .wallpaper-only { min-height: calc(100svh - 52px); }
+}
+
 </style>
 </head>
 
