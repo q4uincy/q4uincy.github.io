@@ -914,11 +914,36 @@ input { padding: 10px 12px; border-radius: 12px; }
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" id="hugCard">
         <div class="card-title">Give him a hug</div>
         <p>One tap = one hug delivered.</p>
         <button class="action" id="hugBtn" style="font-size:2rem">🤗</button>
         <div class="resultbox" id="hugResult">No hugs sent yet.</div>
+        <div class="hug-extra">
+          <div class="card-title">Send a kiss ♡</div>
+          <p>Or find a little GIF or sticker for Kimchi.</p>
+          <button class="action" id="kissKimchiBtn" type="button">Send a kiss ♡</button>
+          <div class="status" id="kissStatus" role="status" aria-live="polite"></div>
+          <label for="giphySearch" class="status" style="display:block;margin:10px 0 6px">Search GIFs or stickers</label>
+          <div class="chat-form">
+            <input id="giphySearch" type="search" maxlength="100" placeholder="Search cute GIFs or stickers">
+            <button class="action" id="giphySearchBtn" type="button">Search</button>
+          </div>
+          <div class="controls">
+            <button class="smallbtn active" type="button" data-giphy-kind="gifs">GIFs</button>
+            <button class="smallbtn" type="button" data-giphy-kind="stickers">Stickers</button>
+          </div>
+          <div id="giphyResults" class="thumbs" aria-live="polite"></div>
+          <div class="status" id="giphyStatus">Search for something cute, then choose one to send.</div>
+          <button class="action" id="sendGiphyBtn" type="button" disabled>Send selected GIF or sticker</button>
+          <div class="hug-upload">
+            <label for="kissImageUpload" class="status" style="display:block;margin:10px 0 6px">Or upload an image</label>
+            <input type="file" id="kissImageUpload" accept="image/*" hidden>
+            <button class="action" id="pickKissImage" type="button">Choose an image</button>
+            <div class="thumbs" id="kissImagePreview"></div>
+            <div class="status" id="kissImageStatus"></div>
+          </div>
+        </div>
       </div>
 
       <div class="card" id="kissKimchiCard">
@@ -1924,6 +1949,8 @@ $("realCat").onclick = () => {
 /* Spotify + adaptive colors */
 let adaptive = true;
 let lastArt = "";
+let lastSongId = "";
+let songPollBusy = false;
 
 function applySongColor(url) {
   if (!adaptive || !url) return;
@@ -1963,11 +1990,13 @@ async function loadSong() {
   const button = $("anotherSong");
   const art = $("songArt");
 
-  button.disabled = true;
-  title.textContent = "Loading...";
+  if (songPollBusy) return;
+  songPollBusy = true;
+  const manual = button.dataset.manual === "1";
+  if (manual || !lastSongId) { button.disabled = true; title.textContent = "Loading..."; }
 
   try {
-    const response = await api("/song", { cache: "no-store" });
+    const response = await api("/song?_=" + Date.now(), { cache: "no-store" });
     if (!response.ok) throw new Error("Song request failed");
 
     const data = await response.json();
@@ -1997,16 +2026,21 @@ async function loadSong() {
       }
     }
 
-    box.innerHTML = '<iframe class="music-embed" title="Spotify song" src="https://open.spotify.com/embed/track/' + data.id + '" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+    if (lastSongId !== data.id) {
+      lastSongId = data.id;
+      box.innerHTML = '<iframe class="music-embed" title="Spotify song" src="https://open.spotify.com/embed/track/' + data.id + '" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+    }
   } catch (error) {
     title.textContent = "Couldn't load a song";
     text.textContent = "Try again in a moment.";
   } finally {
     button.disabled = false;
+    songPollBusy = false;
   }
 }
 
-$("anotherSong").onclick = loadSong;
+$("anotherSong").onclick = () => { $("anotherSong").dataset.manual = "1"; loadSong(); };
+setInterval(() => { if (!document.hidden) loadSong(); }, 12000);
 
 $("colorToggle").onclick = () => {
   adaptive = !adaptive;
@@ -2758,3 +2792,22 @@ html { scroll-padding-top: 78px; }
 </script>
 </body>
 </html>
+<style>
+/* Compact pass: tighten content cards while leaving the wallpaper/background visible. */
+.app { padding-top: 54px; padding-bottom: 24px; }
+.hero { min-height: 28vh; padding: 14px 4px 20px; }
+.section-head { margin-bottom: 14px; padding-bottom: 14px; }
+.grid { gap: 12px; }
+.grid > .card { padding: 16px; border-radius: 15px; }
+.card-title { margin-bottom: 5px; }
+.card p { line-height: 1.5; margin-bottom: 7px; }
+#kimchiMsg { min-height: 125px; padding: 12px; margin-top: 9px; }
+#sendMsg { min-height: 40px; margin-top: 10px; }
+.resultbox,.notes { margin-top: 9px; }
+.hug-extra { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(220,190,215,.16); }
+.hug-extra .card-title { font-size: 1.2rem; }
+.hug-extra .action { min-height: 38px; }
+.hug-upload { margin-top: 8px; }
+.music-embed { min-height: 152px; }
+@media (max-width:760px) { .grid { gap: 10px; } .grid > .card { padding: 14px; } .hero { min-height: 24vh; } }
+</style>
