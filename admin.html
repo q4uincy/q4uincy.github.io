@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +40,6 @@
   #adminLoginWallpaper{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
   #adminLoginWallpaperShade{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(30,54,79,.04),rgba(25,45,66,.2)),radial-gradient(ellipse at center,rgba(224,238,249,.04),rgba(21,41,64,.18));transition:background .25s ease}
   :root[data-theme="space"] #adminLoginWallpaperShade{background:radial-gradient(circle at 13% 18%,rgba(255,255,255,.65) 0 1px,transparent 1.8px),radial-gradient(circle at 72% 13%,rgba(230,224,255,.75) 0 1px,transparent 1.8px),radial-gradient(circle at 46% 41%,rgba(255,255,255,.6) 0 1px,transparent 1.8px),radial-gradient(circle at 88% 66%,rgba(201,188,255,.65) 0 1px,transparent 1.8px),linear-gradient(180deg,rgba(4,5,20,.48),rgba(4,5,20,.58)),radial-gradient(ellipse at 50% 30%,rgba(52,44,119,.08),rgba(4,4,18,.4))}
-  /* Keep the selected video wallpaper visible in both login and dashboard views. */
   .panel,.section{background:var(--surface);border:1px solid var(--line);border-radius:24px;backdrop-filter:blur(18px);box-shadow:var(--shadow);transition:background .25s ease,border-color .25s ease,box-shadow .25s ease}
   .panel{width:min(400px,100%);margin:clamp(40px,11vh,110px) auto 0;padding:clamp(22px,4.5vw,30px)}
   .section-head{display:flex;align-items:center;gap:13px;margin-bottom:6px}.snow-icon{width:42px;height:42px;display:grid;place-items:center;flex:0 0 auto;border:1px solid var(--line-strong);border-radius:14px;background:rgba(226,160,187,.09);font-size:1.18rem;color:var(--pink)}
@@ -58,16 +58,20 @@
   button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--pink-bright);outline-offset:3px}
   .fields{display:grid;gap:10px}.fields input{width:100%}
   #loginPanel button:not(.secondary){margin-top:2px}
-  /* Compact pill row for the extra login options */
   .login-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:4px}
   .login-tools button{width:auto;padding:7px 12px;font-size:.74rem;border-radius:999px;font-weight:600}
   #loginPanel .status{margin-top:-2px;text-align:center}
-  /* Fixed widths so changing a button's label never changes the row wrapping / page height */
   .login-tools button,.header-actions button{white-space:nowrap;text-align:center}
   #fxSwitchLogin,#fxToggleDashboard{min-width:9rem}
   .wallpaper-switch{min-width:10.5rem}
   .theme-switch{min-width:9.5rem}
   #dashboard[hidden],#loginPanel[hidden]{display:none!important}
+
+  /* Show-password control */
+  .password-field{display:grid;gap:8px}
+  .show-password{display:flex;align-items:center;gap:8px;width:fit-content;color:var(--muted);font-size:.8rem;cursor:pointer;user-select:none}
+  .show-password input{width:15px;height:15px;margin:0;padding:0;accent-color:var(--pink);cursor:pointer;box-shadow:none}
+
   .dashboard-shell{display:grid;gap:20px;padding-bottom:32px}
   .dashboard-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:9px 2px 3px}
   .eyebrow{margin-bottom:9px;font-size:.71rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pink);font-weight:750}
@@ -111,7 +115,6 @@
   :root[data-theme="snow"] #loginPanel{box-shadow:0 24px 80px rgba(10,28,50,.18)}
   :root[data-theme="snow"] .quick-nav a:hover{background:rgba(117,142,172,.16)}
   :root[data-theme="space"] .quick-nav a:hover{background:rgba(186,155,255,.15)}
-  /* Falling snow / rain, clipped inside each panel */
   :root{--fx-snow:#8aa3c2;--fx-rain:#3f6a9e}
   :root[data-theme="space"]{--fx-snow:#ffffff;--fx-rain:#d6e4ff}
   .panel,.section{position:relative;overflow:hidden}
@@ -137,7 +140,15 @@
     <p class="muted login-description">Enter your usename and password.</p>
     <div class="fields">
       <input id="user" type="text" placeholder="Admin username" autocomplete="username" aria-label="Admin username" required>
-      <input id="pw" type="password" placeholder="Admin password" autocomplete="current-password" aria-label="Admin password" required>
+
+      <div class="password-field">
+        <input id="pw" type="password" placeholder="Admin password" autocomplete="current-password" aria-label="Admin password" required>
+        <label class="show-password" for="showPassword">
+          <input id="showPassword" type="checkbox">
+          Show password
+        </label>
+      </div>
+
       <button id="login" type="button">Continue ✦</button>
       <div class="login-tools">
         <button class="secondary wallpaper-switch" id="wallpaperSwitch" type="button">Main-site wallpaper ↗</button>
@@ -212,6 +223,11 @@
         status = document.getElementById("status"), list = document.getElementById("list");
   const loginPanel=document.getElementById("loginPanel"), dashboard=document.getElementById("dashboard"), loginStatus=document.getElementById("loginStatus");
 
+  // Show or hide the admin password.
+  document.getElementById("showPassword").addEventListener("change", function () {
+    pw.type = this.checked ? "text" : "password";
+  });
+
   // The selected wallpaper stays visible behind both the login and the dashboard.
   const adminWallpaperVideo = document.getElementById("adminLoginWallpaper");
   const adminWallpaperSource = document.getElementById("adminLoginWallpaperSource");
@@ -269,9 +285,8 @@
   }));
   applyAdminTheme();
 
-  // ---- Falling snow / rain, clipped inside each panel (gentle: slow, soft, not too many) ----
+  // Falling snow / rain, clipped inside each panel.
   const fxReduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // One effect setting (snow / rain / off) shared by the login panel and the dashboard panels.
   let fxMode = "snow";
   try {
     const savedFx = localStorage.getItem("layaLoginFx");
@@ -295,7 +310,7 @@
     fx.w = fx.panel.clientWidth; fx.h = fx.panel.clientHeight;
     fx.canvas.width = fx.w * dpr; fx.canvas.height = fx.h * dpr;
     fx.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    fx.kind = null; // reseed for the new size
+    fx.kind = null;
   }
   function seedFx(fx, kind) {
     const area = fx.w * fx.h;
@@ -373,6 +388,8 @@
     loginPanel.hidden=false;
     pw.value="";
     user.value="";
+    document.getElementById("showPassword").checked=false;
+    pw.type="password";
     loginStatus.textContent=message;
   }
   function scheduleIdleLock(){
@@ -410,7 +427,7 @@
       else scheduleIdleLock();
     }
   });
-  // The main page may pass the already-entered admin login through this tab only.
+
   try {
     const savedUser = sessionStorage.getItem("adminUsername");
     const savedPassword = sessionStorage.getItem("adminPassword") || sessionStorage.getItem("pw");
@@ -420,22 +437,50 @@
     sessionStorage.removeItem("adminPassword");
     sessionStorage.removeItem("pw");
   } catch (e) {}
+
   document.getElementById("login").onclick=async()=>{
     loginStatus.textContent="Checking login…";
-    try{const r=await fetch(api("/admin/lists"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:user.value.trim(),password:pw.value})});
-      if(!r.ok){loginStatus.textContent=r.status===401?"That username or password didn't match.":"Couldn't verify login. Try again.";return;}
-      authenticated=true;lastActivityAt=Date.now();scheduleIdleLock();document.body.classList.add("dashboard-open");loginPanel.hidden=true;dashboard.hidden=false;loginStatus.textContent="";load();loadCutes();loadPics();
-    }catch(e){loginStatus.textContent="Couldn't connect to the admin service.";}
+    try{
+      const r=await fetch(api("/admin/lists"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value})
+      });
+      if(!r.ok){
+        loginStatus.textContent=r.status===401?"That username or password didn't match.":"Couldn't verify login. Try again.";
+        return;
+      }
+      authenticated=true;
+      lastActivityAt=Date.now();
+      scheduleIdleLock();
+      document.body.classList.add("dashboard-open");
+      loginPanel.hidden=true;
+      dashboard.hidden=false;
+      loginStatus.textContent="";
+      load();
+      loadCutes();
+      loadPics();
+    }catch(e){
+      loginStatus.textContent="Couldn't connect to the admin service.";
+    }
   };
+
   pw.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("login").click();});
   document.getElementById("lock").onclick=()=>lockDashboard("Dashboard locked.");
+
   const cuteText = document.getElementById("cuteText"), addCute = document.getElementById("addCute"),
         cuteStatus = document.getElementById("cuteStatus"), cuteList = document.getElementById("cuteList");
   const fmt = d => /^\d{4}-\d\d-\d\d/.test(d || "") ? new Date(d).toLocaleString() : (d || "");
 
   function render(notes) {
     list.innerHTML = "";
-    if (!notes.length) { const empty=document.createElement("div"); empty.className="empty-state"; empty.textContent="No notes yet. Your first message will live here."; list.appendChild(empty); return; }
+    if (!notes.length) {
+      const empty=document.createElement("div");
+      empty.className="empty-state";
+      empty.textContent="No notes yet. Your first message will live here.";
+      list.appendChild(empty);
+      return;
+    }
     notes.slice().reverse().forEach(n => {
       const d = document.createElement("div"); d.className = "note";
       const s = document.createElement("small"); s.textContent = fmt(n.date);
@@ -445,33 +490,43 @@
       d.append(s, p, b); list.appendChild(d);
     });
   }
+
   async function load() {
     try {
-      // The current Worker exposes the notes list as GET /notes.
-      // The admin-only add/delete actions below still validate the admin credentials.
       const r = await fetch(api("/notes"), { method: "GET", cache: "no-store" });
       if (!r.ok) throw new Error("Notes request failed");
       const data = await r.json();
       render(Array.isArray(data.notes) ? data.notes : []);
-    } catch (e) { status.textContent = "Couldn't load notes."; }
+    } catch (e) {
+      status.textContent = "Couldn't load notes.";
+    }
   }
+
   async function send(path, extra, okMsg) {
     if(!authenticated){status.textContent="Please sign in first.";return false;}
     status.textContent = "Working...";
     try {
-      const r = await fetch(api(path), { method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:user.value.trim(),password:pw.value,...extra}) });
-      if (r.status === 401) { status.textContent = "Wrong password."; return; }
+      const r = await fetch(api(path), {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value,...extra})
+      });
+      if (r.status === 401) { status.textContent = "Wrong password."; return false; }
       if (!r.ok) throw 0;
-      status.textContent = okMsg; render((await r.json()).notes || []); return true;
-    } catch (e) { status.textContent = "Something went wrong. Try again."; }
+      status.textContent = okMsg;
+      render((await r.json()).notes || []);
+      return true;
+    } catch (e) {
+      status.textContent = "Something went wrong. Try again.";
+      return false;
+    }
   }
+
   document.getElementById("post").onclick = async () => {
     if (!text.value.trim()) { status.textContent = "Write something first."; return; }
     if (await send("/admin/add",{text:text.value},"Posted. Laya can see it now.")) text.value="";
   };
 
-  // Cute notes start compact: show the newest note, then reveal four more per click.
   const cuteShowMore = document.getElementById("cuteShowMore");
   const CUTE_NOTES_INITIAL = 1;
   const CUTE_NOTES_PAGE_SIZE = 4;
@@ -527,27 +582,45 @@
     }
     renderCutes(cuteItems);
   });
+
   async function cuteSend(path, extra, okMsg) {
     if(!authenticated){cuteStatus.textContent="Please sign in first.";return false;}
     cuteStatus.textContent="Working...";
     try {
-      const r=await fetch(api(path),{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:user.value.trim(),password:pw.value,...extra})});
+      const r=await fetch(api(path),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value,...extra})
+      });
       if(r.status===401){cuteStatus.textContent="Wrong password.";return false;}
       if(!r.ok)throw 0;
-      const data=await r.json(); renderCutes(data.list||[]); cuteStatus.textContent=okMsg; return true;
-    } catch(e){cuteStatus.textContent="Something went wrong. Try again.";return false;}
+      const data=await r.json();
+      renderCutes(data.list||[]);
+      cuteStatus.textContent=okMsg;
+      return true;
+    } catch(e) {
+      cuteStatus.textContent="Something went wrong. Try again.";
+      return false;
+    }
   }
+
   async function loadCutes() {
     if(!authenticated)return;
     try {
-      const r=await fetch(api("/admin/lists"),{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:user.value.trim(),password:pw.value})});
+      const r=await fetch(api("/admin/lists"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value})
+      });
       if(r.status===401){cuteStatus.textContent="Wrong password.";return;}
       if(!r.ok)throw 0;
-      const data=await r.json(); renderCutes(data.cutes||[]);
-    } catch(e){cuteStatus.textContent="Couldn't load cute notes. Try again.";}
+      const data=await r.json();
+      renderCutes(data.cutes||[]);
+    } catch(e) {
+      cuteStatus.textContent="Couldn't load cute notes. Try again.";
+    }
   }
+
   addCute.onclick=async()=>{
     const value=cuteText.value.trim();
     if(!value){cuteStatus.textContent="Write something first.";return;}
@@ -555,17 +628,27 @@
   };
 
   const picsBox=document.getElementById("pics"), picStatus=document.getElementById("picStatus");
+
   async function loadPics(){
     if(!authenticated)return;
-    picStatus.textContent="Loading..."; picsBox.innerHTML="";
+    picStatus.textContent="Loading...";
+    picsBox.innerHTML="";
     try{
-      const r=await fetch(api("/admin/photos"),{method:"POST",headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:user.value.trim(),password:pw.value})});
+      const r=await fetch(api("/admin/photos"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value})
+      });
       if(r.status===401){picStatus.textContent="Wrong password.";return;}
       if(!r.ok)throw 0;
       const photos=(await r.json()).photos||[];
       picStatus.textContent=photos.length ? (photos.length + " photo" + (photos.length === 1 ? "" : "s") + " saved") : "No photos yet.";
-      if (!photos.length) { const empty=document.createElement("div"); empty.className="empty-state photo-empty"; empty.textContent="When Laya sends photos from the homepage, they will appear here."; picsBox.appendChild(empty); }
+      if (!photos.length) {
+        const empty=document.createElement("div");
+        empty.className="empty-state photo-empty";
+        empty.textContent="When Laya sends photos from the homepage, they will appear here.";
+        picsBox.appendChild(empty);
+      }
       for(const ph of photos.slice().reverse()){
         const card=document.createElement("div");card.className="pic";
         const img=document.createElement("img");img.alt="Photo from Laya";
@@ -573,29 +656,85 @@
         const row=document.createElement("div");row.className="row";
         const dl=document.createElement("a");dl.textContent="Save";dl.download="laya-"+ph.id.replace("photo:","")+".jpg";
         const del=document.createElement("button");del.className="small";del.textContent="Delete";
-        del.onclick=async()=>{if(!confirm("Delete this photo for good?"))return;
+        del.onclick=async()=>{
+          if(!confirm("Delete this photo for good?"))return;
           del.disabled=true;
           try {
-            const deleted=await fetch(api("/admin/photo-delete"),{method:"POST",headers:{"Content-Type":"application/json"},
-              body:JSON.stringify({username:user.value.trim(),password:pw.value,id:ph.id})});
+            const deleted=await fetch(api("/admin/photo-delete"),{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({username:user.value.trim(),password:pw.value,id:ph.id})
+            });
             if(!deleted.ok)throw new Error("Delete failed");
             card.remove();
             picStatus.textContent="Photo deleted.";
-          } catch(e) { picStatus.textContent="Couldn’t delete this photo. Please try again."; del.disabled=false; }
+          } catch(e) {
+            picStatus.textContent="Couldn’t delete this photo. Please try again.";
+            del.disabled=false;
+          }
         };
         row.append(dl,del);card.append(img,small,row);picsBox.appendChild(card);
-        fetch(api("/admin/photo"),{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({username:user.value.trim(),password:pw.value,id:ph.id})}).then(x=>{
-            if(!x.ok)throw new Error("Photo request failed");
-            return x.blob();
-          }).then(b=>{const u=URL.createObjectURL(b);img.src=u;dl.href=u;})
-          .catch(()=>{img.alt="Couldn’t load this photo";small.textContent="Couldn’t load photo";});
+        fetch(api("/admin/photo"),{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({username:user.value.trim(),password:pw.value,id:ph.id})
+        }).then(x=>{
+          if(!x.ok)throw new Error("Photo request failed");
+          return x.blob();
+        }).then(b=>{
+          const u=URL.createObjectURL(b);
+          img.src=u;
+          dl.href=u;
+        }).catch(()=>{
+          img.alt="Couldn’t load this photo";
+          small.textContent="Couldn’t load photo";
+        });
       }
-    }catch(e){picStatus.textContent="Couldn't load photos. Try again.";}
+    }catch(e){
+      picStatus.textContent="Couldn't load photos. Try again.";
+    }
   }
+
   document.getElementById("loadPics").onclick=loadPics;
-  document.getElementById("forgot").onclick=async()=>{loginStatus.textContent="Requesting a reset link for "+RECOVERY_EMAIL+"…";try{const r=await fetch(api("/admin/reset-request"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:RECOVERY_EMAIL})});const data=await r.json().catch(()=>({}));loginStatus.textContent=r.ok?"If email delivery is configured, a reset link has been sent to "+RECOVERY_EMAIL+".":(data.error||data.message||"Reset request failed. Check the Worker’s email configuration.");}catch(e){loginStatus.textContent="Couldn't connect to the reset service.";}};
-  const qp=new URLSearchParams(location.search); if(qp.has("reset")){const token=qp.get("reset"),np=prompt("Choose a new password (at least 12 characters):");if(np){fetch(api("/admin/reset-complete"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token,password:np})}).then(async r=>{loginStatus.textContent=r.ok?"Password changed. Sign in with your new password.":"Reset link expired or invalid, or the Worker rejected the reset.";history.replaceState({},document.title,location.pathname);}).catch(()=>{loginStatus.textContent="Couldn't connect to complete the reset.";});}else{history.replaceState({},document.title,location.pathname);}}
+
+  document.getElementById("forgot").onclick=async()=>{
+    loginStatus.textContent="Requesting a reset link for "+RECOVERY_EMAIL+"…";
+    try{
+      const r=await fetch(api("/admin/reset-request"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email:RECOVERY_EMAIL})
+      });
+      const data=await r.json().catch(()=>({}));
+      loginStatus.textContent=r.ok
+        ?"If email delivery is configured, a reset link has been sent to "+RECOVERY_EMAIL+"."
+        :(data.error||data.message||"Reset request failed. Check the Worker’s email configuration.");
+    }catch(e){
+      loginStatus.textContent="Couldn't connect to the reset service.";
+    }
+  };
+
+  const qp=new URLSearchParams(location.search);
+  if(qp.has("reset")){
+    const token=qp.get("reset"),np=prompt("Choose a new password (at least 12 characters):");
+    if(np){
+      fetch(api("/admin/reset-complete"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({token,password:np})
+      }).then(async r=>{
+        loginStatus.textContent=r.ok
+          ?"Password changed. Sign in with your new password."
+          :"Reset link expired or invalid, or the Worker rejected the reset.";
+        history.replaceState({},document.title,location.pathname);
+      }).catch(()=>{
+        loginStatus.textContent="Couldn't connect to complete the reset.";
+      });
+    }else{
+      history.replaceState({},document.title,location.pathname);
+    }
+  }
+
   // Dashboard content stays hidden until the Worker verifies the login above.
 </script>
 </body>
