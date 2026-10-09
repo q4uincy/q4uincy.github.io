@@ -33,7 +33,7 @@
   :root[data-theme="space"] body{background:radial-gradient(ellipse at 12% 0%,#27234e 0,transparent 40%),radial-gradient(ellipse at 100% 25%,#242047 0,transparent 36%),linear-gradient(160deg,#07091a,#101128 56%,#050610);}
   body:before{content:"❄       ✧          ❄                ✦            ❄";position:fixed;inset:0;pointer-events:none;opacity:.11;font-size:clamp(22px,4vw,44px);letter-spacing:.7em;line-height:2.8;overflow:hidden;z-index:-1}
   :root[data-theme="space"] body:before{content:"✦       ·          ✧                ⊹            ✦";opacity:.18}
-  main{position:relative;z-index:1;width:min(1120px,100%);margin:0 auto}
+  main{position:relative;z-index:1;width:min(960px,100%);margin:0 auto}
   h1,h2,h3,p{margin:0}h1,h2,h3{line-height:1.2}h1{font-size:clamp(1.9rem,4.3vw,3.1rem);font-weight:600;letter-spacing:-.045em}h1 span{color:var(--pink)}h2{font-size:1.15rem;font-weight:650;letter-spacing:-.02em}h3{font-size:.98rem;font-weight:650}
   .muted,.status{color:var(--muted)}.muted{line-height:1.65}.status{font-size:.84rem;min-height:1.35em;overflow-wrap:anywhere}
   #adminLoginWallpaper{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
@@ -41,12 +41,12 @@
   :root[data-theme="space"] #adminLoginWallpaperShade{background:radial-gradient(circle at 13% 18%,rgba(255,255,255,.65) 0 1px,transparent 1.8px),radial-gradient(circle at 72% 13%,rgba(230,224,255,.75) 0 1px,transparent 1.8px),radial-gradient(circle at 46% 41%,rgba(255,255,255,.6) 0 1px,transparent 1.8px),radial-gradient(circle at 88% 66%,rgba(201,188,255,.65) 0 1px,transparent 1.8px),linear-gradient(180deg,rgba(4,5,20,.48),rgba(4,5,20,.58)),radial-gradient(ellipse at 50% 30%,rgba(52,44,119,.08),rgba(4,4,18,.4))}
   /* Keep the selected video wallpaper visible in both login and dashboard views. */
   .panel,.section{background:var(--surface);border:1px solid var(--line);border-radius:24px;backdrop-filter:blur(18px);box-shadow:var(--shadow);transition:background .25s ease,border-color .25s ease,box-shadow .25s ease}
-  .panel{width:min(440px,100%);margin:clamp(56px,15vh,150px) auto 0;padding:clamp(24px,5vw,38px)}
+  .panel{width:min(400px,100%);margin:clamp(40px,11vh,110px) auto 0;padding:clamp(22px,4.5vw,30px)}
   .section-head{display:flex;align-items:center;gap:13px;margin-bottom:6px}.snow-icon{width:42px;height:42px;display:grid;place-items:center;flex:0 0 auto;border:1px solid var(--line-strong);border-radius:14px;background:rgba(226,160,187,.09);font-size:1.18rem;color:var(--pink)}
   #loginPanel{background:var(--surface-strong);border-color:var(--line-strong);backdrop-filter:blur(18px)}
-  #loginPanel h1{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.8rem;font-weight:500;letter-spacing:-.025em;color:var(--login-heading)}
+  #loginPanel h1{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.5rem;font-weight:500;letter-spacing:-.025em;color:var(--login-heading)}
   #loginPanel .muted,#loginPanel .status{color:var(--muted)}
-  .login-description{margin:12px 0 24px;max-width:32ch}
+  .login-description{margin:8px 0 18px;max-width:32ch}
   input,textarea,button{font:inherit;border-radius:13px;width:100%}
   input,textarea{border:1px solid var(--line-strong);padding:13px 14px;background:var(--field);color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s}
   input::placeholder,textarea::placeholder{color:var(--placeholder)}
@@ -56,17 +56,24 @@
   button:hover{filter:brightness(1.1);transform:translateY(-1px)}button:active{transform:translateY(0)}button:disabled{opacity:.6;cursor:wait;transform:none}
   button.secondary{background:var(--secondary-bg);border-color:var(--line-strong);color:var(--secondary-text)}
   button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--pink-bright);outline-offset:3px}
-  .fields{display:grid;gap:11px}.fields input{width:100%}
-  #loginPanel button:not(.secondary){margin-top:4px}
-  #loginPanel button.secondary{font-size:.85rem}
-  #wallpaperSwitchHint{font-size:.72rem;min-height:0;margin-top:-5px;text-align:center}
+  .fields{display:grid;gap:10px}.fields input{width:100%}
+  #loginPanel button:not(.secondary){margin-top:2px}
+  /* Compact pill row for the extra login options */
+  .login-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:4px}
+  .login-tools button{width:auto;padding:7px 12px;font-size:.74rem;border-radius:999px;font-weight:600}
+  #loginPanel .status{margin-top:-2px;text-align:center}
+  /* Fixed widths so changing a button's label never changes the row wrapping / page height */
+  .login-tools button,.header-actions button{white-space:nowrap;text-align:center}
+  #fxSwitchLogin,#fxToggleDashboard{min-width:9rem}
+  .wallpaper-switch{min-width:10.5rem}
+  .theme-switch{min-width:9.5rem}
   #dashboard[hidden],#loginPanel[hidden]{display:none!important}
   .dashboard-shell{display:grid;gap:20px;padding-bottom:32px}
   .dashboard-header{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:9px 2px 3px}
   .eyebrow{margin-bottom:9px;font-size:.71rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pink);font-weight:750}
   .dashboard-header .muted{margin-top:12px;max-width:55ch}
-  .header-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:10px}
-  .header-actions button{width:auto;white-space:nowrap}
+  .header-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px}
+  .header-actions button{width:auto;white-space:nowrap;padding:8px 13px;font-size:.8rem}
   .status-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:99px;background:var(--surface);padding:8px 11px;font-size:.76rem;color:var(--text);white-space:nowrap;backdrop-filter:blur(12px)}
   .status-dot{width:7px;height:7px;border-radius:50%;background:#a6dfb1;box-shadow:0 0 12px rgba(166,223,177,.6)}
   .quick-nav{display:flex;gap:8px;flex-wrap:wrap;padding:8px;border:1px solid var(--line);border-radius:17px;background:var(--surface);backdrop-filter:blur(16px)}
@@ -98,7 +105,6 @@
   .pic .row{display:flex;gap:8px}.pic .row>*{flex:1;min-width:0}.pic .row a{border:1px solid var(--line-strong);color:#f0dbe8;border-radius:11px;text-decoration:none;text-align:center;padding:8px;font-size:.8rem;background:rgba(255,255,255,.025)}
   .pic .row button{padding:8px;font-size:.8rem;background:var(--accent-soft);border:1px solid var(--line-strong);color:var(--text)}
   .photo-empty{grid-column:1/-1}
-  .header-actions .theme-switch,.header-actions .wallpaper-switch{max-width:220px}
   :root[data-theme="space"] .snow-icon{background:rgba(178,155,255,.1)}
   :root[data-theme="space"] .eyebrow,:root[data-theme="space"] .section-kicker{color:#d7b0f7}
   :root[data-theme="snow"] .eyebrow,:root[data-theme="snow"] .section-kicker{color:#6d617f}
@@ -111,8 +117,8 @@
   .panel,.section{position:relative;overflow:hidden}
   .fx-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;border-radius:inherit}
   .panel>*:not(.fx-canvas),.section>*:not(.fx-canvas){position:relative;z-index:1}
-  @media(max-width:760px){body{padding:16px}.dashboard-header{display:grid;align-items:start}.header-actions{justify-content:flex-start}.dashboard-grid{grid-template-columns:1fr}#photosSection{grid-column:auto}.quick-nav{gap:3px}.quick-nav a{padding:8px 10px}.panel{margin-top:10vh}}
-  @media(max-width:420px){body{padding:11px}.panel{padding:23px 18px;border-radius:20px}.section{padding:17px;border-radius:19px}.header-actions{display:grid;grid-template-columns:1fr;width:100%}.header-actions button{width:100%}.form-actions{align-items:stretch;flex-direction:column}.form-actions button{width:100%}.form-actions .status{text-align:left}.quick-nav{display:grid;grid-template-columns:1fr 1fr}.photo-toolbar button{width:100%}}
+  @media(max-width:760px){body{padding:16px}.dashboard-header{display:grid;align-items:start}.header-actions{justify-content:flex-start}.dashboard-grid{grid-template-columns:1fr}#photosSection{grid-column:auto}.quick-nav{gap:3px}.quick-nav a{padding:8px 10px}.panel{margin-top:8vh}}
+  @media(max-width:420px){body{padding:11px}.panel{padding:22px 18px;border-radius:20px}.section{padding:17px;border-radius:19px}.header-actions{display:flex}.form-actions{align-items:stretch;flex-direction:column}.form-actions button{width:100%}.form-actions .status{text-align:left}.quick-nav{display:grid;grid-template-columns:1fr 1fr}.photo-toolbar button{width:100%}}
   @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 <script>
@@ -133,11 +139,12 @@
       <input id="user" type="text" placeholder="Admin username" autocomplete="username" aria-label="Admin username" required>
       <input id="pw" type="password" placeholder="Admin password" autocomplete="current-password" aria-label="Admin password" required>
       <button id="login" type="button">Continue ✦</button>
-      <button class="secondary wallpaper-switch" id="wallpaperSwitch" type="button">Switch to main-site wallpaper ↗</button>
-      <p class="status" id="wallpaperSwitchHint">Choose either wallpaper. Your choice stays saved in this browser.</p>
-      <button class="secondary theme-switch" id="themeSwitchLogin" type="button">Enter outer-space mode ✦</button>
-      <button class="secondary" id="fxSwitchLogin" type="button">Switch to rain mode ☂</button>
-      <button class="secondary" id="forgot" type="button">Forgot password? Email a reset link</button>
+      <div class="login-tools">
+        <button class="secondary wallpaper-switch" id="wallpaperSwitch" type="button">Main-site wallpaper ↗</button>
+        <button class="secondary theme-switch" id="themeSwitchLogin" type="button">Outer-space mode ✦</button>
+        <button class="secondary" id="fxSwitchLogin" type="button">Effect: Snow ❄</button>
+        <button class="secondary" id="forgot" type="button">Forgot password?</button>
+      </div>
       <p class="status" id="loginStatus" aria-live="polite"></p>
     </div>
   </section>
@@ -151,9 +158,9 @@
       </div>
       <div class="header-actions">
         <span class="status-chip"><span class="status-dot" aria-hidden="true"></span> Dashboard unlocked</span>
-        <button id="wallpaperSwitchDashboard" class="secondary wallpaper-switch" type="button">Switch to main-site wallpaper ↗</button>
-        <button id="themeSwitchDashboard" class="secondary theme-switch" type="button">Enter outer-space mode ✦</button>
-        <button id="fxToggleDashboard" class="secondary" type="button" aria-pressed="true">Panel snow: On ❄</button>
+        <button id="wallpaperSwitchDashboard" class="secondary wallpaper-switch" type="button">Main-site wallpaper ↗</button>
+        <button id="themeSwitchDashboard" class="secondary theme-switch" type="button">Outer-space mode ✦</button>
+        <button id="fxToggleDashboard" class="secondary" type="button">Effect: Snow ❄</button>
         <button id="lock" class="secondary" type="button">Lock dashboard ↗</button>
       </div>
     </header>
@@ -226,8 +233,8 @@
     }
     wallpaperSwitchButtons.forEach(button => {
       button.textContent = useMainWallpaper
-        ? "Change Wallpaper ↗"
-        : "Switch to main-site wallpaper ↗";
+        ? "Admin wallpaper ↗"
+        : "Main-site wallpaper ↗";
       button.setAttribute("aria-label", useMainWallpaper
         ? "Switch to admin wallpaper"
         : "Switch to main-site wallpaper");
@@ -250,7 +257,7 @@
     document.documentElement.dataset.theme = adminTheme;
     const switchToSpace = adminTheme !== "space";
     themeSwitchButtons.forEach(button => {
-      button.textContent = switchToSpace ? "Enter outer-space mode ✦" : "Change theme ❄";
+      button.textContent = switchToSpace ? "Outer-space mode ✦" : "Snowy mode ❄";
       button.setAttribute("aria-label", switchToSpace ? "Switch to outer-space theme" : "Switch to snowy theme");
       button.setAttribute("aria-pressed", String(adminTheme === "space"));
     });
@@ -262,13 +269,13 @@
   }));
   applyAdminTheme();
 
-  // ---- Falling snow / rain, clipped inside each panel ----
+  // ---- Falling snow / rain, clipped inside each panel (gentle: slow, soft, not too many) ----
   const fxReduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let loginFx = "snow", dashSnow = true;
+  // One effect setting (snow / rain / off) shared by the login panel and the dashboard panels.
+  let fxMode = "snow";
   try {
     const savedFx = localStorage.getItem("layaLoginFx");
-    loginFx = ["snow", "rain", "off"].includes(savedFx) ? savedFx : "snow";
-    dashSnow = localStorage.getItem("layaDashSnow") !== "off";
+    fxMode = ["snow", "rain", "off"].includes(savedFx) ? savedFx : "snow";
   } catch (e) {}
   const fxPanels = [];
   let fxTheme = "", fxColors = {snow:"#fff", rain:"#fff"};
@@ -292,10 +299,10 @@
   }
   function seedFx(fx, kind) {
     const area = fx.w * fx.h;
-    const n = kind === "snow" ? Math.min(Math.max(area / 6000, 20), 90) : Math.min(Math.max(area / 9000, 15), 55);
+    const n = kind === "snow" ? Math.min(Math.max(area / 9000, 14), 55) : Math.min(Math.max(area / 14000, 10), 32);
     fx.parts = Array.from({length: Math.round(n)}, () => kind === "snow"
-      ? {x: rnd(0, fx.w), y: rnd(0, fx.h), r: rnd(1, 3.2), vy: rnd(.3, 1), ph: rnd(0, 6.28), sw: rnd(.3, .9)}
-      : {x: rnd(0, fx.w), y: rnd(0, fx.h), len: rnd(7, 13), vy: rnd(2, 3.5), vx: -0.4});
+      ? {x: rnd(0, fx.w), y: rnd(0, fx.h), r: rnd(1, 2.4), vy: rnd(.2, .6), ph: rnd(0, 6.28), sw: rnd(.2, .6)}
+      : {x: rnd(0, fx.w), y: rnd(0, fx.h), len: rnd(6, 11), vy: rnd(1.6, 2.6), vx: -0.25});
     fx.kind = kind;
   }
   function fxFrame(t) {
@@ -318,14 +325,14 @@
       const c = fx.ctx;
       c.clearRect(0, 0, fx.w, fx.h);
       if (mode === "snow") {
-        c.fillStyle = fxColors.snow; c.globalAlpha = .8;
+        c.fillStyle = fxColors.snow; c.globalAlpha = .6;
         for (const p of fx.parts) {
-          p.y += p.vy; p.x += Math.sin(t / 900 + p.ph) * p.sw * .5;
+          p.y += p.vy; p.x += Math.sin(t / 1400 + p.ph) * p.sw * .5;
           if (p.y > fx.h + 4) { p.y = -4; p.x = rnd(0, fx.w); }
           c.beginPath(); c.arc(p.x, p.y, p.r, 0, 6.283); c.fill();
         }
       } else {
-        c.strokeStyle = fxColors.rain; c.globalAlpha = .7; c.lineWidth = 1.1; c.lineCap = "round";
+        c.strokeStyle = fxColors.rain; c.globalAlpha = .45; c.lineWidth = 1; c.lineCap = "round";
         c.beginPath();
         for (const p of fx.parts) {
           p.y += p.vy; p.x += p.vx;
@@ -337,27 +344,23 @@
       c.globalAlpha = 1;
     }
   }
-  addFx(document.getElementById("loginPanel"), () => loginFx);
-  document.querySelectorAll(".section").forEach(s => addFx(s, () => dashSnow ? "snow" : "off"));
+  addFx(document.getElementById("loginPanel"), () => fxMode);
+  document.querySelectorAll(".section").forEach(s => addFx(s, () => fxMode));
   requestAnimationFrame(fxFrame);
 
-  const fxSwitchLogin = document.getElementById("fxSwitchLogin");
-  const fxToggleDash = document.getElementById("fxToggleDashboard");
+  const fxButtons = [
+    document.getElementById("fxSwitchLogin"),
+    document.getElementById("fxToggleDashboard")
+  ].filter(Boolean);
   function applyFxLabels() {
-    fxSwitchLogin.textContent = loginFx === "snow" ? "Panel effect: Snow ❄" : loginFx === "rain" ? "Panel effect: Rain ☂" : "Panel effect: Off";
-    fxToggleDash.textContent = dashSnow ? "Panel snow: On ❄" : "Panel snow: Off";
-    fxToggleDash.setAttribute("aria-pressed", String(dashSnow));
+    const label = fxMode === "snow" ? "Effect: Snow ❄" : fxMode === "rain" ? "Effect: Rain ☂" : "Effect: Off";
+    fxButtons.forEach(button => button.textContent = label);
   }
-  fxSwitchLogin.addEventListener("click", () => {
-    loginFx = loginFx === "snow" ? "rain" : loginFx === "rain" ? "off" : "snow";
-    try { localStorage.setItem("layaLoginFx", loginFx); } catch (e) {}
+  fxButtons.forEach(button => button.addEventListener("click", () => {
+    fxMode = fxMode === "snow" ? "rain" : fxMode === "rain" ? "off" : "snow";
+    try { localStorage.setItem("layaLoginFx", fxMode); } catch (e) {}
     applyFxLabels();
-  });
-  fxToggleDash.addEventListener("click", () => {
-    dashSnow = !dashSnow;
-    try { localStorage.setItem("layaDashSnow", dashSnow ? "on" : "off"); } catch (e) {}
-    applyFxLabels();
-  });
+  }));
   applyFxLabels();
 
   const IDLE_TIMEOUT_MS=15*60*1000;
