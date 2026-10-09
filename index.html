@@ -61,6 +61,11 @@ h2{font-family:"Cormorant Garamond",serif;font-size:clamp(1.65rem,4vw,2.25rem);f
 .note{padding:15px;border-radius:16px;background:rgba(255,255,255,.045);border:1px solid var(--line)}
 .note small{display:block;color:var(--pink);margin-bottom:5px}
 .note p{color:var(--text);white-space:pre-wrap}
+
+/* Notes Show More */
+.notes-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.notes-more,.notes-less{border:1px solid rgba(217,141,165,.3);background:linear-gradient(135deg,rgba(101,29,53,.45),rgba(39,19,59,.45));color:var(--text);padding:9px 16px;border-radius:999px;font-size:.78rem;cursor:pointer;transition:.2s ease}
+.notes-more:hover,.notes-less:hover{border-color:rgba(217,141,165,.7);transform:translateY(-1px)}
 textarea,input{width:100%;border:1px solid var(--line);background:rgba(4,4,7,.45);color:var(--text);border-radius:16px;padding:13px 15px}
 textarea{min-height:140px;resize:vertical}
 ::placeholder{color:#9e8e98}
@@ -126,7 +131,6 @@ textarea{min-height:140px;resize:vertical}
 .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);opacity:0;z-index:200;padding:11px 16px;border-radius:999px;background:#171019;border:1px solid var(--line);box-shadow:0 12px 35px #0008;transition:.25s;pointer-events:none}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .hidden{display:none!important}
-
 @media(max-width:760px){
  .app{padding-top:58px;width:min(100% - 16px,680px)}
  .hero{min-height:43vh;padding-top:25px}.grid{grid-template-columns:1fr}
@@ -141,7 +145,6 @@ textarea{min-height:140px;resize:vertical}
  h1{font-size:2.75rem}.hero p{font-size:.9rem}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
-
 .wallpaper-only{min-height:calc(100svh - 52px);display:flex;align-items:flex-end;justify-content:center;position:relative;scroll-margin-top:52px;margin:0 -10px 40px;padding:20px}
 .wallpaper-only::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at center,transparent 25%,rgba(5,4,7,.12) 75%,rgba(5,4,7,.28));pointer-events:none}
 .wallpaper-only-content{position:relative;z-index:2;width:min(700px,100%);display:flex;justify-content:center}
@@ -150,28 +153,18 @@ textarea{min-height:140px;resize:vertical}
 .wallpaper-float .status{margin:0 4px;font-size:.72rem}
 
 /* Welcome veil + discreet admin entry */
-#welcomeVeil{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,rgba(72,26,66,.94),rgba(8,5,12,.99) 68%);opacity:1;visibility:visible;transition:opacity .85s ease,visibility .85s ease}
+#welcomeVeil{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 45%,rgba(72,26,66,.94),rgba(8,5,12,.99) 68%);opacity:1;visibility:visible;transition:opacity .85s ease,visibility .85s ease;}
 #welcomeVeil.dismissed{opacity:0;visibility:hidden;pointer-events:none}
 .welcome-card{position:relative;text-align:center;padding:36px 28px;max-width:min(90vw,440px);animation:welcomeRise 1.05s cubic-bezier(.2,.75,.25,1) both}
 .welcome-card:before,.welcome-card:after{content:'✦';position:absolute;color:#c58cae;opacity:.7;font-size:18px;animation:twinkle 2s ease-in-out infinite alternate}
 .welcome-card:before{top:5px;left:8px}.welcome-card:after{bottom:8px;right:8px;animation-delay:.6s}
 .welcome-moon{font-size:28px;color:#d8a6c5;letter-spacing:.5em;margin:0 0 20px 8px;text-shadow:0 0 22px rgba(193,115,164,.55)}
-
-/* Small animated Kuromi-style mascot — drawn directly in SVG */
-.welcome-kuromi{
-  display:block;width:82px;height:94px;margin:0 auto 14px;overflow:visible;
-  filter:drop-shadow(0 5px 12px rgba(187,104,157,.3));
-  animation:kuromiFloat 2.8s ease-in-out infinite;
-}
-.welcome-kuromi .ear-left{transform-box:fill-box;transform-origin:100% 100%;animation:kuromiEarLeft 3s ease-in-out infinite}
-.welcome-kuromi .ear-right{transform-box:fill-box;transform-origin:0% 100%;animation:kuromiEarRight 3s ease-in-out infinite}
-.welcome-kuromi .eye{transform-box:fill-box;transform-origin:center;animation:kuromiBlink 4.5s infinite}
-@keyframes kuromiFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(1deg)}}
-@keyframes kuromiEarLeft{0%,85%,100%{transform:rotate(0)}90%{transform:rotate(-7deg)}95%{transform:rotate(3deg)}}
-@keyframes kuromiEarRight{0%,85%,100%{transform:rotate(0)}90%{transform:rotate(7deg)}95%{transform:rotate(-3deg)}}
-@keyframes kuromiBlink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.12)}}
-@media(prefers-reduced-motion:reduce){.welcome-kuromi,.welcome-kuromi .ear-left,.welcome-kuromi .ear-right,.welcome-kuromi .eye{animation:none!important}}
-
+.welcome-kitty{width:76px;height:64px;margin:0 auto 18px;position:relative;filter:drop-shadow(0 0 18px rgba(187,104,157,.25))}
+.welcome-kitty:before{content:'';position:absolute;left:12px;right:12px;bottom:0;height:48px;border-radius:48% 48% 44% 44%;background:#17131d;border:1px solid #88617f}
+.welcome-kitty:after{content:'♥';position:absolute;left:31px;top:27px;color:#e6c3d7;font-size:10px}
+.welcome-ear{position:absolute;top:0;width:25px;height:30px;background:#17131d;border:1px solid #88617f;z-index:-1}
+.welcome-ear.left{left:10px;transform:rotate(-22deg);clip-path:polygon(0 0,100% 25%,75% 100%,20% 80%)}
+.welcome-ear.right{right:10px;transform:rotate(22deg);clip-path:polygon(0 25%,100% 0,80% 80%,25% 100%)}
 .welcome-title{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(2.6rem,9vw,4.3rem);line-height:1;color:#f3dce9;letter-spacing:.02em;text-shadow:0 0 28px rgba(184,96,151,.3)}
 .welcome-sub{margin-top:15px;color:#c9b2c4;font-size:.72rem;letter-spacing:.24em;text-transform:uppercase}
 .welcome-skip{margin-top:28px;border:1px solid rgba(214,162,195,.28);border-radius:999px;background:rgba(255,255,255,.035);color:#ead8e5;padding:8px 16px;font-size:.72rem;cursor:pointer}
@@ -229,45 +222,7 @@ body.auth-locked{overflow:hidden}
 <div id="welcomeVeil" role="dialog" aria-label="Welcome Laya" aria-modal="true">
   <div class="welcome-card">
     <div class="welcome-moon">☾ ✦ ☽</div>
-
-    <!-- Animated mascot is embedded directly in the HTML -->
-    <svg class="welcome-kuromi" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A cute animated Kuromi-style mascot">
-      <path d="M81 108 C106 115 113 92 102 78" fill="none" stroke="#17131d" stroke-width="7" stroke-linecap="round"/>
-      <path d="M99 78 L111 78 L105 66 Z" fill="#17131d"/>
-
-      <path d="M47 92 C34 103 39 120 52 126 C61 131 69 123 63 115 L59 104 L78 116 C88 123 98 113 91 103 L79 90" fill="#fff8fb" stroke="#17131d" stroke-width="2.5" stroke-linejoin="round"/>
-      <path d="M43 76 C29 68 15 71 13 81 C12 90 27 92 40 87" fill="#fff8fb" stroke="#17131d" stroke-width="2.5"/>
-      <path d="M78 76 C91 66 105 69 108 80 C110 89 97 94 83 87" fill="#fff8fb" stroke="#17131d" stroke-width="2.5"/>
-
-      <g class="ear-left">
-        <path d="M43 39 L17 12 L24 52 L43 61 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
-        <circle cx="16" cy="11" r="5.5" fill="#d7a0eb" stroke="#17131d" stroke-width="2"/>
-      </g>
-      <g class="ear-right">
-        <path d="M77 39 L103 12 L96 52 L77 61 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
-        <circle cx="104" cy="11" r="5.5" fill="#d7a0eb" stroke="#17131d" stroke-width="2"/>
-      </g>
-
-      <path d="M19 58 C19 33 38 24 60 24 C82 24 101 33 101 58 C101 79 83 91 60 92 C37 91 19 79 19 58 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
-      <path d="M29 62 C30 47 43 43 52 50 L60 55 L68 50 C78 43 91 47 91 62 C91 78 77 85 60 85 C43 85 29 78 29 62 Z" fill="#fff8fb" stroke="#17131d" stroke-width="2"/>
-
-      <path d="M48 43 C45 35 51 30 60 30 C69 30 75 35 72 43 L68 48 L65 48 L64 44 L61 44 L60 49 L57 49 L56 44 L53 44 L52 48 L49 48 Z" fill="#e991c3" stroke="#17131d" stroke-width="1"/>
-      <g fill="#211a28">
-        <ellipse cx="55" cy="40" rx="2" ry="3"/>
-        <ellipse cx="65" cy="40" rx="2" ry="3"/>
-      </g>
-
-      <ellipse class="eye" cx="46" cy="61" rx="5" ry="8" fill="#17131d"/>
-      <ellipse class="eye" cx="74" cy="61" rx="5" ry="8" fill="#17131d"/>
-      <ellipse cx="60" cy="70" rx="3.5" ry="2.5" fill="#e991c3"/>
-      <path d="M54 75 Q60 83 66 75" fill="#f18bb8" stroke="#17131d" stroke-width="1.8" stroke-linecap="round"/>
-
-      <path d="M37 87 L83 87 L77 97 L68 92 L60 100 L52 92 L43 97 Z" fill="#211a28" stroke="#17131d" stroke-width="2"/>
-      <circle cx="43" cy="97" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
-      <circle cx="60" cy="100" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
-      <circle cx="77" cy="97" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
-    </svg>
-
+    <div class="welcome-kitty" aria-hidden="true"><span class="welcome-ear left"></span><span class="welcome-ear right"></span></div>
     <h1 class="welcome-title">welcome laya</h1>
     <p class="welcome-sub">Kimchi Loves You</p>
     <button class="welcome-skip" id="welcomeEnter" type="button">enter softly ✦</button>
@@ -324,8 +279,13 @@ body.auth-locked{overflow:hidden}
       <button class="action" id="sendMsg">Send it 💌</button><div class="status" id="msgStatus"></div>
     </div>
     <div class="card">
-      <div class="card-title">What Kimchi wrote</div><p id="notesIntro">Your little collection of notes from him.</p>
+      <div class="card-title">What Kimchi wrote</div>
+      <p id="notesIntro">Your little collection of notes from him.</p>
       <div class="notes" id="notesList"></div>
+      <div class="notes-actions" id="notesActions" hidden>
+        <button class="notes-more" id="notesMore" type="button">Show more</button>
+        <button class="notes-less" id="notesLess" type="button" hidden>Show less</button>
+      </div>
     </div>
     <div class="card">
       <div class="card-title">Give him a hug</div><p>One tap = one hug delivered.</p>
@@ -517,7 +477,6 @@ async function api(path,opts={}){
       hideLogin();
     }
   }else showLogin();
-
   form.addEventListener("submit",async e=>{
     e.preventDefault();
     status.textContent="Signing in…";
@@ -526,10 +485,7 @@ async function api(path,opts={}){
       const response=await fetch(CHAT_URL.replace(/\/$/,"")+"/login",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          email:$("loginEmail").value.trim(),
-          password:$("loginPass").value
-        })
+        body:JSON.stringify({email:$("loginEmail").value.trim(),password:$("loginPass").value})
       });
       const data=await response.json().catch(()=>({}));
       if(!response.ok||!data.token){
@@ -542,7 +498,7 @@ async function api(path,opts={}){
       hideLogin();
       const params=new URLSearchParams(location.search);
       if(params.has("code")&&params.has("state")){
-        await api("/spotify/callback?code="+encodeURIComponent(params.get("code"))+"&state="+encodeURIComponent(params.get("state")),{cache:"no-store"});
+        const callback=await api("/spotify/callback?code="+encodeURIComponent(params.get("code"))+"&state="+encodeURIComponent(params.get("state")),{cache:"no-store"});
         history.replaceState({},document.title,location.pathname+location.hash);
       }
       location.reload();
@@ -577,15 +533,10 @@ $("signOutBtn").addEventListener("click",()=>{
 (()=>{
   const c=$("cursor"),fine=matchMedia("(hover:hover) and (pointer:fine)").matches;
   if(fine)document.documentElement.classList.add("has-cursor");
-  document.addEventListener("pointermove",e=>{
-    if(!fine)return;
-    c.classList.add("on");c.style.left=e.clientX+"px";c.style.top=e.clientY+"px";
-  });
+  document.addEventListener("pointermove",e=>{if(!fine)return;c.classList.add("on");c.style.left=e.clientX+"px";c.style.top=e.clientY+"px"});
   document.addEventListener("pointerdown",e=>{
     c.classList.add("down");setTimeout(()=>c.classList.remove("down"),130);
-    const r=document.createElement("div");r.className="ripple";
-    r.style.left=e.clientX+"px";r.style.top=e.clientY+"px";
-    document.body.appendChild(r);setTimeout(()=>r.remove(),700);
+    const r=document.createElement("div");r.className="ripple";r.style.left=e.clientX+"px";r.style.top=e.clientY+"px";document.body.appendChild(r);setTimeout(()=>r.remove(),700);
   });
 })();
 
@@ -665,30 +616,27 @@ const plushies=[
 ];
 const plushGrid=$("plushGrid");
 const plushMsg=$("plushMsg");
-plushies.forEach(plush=>{
+plushies.forEach((plush,index)=>{
   const button=document.createElement("button");
-  button.type="button";
-  button.className="plush";
+  button.type="button";button.className="plush";
   button.setAttribute("aria-label","Pet "+plush.name);
-  button.innerHTML=
-    (plush.kuromi
-      ? `<svg class="kuromi-art" viewBox="0 0 120 120" aria-label="Kuromi plush" role="img">
-          <path class="hood" d="M31 48 L18 9 Q17 3 23 7 L47 25 Q60 19 73 25 L97 7 Q103 3 102 10 L89 48 Q101 57 96 77 Q91 98 60 102 Q29 98 24 77 Q19 57 31 48Z"/>
-          <path class="inner" d="M25 13 L45 29 L34 42Z M95 13 L75 29 L86 42Z"/>
-          <ellipse class="face" cx="60" cy="61" rx="31" ry="27"/>
-          <ellipse class="eye" cx="48" cy="62" rx="4.2" ry="6.5"/>
-          <ellipse class="eye" cx="72" cy="62" rx="4.2" ry="6.5"/>
-          <path class="nose" d="M57 70 Q60 67 63 70 Q60 74 57 70Z"/>
-          <path class="hood" d="M37 83 Q60 97 83 83 L78 95 Q60 105 42 95Z"/>
-          <g transform="translate(47 80)">
-            <path class="skull" d="M3 10 Q3 2 11 2 Q19 2 19 10 L17 16 L13 16 L12 13 L10 13 L9 16 L5 16Z"/>
-            <circle class="skull-eye" cx="8" cy="9" r="1.8"/>
-            <circle class="skull-eye" cx="14" cy="9" r="1.8"/>
-            <path class="skull-cross" d="M11 12 L11 16 M8.5 14 L13.5 14"/>
-          </g>
-        </svg>`
-      : '<span class="emoji">'+plush.emoji+'</span>')+
-    '<span class="name">'+plush.name+'</span>';
+  button.innerHTML=(plush.kuromi
+    ? `<svg class="kuromi-art" viewBox="0 0 120 120" aria-label="Kuromi plush" role="img">
+        <path class="hood" d="M31 48 L18 9 Q17 3 23 7 L47 25 Q60 19 73 25 L97 7 Q103 3 102 10 L89 48 Q101 57 96 77 Q91 98 60 102 Q29 98 24 77 Q19 57 31 48Z"/>
+        <path class="inner" d="M25 13 L45 29 L34 42Z M95 13 L75 29 L86 42Z"/>
+        <ellipse class="face" cx="60" cy="61" rx="31" ry="27"/>
+        <ellipse class="eye" cx="48" cy="62" rx="4.2" ry="6.5"/>
+        <ellipse class="eye" cx="72" cy="62" rx="4.2" ry="6.5"/>
+        <path class="nose" d="M57 70 Q60 67 63 70 Q60 74 57 70Z"/>
+        <path class="hood" d="M37 83 Q60 97 83 83 L78 95 Q60 105 42 95Z"/>
+        <g transform="translate(47 80)">
+          <path class="skull" d="M3 10 Q3 2 11 2 Q19 2 19 10 L17 16 L13 16 L12 13 L10 13 L9 16 L5 16Z"/>
+          <circle class="skull-eye" cx="8" cy="9" r="1.8"/>
+          <circle class="skull-eye" cx="14" cy="9" r="1.8"/>
+          <path class="skull-cross" d="M11 12 L11 16 M8.5 14 L13.5 14"/>
+        </g>
+      </svg>`
+    : '<span class="emoji">'+plush.emoji+'</span>')+'<span class="name">'+plush.name+'</span>';
 
   button.addEventListener("click",()=>{
     const line=plush.lines[Math.floor(Math.random()*plush.lines.length)];
@@ -706,12 +654,10 @@ plushies.forEach(plush=>{
       heart.style.position="absolute";
       heart.style.left=(38+Math.random()*24)+"%";
       heart.style.top=(34+Math.random()*16)+"%";
-      heart.style.pointerEvents="none";
-      heart.style.color="var(--pink)";
+      heart.style.pointerEvents="none";heart.style.color="var(--pink)";
       heart.style.fontSize=".9rem";
       heart.style.animation="plushHeart .75s ease-out forwards";
-      button.appendChild(heart);
-      setTimeout(()=>heart.remove(),800);
+      button.appendChild(heart);setTimeout(()=>heart.remove(),800);
     }
   });
   plushGrid.appendChild(button);
@@ -747,22 +693,77 @@ $("alotBtn").onclick=()=>miss("alot");
 let hugs=0;
 $("hugBtn").onclick=()=>{hugs++;if(hugs===1)notify("hug");$("hugResult").textContent=hugs===1?"Hug sent. Kimchi got it.":"Hugs sent: "+hugs+" ♡"};
 
-/* Notes */
+/* Notes — start with one, reveal six at a time */
 (()=>{
-  const list=$("notesList"),local=(typeof notes!=="undefined"?notes:[]);
-  const fmt=d=>/^\d{4}-\d\d-\d\d/.test(d||"")?new Date(d).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):(d||"");
-  function render(all){
+  const list=$("notesList");
+  const intro=$("notesIntro");
+  const actions=$("notesActions");
+  const moreBtn=$("notesMore");
+  const lessBtn=$("notesLess");
+  const localNotes=typeof notes!=="undefined"?notes:[];
+  const PAGE_SIZE=6;
+  let allNotes=[];
+  let visibleCount=1;
+
+  const formatDate=date=>{
+    if(/^\d{4}-\d\d-\d\d/.test(date||"")){
+      return new Date(date).toLocaleDateString(undefined,{
+        year:"numeric",month:"short",day:"numeric"
+      });
+    }
+    return date||"";
+  };
+
+  function drawNotes(){
     list.innerHTML="";
-    if(!all.length){$("notesIntro").textContent="Nothing here yet. Check back soon.";return}
-    $("notesIntro").textContent="A few words from Kimchi.";
-    all.slice().reverse().forEach(n=>{
-      const d=document.createElement("div");d.className="note";d.innerHTML="<small></small><p></p>";
-      d.querySelector("small").textContent=fmt(n.date);
-      d.querySelector("p").textContent=n.text;
-      list.appendChild(d);
+    if(!allNotes.length){
+      intro.textContent="Nothing here yet. Check back soon.";
+      actions.hidden=true;
+      return;
+    }
+
+    intro.textContent="A few words from Kimchi.";
+
+    allNotes.slice(0,visibleCount).forEach(note=>{
+      const card=document.createElement("div");
+      card.className="note";
+      const date=document.createElement("small");
+      date.textContent=formatDate(note.date);
+      const message=document.createElement("p");
+      message.textContent=note.text||"";
+      card.append(date,message);
+      list.appendChild(card);
     });
+
+    actions.hidden=allNotes.length<=1;
+    moreBtn.hidden=visibleCount>=allNotes.length;
+    moreBtn.textContent=visibleCount===1?"Show more":"Show 6 more";
+    lessBtn.hidden=visibleCount<=1;
   }
-  api("/notes").then(r=>r.ok?r.json():Promise.reject()).then(d=>render(d.notes&&d.notes.length?d.notes:local)).catch(()=>render(local));
+
+  function renderNotes(notesArray){
+    // Preserve the existing newest-first display.
+    allNotes=Array.isArray(notesArray)?notesArray.slice().reverse():[];
+    visibleCount=Math.min(1,allNotes.length);
+    drawNotes();
+  }
+
+  moreBtn.addEventListener("click",()=>{
+    visibleCount=visibleCount===1
+      ?Math.min(PAGE_SIZE,allNotes.length)
+      :Math.min(visibleCount+PAGE_SIZE,allNotes.length);
+    drawNotes();
+  });
+
+  lessBtn.addEventListener("click",()=>{
+    visibleCount=1;
+    drawNotes();
+  });
+
+  api("/notes")
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(d=>renderNotes(d.notes&&d.notes.length?d.notes:localNotes))
+    .catch(()=>renderNotes(localNotes));
 })();
 
 /* Message */
@@ -774,14 +775,19 @@ $("sendMsg").onclick=async()=>{
     const r=await api("/message",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message})});
     if(!r.ok)throw 0;
     input.value="";status.textContent="Sent 💌 Kimchi will get it.";btn.textContent="Send another 💌";
-  }catch(e){status.textContent="Couldn't send it right now. Try again in a bit.";btn.textContent="Try again 💌"}
+  }catch(e){
+    status.textContent="Couldn't send it right now. Try again in a bit.";btn.textContent="Try again 💌";
+  }
   btn.disabled=false;
 };
 
 /* Cute */
 function loadCute(){
   $("cuteText").textContent="...";
-  api("/cute",{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(d=>$("cuteText").textContent=d.text||"No cute notes yet.").catch(()=>$("cuteText").textContent="Couldn't load a note. Try again.");
+  api("/cute",{cache:"no-store"})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(d=>$("cuteText").textContent=d.text||"No cute notes yet.")
+    .catch(()=>$("cuteText").textContent="Couldn't load a note. Try again.");
 }
 $("anotherCute").onclick=loadCute;
 loadCute();
@@ -807,7 +813,8 @@ function applySongColor(url){
     try{
       const c=document.createElement("canvas"),ctx=c.getContext("2d");
       c.width=1;c.height=1;ctx.drawImage(img,0,0,1,1);
-      const d=ctx.getImageData(0,0,1,1).data;let r=d[0],g=d[1],b=d[2];
+      const d=ctx.getImageData(0,0,1,1).data;
+      let r=d[0],g=d[1],b=d[2];
       const mx=Math.max(r,g,b),mn=Math.min(r,g,b),f=mx<100?1.5:.85;
       r=Math.min(255,r*f);g=Math.min(255,g*f);b=Math.min(255,b*f);
       document.documentElement.style.setProperty("--song-rgb",`${r},${g},${b}`);
@@ -863,7 +870,10 @@ loadFact();
 
 /* AI chat */
 const history=[],log=$("log");
-function addMsg(who,t){const d=document.createElement("div");d.className="msg "+who;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+function addMsg(who,t){
+  const d=document.createElement("div");d.className="msg "+who;d.textContent=t;
+  log.appendChild(d);log.scrollTop=log.scrollHeight;return d;
+}
 addMsg("ai","Hey Laya. What's going on? You can tell me as much or as little as you want.");
 $("cform").onsubmit=async e=>{
   e.preventDefault();
