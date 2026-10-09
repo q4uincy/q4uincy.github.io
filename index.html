@@ -3,446 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title> ♡</title>
+<title>for Laya ♡</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink: #09070b;
-  --ink2: #120b16;
-  --card: rgba(14,10,18,.72);
-  --card2: rgba(27,14,31,.72);
-  --burg: #651d35;
-  --burg2: #8b2947;
-  --purple: #27133b;
-  --purple2: #43205e;
-  --text: #f4eaf0;
-  --muted: #c5b7c1;
-  --pink: #d98da5;
-  --line: rgba(236,205,220,.18);
-  --glow: rgba(139,41,71,.42);
-  --song-rgb: 120,45,75;
-  --wall-opacity: .42;
+:root{
+  --ink:#09070b;--ink2:#120b16;--card:rgba(14,10,18,.72);--card2:rgba(27,14,31,.72);
+  --burg:#651d35;--burg2:#8b2947;--purple:#27133b;--purple2:#43205e;
+  --text:#f4eaf0;--muted:#c5b7c1;--pink:#d98da5;--line:rgba(236,205,220,.18);
+  --glow:rgba(139,41,71,.42);--song-rgb:120,45,75;--wall-opacity:.42;
 }
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{min-height:100%;font-family:"DM Sans",system-ui,sans-serif;color:var(--text);
+  background:radial-gradient(circle at 20% 10%,#24132f 0,#0b080d 42%,#050507 100%);
+  overflow-x:hidden;transition:background 2s ease,color 2s ease}
+button,input,textarea{font:inherit}
+button{color:inherit}
+.wall{position:fixed;inset:0;z-index:-5;background-size:cover;background-position:center;opacity:0;transition:opacity 1.5s ease,filter 2s ease;filter:saturate(.72) brightness(.62)}
+.wall.visible{opacity:var(--wall-opacity)}
+.shade{position:fixed;inset:0;z-index:-4;background:linear-gradient(180deg,rgba(5,4,7,.38),rgba(5,4,7,.76) 72%,#060508)}
+.starfield{position:fixed;inset:0;z-index:-3;pointer-events:none;opacity:.35;background-image:radial-gradient(circle,rgba(255,255,255,.65) 1px,transparent 1px);background-size:67px 67px;mask-image:linear-gradient(to bottom,black,transparent 80%)}
+a{color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--pink);outline-offset:3px}
+.app{width:min(1120px,calc(100% - 28px));margin:auto;padding:82px 0 60px}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:12px 14px;background:rgba(6,5,8,.62);border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}
+.topbar-inner{width:min(1120px,100%);margin:auto;display:flex;align-items:center;gap:10px;overflow-x:auto;scrollbar-width:none}
+.topbar-inner::-webkit-scrollbar{display:none}
+.brand{font-family:"Cinzel",serif;letter-spacing:.08em;font-size:.9rem;white-space:nowrap;margin-right:6px;color:#f0dce5}
+.navbtn,.theme-toggle{border:1px solid var(--line);background:rgba(255,255,255,.055);padding:8px 12px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.2s}
+.navbtn:hover,.theme-toggle:hover{border-color:rgba(217,141,165,.55);background:rgba(101,29,53,.32);transform:translateY(-1px)}
+.hero{min-height:52vh;display:grid;align-content:center;padding:35px 4px 55px}
+.eyebrow{font-family:"Cinzel",serif;font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;color:var(--pink);margin-bottom:15px}
+h1{font-family:"Playfair Display",serif;font-size:clamp(3rem,9vw,6.8rem);line-height:.95;font-weight:400;max-width:850px}
+h1 em{color:#d99aae}
+.hero p{max-width:620px;color:var(--muted);font-size:1.05rem;line-height:1.65;margin-top:20px}
+.orn{display:flex;align-items:center;gap:12px;margin:28px 0;color:var(--pink);max-width:500px}
+.orn:before,.orn:after{content:"";height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);flex:1}
+.section{scroll-margin-top:82px;margin:24px 0 70px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:18px}
+.section-kicker{font-family:"Cinzel",serif;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--pink);margin-bottom:5px}
+h2{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,5vw,2.7rem);font-weight:400}
+.section-head p{color:var(--muted);max-width:520px;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.card{background:linear-gradient(145deg,rgba(25,15,30,.78),rgba(9,8,12,.72));border:1px solid var(--line);border-radius:24px;padding:20px;box-shadow:0 18px 55px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.035);backdrop-filter:blur(15px)}
+.card:hover{border-color:rgba(217,141,165,.3)}
+.card-title{font-family:"Playfair Display",serif;font-size:1.35rem;margin-bottom:7px}
+.card p{color:var(--muted);line-height:1.55}
+.action{width:100%;border:1px solid rgba(217,141,165,.26);background:linear-gradient(135deg,rgba(101,29,53,.72),rgba(39,19,59,.72));padding:13px 15px;border-radius:15px;cursor:pointer;margin-top:15px;transition:.2s}
+.action:hover{transform:translateY(-2px);border-color:rgba(217,141,165,.6);box-shadow:0 10px 30px var(--glow)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.resultbox{min-height:55px;margin-top:12px;color:#ead9e1;white-space:pre-wrap;line-height:1.55}
+.notes{display:grid;gap:10px;margin-top:15px;text-align:left}
+.note{padding:15px;border-radius:16px;background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.note small{display:block;color:var(--pink);margin-bottom:5px}
+.note p{color:var(--text);white-space:pre-wrap}
+textarea,input{width:100%;border:1px solid var(--line);background:rgba(4,4,7,.45);color:var(--text);border-radius:16px;padding:13px 15px}
+textarea{min-height:140px;resize:vertical}
+::placeholder{color:#9e8e98}
+.music-art{width:100%;aspect-ratio:1;object-fit:cover;border-radius:18px;margin-bottom:14px;display:none}
+.music-embed{border:0;border-radius:16px;width:100%;height:152px}
+.fact{font-family:"Playfair Display",serif;font-size:1.35rem;line-height:1.5;color:#f3e6ec;min-height:90px}
+.controls{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}
+.smallbtn{border:1px solid var(--line);background:rgba(255,255,255,.045);padding:9px 12px;border-radius:999px;cursor:pointer}
+.smallbtn.active{background:rgba(101,29,53,.6);border-color:rgba(217,141,165,.5)}
+.status{font-size:.82rem;color:var(--muted);margin-top:10px}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.switch{width:48px;height:27px;border-radius:99px;background:#342b38;border:1px solid var(--line);padding:3px;cursor:pointer}
+.switch i{display:block;width:19px;height:19px;border-radius:50%;background:#cbbbc4;transition:.2s}
+.switch.on{background:var(--burg2)} .switch.on i{transform:translateX(19px);background:#fff}
+.wallpaper-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.wall-thumb{position:relative;aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--line);cursor:pointer;background:#0c0a0e}
+.wall-thumb img{width:100%;height:100%;object-fit:cover;transition:.3s}
+.wall-thumb:hover img{transform:scale(1.04)}
+.wall-thumb span{position:absolute;left:8px;bottom:7px;padding:4px 7px;border-radius:8px;background:rgba(0,0,0,.6);font-size:.7rem}
+.plush-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.plush{min-height:155px;border-radius:22px;border:1px solid var(--line);background:rgba(18,11,23,.74);display:grid;place-items:center;padding:13px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.plush:hover{transform:translateY(-4px);border-color:rgba(217,141,165,.45)}
+.plush .emoji{font-size:4rem;filter:drop-shadow(0 8px 12px rgba(0,0,0,.35));transition:.2s}
+.plush:active .emoji{transform:scale(1.25) rotate(-4deg)}
+.plush .name{position:absolute;bottom:9px;font-size:.78rem;color:var(--muted)}
+.plush-msg{text-align:center;min-height:28px;margin:13px 0 0;color:#e7d6de}
+.chat-log{display:grid;gap:9px;max-height:360px;overflow:auto;padding:3px;margin-bottom:11px}
+.msg{padding:11px 14px;border-radius:16px;max-width:86%;white-space:pre-wrap;line-height:1.45}
+.msg.ai{justify-self:start;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.msg.me{justify-self:end;background:rgba(101,29,53,.65)}
+.chat-form{display:flex;gap:8px}.chat-form input{flex:1}.chat-form .action{width:auto;margin:0}
+.thumbs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:13px}
+.thumbs div{position:relative;aspect-ratio:1;overflow:hidden;border-radius:12px;border:1px solid var(--line)}
+.thumbs img{width:100%;height:100%;object-fit:cover}.thumbs span{position:absolute;bottom:4px;right:4px;background:#09070bcc;padding:2px 6px;border-radius:7px;font-size:.68rem}
 
-* { box-sizing: border-box; margin: 0; }
-html { scroll-behavior: smooth; }
-
-body {
-  min-height: 100%;
-  font-family: "Manrope",system-ui,sans-serif;
-  color: var(--text);
-  background: radial-gradient(circle at 20% 10%,#24132f 0,#0b080d 42%,#050507 100%);
-  overflow-x: hidden;
-  transition: background 2s ease,color 2s ease;
-}
-
-button,input,textarea { font: inherit; }
-button { color: inherit; }
-
-.wall {
-  position: fixed;
-  inset: 0;
-  z-index: -5;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
-  transition: opacity 1.5s ease,filter 2s ease;
-  filter: saturate(.82) brightness(.88);
-}
-.wall.visible { opacity: var(--wall-opacity); }
-
-.shade {
-  position: fixed;
-  inset: 0;
-  z-index: -4;
-  background: linear-gradient(
-    180deg,
-    rgba(5,4,7,.18),
-    rgba(5,4,7,.42) 70%,
-    rgba(6,5,8,.66)
-  );
-}
-
-.starfield {
-  position: fixed;
-  inset: 0;
-  z-index: -3;
-  pointer-events: none;
-  opacity: .22;
-  background-image: radial-gradient(circle,rgba(255,255,255,.65) 1px,transparent 1px);
-  background-size: 67px 67px;
-  mask-image: linear-gradient(to bottom,black,transparent 80%);
-}
-
-a { color: inherit; }
-
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--pink);
-  outline-offset: 3px;
-}
-
-.app {
-  width: min(960px,calc(100% - 20px));
-  margin: auto;
-  padding: 58px 0 34px;
-}
-
-.topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  padding: 6px 8px;
-  background: rgba(7,5,9,.58);
-  border-bottom: 1px solid rgba(236,205,220,.11);
-  backdrop-filter: blur(20px);
-}
-
-.topbar-inner {
-  width: min(1120px,100%);
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.topbar-inner::-webkit-scrollbar { display: none; }
-
-.brand {
-  font-family: "Cormorant Garamond",serif;
-  letter-spacing: .12em;
-  font-size: 1rem;
-  white-space: nowrap;
-  margin-right: 3px;
-  color: #f0dce5;
-}
-
-.navbtn,.theme-toggle {
-  font-family: "Manrope",system-ui,sans-serif;
-  font-size: .72rem;
-  letter-spacing: .02em;
-  color: #d9cbd3;
-  border: 1px solid rgba(236,205,220,.13);
-  background: rgba(255,255,255,.035);
-  padding: 7px 10px;
-  border-radius: 12px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: transform .18s,border-color .18s,background .18s;
-}
-
-.navbtn.sign-out {
-  color: #f0bacb;
-  border-color: rgba(217,141,165,.38);
-  background: rgba(101,29,53,.20);
-}
-
-.navbtn.sign-out:hover {
-  border-color: rgba(217,141,165,.75);
-  background: rgba(101,29,53,.42);
-}
-
-.hero {
-  min-height: 36vh;
-  display: grid;
-  align-content: center;
-  padding: 22px 4px 30px;
-}
-
-.eyebrow {
-  font-size: .75rem;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--pink);
-  margin-bottom: 15px;
-}
-
-h1 {
-  font-family: "Cormorant Garamond",serif;
-  font-size: clamp(2.4rem,6vw,4.6rem);
-  line-height: .95;
-  font-weight: 400;
-  max-width: 850px;
-}
-h1 em { color: #d99aae; }
-
-.hero p {
-  max-width: 560px;
-  color: var(--muted);
-  font-size: .92rem;
-  line-height: 1.65;
-  margin-top: 20px;
-}
-
-.orn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 28px 0;
-  color: var(--pink);
-  max-width: 500px;
-}
-.orn:before,.orn:after {
-  content: "";
-  height: 1px;
-  background: linear-gradient(90deg,transparent,var(--line),transparent);
-  flex: 1;
-}
-
-.section {
-  scroll-margin-top: 60px;
-  margin: 18px 0 42px;
-}
-
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  gap: 14px;
-  margin-bottom: 12px;
-}
-
-.section-kicker {
-  font-size: .7rem;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: var(--pink);
-  margin-bottom: 5px;
-}
-
-h2 {
-  font-family: "Cormorant Garamond",serif;
-  font-size: clamp(1.65rem,4vw,2.25rem);
-  font-weight: 400;
-}
-
-.section-head p {
-  color: var(--muted);
-  max-width: 520px;
-  line-height: 1.5;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
-  gap: 10px;
-}
-
-.card {
-  background: linear-gradient(145deg,rgba(20,12,25,.68),rgba(8,7,11,.58));
-  border: 1px solid var(--line);
-  border-radius: 15px;
-  padding: 14px;
-  box-shadow: 0 14px 42px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.035);
-  backdrop-filter: blur(15px);
-}
-
-.card:hover { border-color: rgba(217,141,165,.3); }
-
-.card-title {
-  font-family: "Cormorant Garamond",serif;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.card p { color: var(--muted); line-height: 1.55; }
-
-.action {
-  width: 100%;
-  border: 1px solid rgba(217,141,165,.26);
-  background: linear-gradient(135deg,rgba(101,29,53,.72),rgba(39,19,59,.72));
-  padding: 13px 15px;
-  border-radius: 15px;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: .2s;
-}
-
-.action:hover {
-  transform: translateY(-2px);
-  border-color: rgba(217,141,165,.6);
-  box-shadow: 0 10px 30px var(--glow);
-}
-
-.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-.resultbox {
-  min-height: 55px;
-  margin-top: 12px;
-  color: #ead9e1;
-  white-space: pre-wrap;
-  line-height: 1.55;
-}
-
-.notes {
-  display: grid;
-  gap: 10px;
-  margin-top: 15px;
-  text-align: left;
-}
-
-.note {
-  padding: 15px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.045);
-  border: 1px solid var(--line);
-}
-
-.note small {
-  display: block;
-  color: var(--pink);
-  margin-bottom: 5px;
-}
-.note p { color: var(--text); white-space: pre-wrap; }
-
-/* Notes: one initially, then six more per click */
-.notes-actions {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
-
-.notes-more,.notes-less {
-  border: 1px solid rgba(217,141,165,.3);
-  background: linear-gradient(135deg,rgba(101,29,53,.45),rgba(39,19,59,.45));
-  color: var(--text);
-  padding: 9px 16px;
-  border-radius: 999px;
-  font-size: .78rem;
-  cursor: pointer;
-  transition: .2s ease;
-}
-.notes-more:hover,.notes-less:hover {
-  border-color: rgba(217,141,165,.7);
-  transform: translateY(-1px);
-}
-
-textarea,input {
-  width: 100%;
-  border: 1px solid var(--line);
-  background: rgba(4,4,7,.45);
-  color: var(--text);
-  border-radius: 16px;
-  padding: 13px 15px;
-}
-textarea { min-height: 140px; resize: vertical; }
-::placeholder { color: #9e8e98; }
-
-.music-art {
-  width: min(210px,42vw);
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 13px;
-  margin: 0 auto 10px;
-  display: none;
-}
-.music-embed { border: 0; border-radius: 12px; width: 100%; height: 92px; }
-
-.fact {
-  font-family: "Cormorant Garamond",serif;
-  font-size: 1.35rem;
-  line-height: 1.5;
-  color: #f3e6ec;
-  min-height: 90px;
-}
-
-.controls { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 15px; }
-.smallbtn { border: 1px solid var(--line); background: rgba(255,255,255,.045); padding: 9px 12px; border-radius: 999px; cursor: pointer; }
-.smallbtn.active { background: rgba(101,29,53,.6); border-color: rgba(217,141,165,.5); }
-.status { font-size: .82rem; color: var(--muted); margin-top: 10px; }
-
-.toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-}
-
-.switch {
-  width: 48px;
-  height: 27px;
-  border-radius: 99px;
-  background: #342b38;
-  border: 1px solid var(--line);
-  padding: 3px;
-  cursor: pointer;
-}
-.switch i {
-  display: block;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: #cbbbc4;
-  transition: .2s;
-}
-.switch.on { background: var(--burg2); }
-.switch.on i { transform: translateX(19px); background: #fff; }
-
-.wallpaper-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 14px; }
-.wall-thumb { position: relative; aspect-ratio: 16/10; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); cursor: pointer; background: #0c0a0e; }
-.wall-thumb img { width: 100%; height: 100%; object-fit: cover; transition: .3s; }
-.wall-thumb:hover img { transform: scale(1.04); }
-.wall-thumb span { position: absolute; left: 8px; bottom: 7px; padding: 4px 7px; border-radius: 8px; background: rgba(0,0,0,.6); font-size: .7rem; }
-
-.plush-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 11px; }
-.plush {
-  min-height: 155px;
-  border-radius: 22px;
-  border: 1px solid var(--line);
-  background: rgba(18,11,23,.74);
-  display: grid;
-  place-items: center;
-  padding: 13px;
-  cursor: pointer;
-  transition: .2s;
-  position: relative;
-  overflow: hidden;
-}
-.plush:hover { transform: translateY(-4px); border-color: rgba(217,141,165,.45); }
-.plush .emoji { font-size: 4rem; filter: drop-shadow(0 8px 12px rgba(0,0,0,.35)); transition: .2s; }
-.plush .kuromi-art { width: 92px; height: 92px; display: block; filter: drop-shadow(0 9px 12px rgba(0,0,0,.42)); transition: .2s; }
-.plush:active .kuromi-art { transform: scale(1.12) rotate(-4deg); }
-.kuromi-art .hood { fill: #17131d; stroke: #d78ca5; stroke-width: 2; }
-.kuromi-art .inner { fill: #4b203d; }
-.kuromi-art .face { fill: #f7e9ed; }
-.kuromi-art .eye { fill: #17131d; }
-.kuromi-art .nose { fill: #d78ca5; }
-.kuromi-art .skull { fill: #f7e9ed; stroke: #17131d; stroke-width: 1.4; }
-.kuromi-art .skull-eye { fill: #17131d; }
-.kuromi-art .skull-cross { stroke: #17131d; stroke-width: 1.4; stroke-linecap: round; }
-.plush:active .emoji { transform: scale(1.25) rotate(-4deg); }
-.plush .name { position: absolute; bottom: 9px; font-size: .78rem; color: var(--muted); }
-.plush-msg { text-align: center; min-height: 28px; margin: 13px 0 0; color: #e7d6de; }
-
-.chat-log { display: grid; gap: 9px; max-height: 360px; overflow: auto; padding: 3px; margin-bottom: 11px; }
-.msg { padding: 11px 14px; border-radius: 16px; max-width: 86%; white-space: pre-wrap; line-height: 1.45; }
-.msg.ai { justify-self: start; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
-.msg.me { justify-self: end; background: rgba(101,29,53,.65); }
-.chat-form { display: flex; gap: 8px; }
-.chat-form input { flex: 1; }
-.chat-form .action { width: auto; margin: 0; }
-
-.thumbs { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; margin-top: 13px; }
-.thumbs div { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 12px; border: 1px solid var(--line); }
-.thumbs img { width: 100%; height: 100%; object-fit: cover; }
-.thumbs span { position: absolute; bottom: 4px; right: 4px; background: #09070bcc; padding: 2px 6px; border-radius: 7px; font-size: .68rem; }
-.fine { font-size: .78rem; color: var(--muted); line-height: 1.5; margin-top: 11px; }
-.footer { text-align: center; color: #8e7f89; font-size: .78rem; padding: 10px 0 20px; }
-
+.kiss-search-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:14px;align-items:center}
+.kiss-search-row .smallbtn{height:100%;padding:10px 16px}
+.kiss-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.kiss-gif{padding:0;overflow:hidden;aspect-ratio:1;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.04);cursor:pointer}
+.kiss-gif img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s}
+.kiss-gif:hover img{transform:scale(1.04)}
+.kiss-gif.selected{outline:2px solid var(--pink);outline-offset:2px}
+.kiss-selected{margin-top:12px;min-height:50px;display:grid;place-items:center;text-align:center;padding:10px;border:1px dashed var(--line);border-radius:14px;color:var(--muted);overflow:hidden}
+.kiss-selected img{display:block;max-width:100%;max-height:230px;object-fit:contain;border-radius:10px}
+.kiss-actions{margin-top:2px}
+.kiss-actions .action{margin-top:10px}
+.kiss-card{position:relative;overflow:hidden}
+.kiss-card:before{content:"✧ ─────── ♡ ─────── ✧";display:block;text-align:center;color:var(--pink);letter-spacing:.13em;font-size:.78rem;margin:-3px 0 16px;opacity:.85}
+@media(max-width:430px){.kiss-results{grid-template-columns:repeat(2,minmax(0,1fr))}.kiss-search-row{grid-template-columns:minmax(0,1fr) auto}}
+.fine{font-size:.78rem;color:var(--muted);line-height:1.5;margin-top:11px}
+.footer{text-align:center;color:#8e7f89;font-size:.78rem;padding:10px 0 20px}
 .cursor { position: fixed; z-index: 9999; width: 38px; height: 38px; pointer-events: none; opacity: 0; transform: translate(-50%,-50%) rotate(-5deg); transition: opacity .18s,transform .12s; filter: drop-shadow(0 5px 8px rgba(0,0,0,.38)); }
 .cursor.on { opacity: 1; }
 .cursor.down { transform: translate(-50%,-50%) scale(.82) rotate(-5deg); }
@@ -464,323 +131,34 @@ textarea { min-height: 140px; resize: vertical; }
 .ripple { position: fixed; width: 14px; height: 14px; border: 1px solid #d98da5; border-radius: 50%; pointer-events: none; z-index: 9998; animation: ripple .65s ease-out forwards; }
 @keyframes ripple { to { transform: scale(6); opacity: 0; } }
 @keyframes plushHeart { 0% { opacity: 0; transform: translateY(8px) scale(.7); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-28px) scale(1.15); } }
-.toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%,20px); opacity: 0; z-index: 200; padding: 11px 16px; border-radius: 999px; background: #171019; border: 1px solid var(--line); box-shadow: 0 12px 35px #0008; transition: .25s; pointer-events: none; }
-.toast.show { opacity: 1; transform: translate(-50%,0); }
-.hidden { display: none !important; }
-
-@media(max-width:760px) {
-  .app { padding-top: 58px; width: min(100% - 16px,680px); }
-  .hero { min-height: 43vh; padding-top: 25px; }
-  .grid { grid-template-columns: 1fr; }
-  .plush-grid { grid-template-columns: repeat(2,1fr); }
-  .wallpaper-grid { grid-template-columns: 1fr 1fr; }
-  .thumbs { grid-template-columns: repeat(3,1fr); }
-  .section-head { display: block; }
-  .section-head p { margin-top: 7px; }
-  .topbar-inner { gap: 5px; justify-content: flex-start; }
-  .brand { font-size: .82rem; }
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);opacity:0;z-index:200;padding:11px 16px;border-radius:999px;background:#171019;border:1px solid var(--line);box-shadow:0 12px 35px #0008;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.hidden{display:none!important}
+html[data-theme="light"] body{background:linear-gradient(160deg,#e9e0e8,#cbb8c7);color:#241b26}
+html[data-theme="light"] .shade{background:linear-gradient(180deg,rgba(250,245,249,.25),rgba(250,245,249,.68))}
+html[data-theme="light"] .card,html[data-theme="light"] .plush{background:rgba(255,255,255,.62);color:#241b26}
+html[data-theme="light"] .card p,html[data-theme="light"] .section-head p,html[data-theme="light"] .plush .name,html[data-theme="light"] .status,html[data-theme="light"] .fine{color:#5f5160}
+html[data-theme="light"] textarea,html[data-theme="light"] input{background:rgba(255,255,255,.58);color:#241b26}
+html[data-theme="light"] .fact{color:#2c202c}
+@media(max-width:760px){
+ .app{padding-top:74px;width:min(100% - 20px,680px)}
+ .hero{min-height:43vh;padding-top:25px}.grid{grid-template-columns:1fr}
+ .plush-grid{grid-template-columns:repeat(2,1fr)}
+ .wallpaper-grid{grid-template-columns:1fr 1fr}
+ .thumbs{grid-template-columns:repeat(3,1fr)}
+ .section-head{display:block}.section-head p{margin-top:7px}
+ .topbar-inner{gap:7px}.brand{font-size:.75rem}
 }
-
-@media(max-width:430px) {
-  .pair { grid-template-columns: 1fr; }
-  .wallpaper-grid { grid-template-columns: 1fr; }
-  h1 { font-size: 2.75rem; }
-  .hero p { font-size: .9rem; }
+@media(max-width:430px){
+ .pair{grid-template-columns:1fr}.wallpaper-grid{grid-template-columns:1fr}
+ h1{font-size:3.15rem}.hero p{font-size:.95rem}
 }
-
-@media(prefers-reduced-motion:reduce) {
-  * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
-}
-
-.wallpaper-only {
-  min-height: calc(100svh - 52px);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  position: relative;
-  scroll-margin-top: 52px;
-  margin: 0 -10px 40px;
-  padding: 20px;
-}
-.wallpaper-only::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center,transparent 25%,rgba(5,4,7,.12) 75%,rgba(5,4,7,.28));
-  pointer-events: none;
-}
-.wallpaper-only-content { position: relative; z-index: 2; width: min(700px,100%); display: flex; justify-content: center; }
-.wallpaper-float { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 8px 10px; border: 1px solid rgba(236,205,220,.14); background: rgba(7,5,10,.42); backdrop-filter: blur(14px); border-radius: 14px; }
-.wallpaper-float .smallbtn { padding: 7px 10px; font-size: .72rem; background: rgba(255,255,255,.035); }
-.wallpaper-float .status { margin: 0 4px; font-size: .72rem; }
-
-/* Welcome screen */
-#welcomeVeil {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(ellipse at 50% 45%,rgba(72,26,66,.94),rgba(8,5,12,.99) 68%);
-  opacity: 1;
-  visibility: visible;
-  transition: opacity .85s ease,visibility .85s ease;
-}
-#welcomeVeil.dismissed { opacity: 0; visibility: hidden; pointer-events: none; }
-
-/* Snow theme: make the welcome screen match the icy login design */
-body.login-snow #welcomeVeil {
-  background: radial-gradient(ellipse at 50% 42%, rgba(28,58,98,.94), rgba(4,8,16,.99) 70%);
-}
-body.login-snow .welcome-card:before,
-body.login-snow .welcome-card:after { color: #b9ddff; text-shadow: 0 0 14px rgba(150,200,240,.55); }
-body.login-snow .welcome-moon {
-  color: #c7e5ff;
-  text-shadow: 0 0 22px rgba(125,190,245,.65);
-}
-body.login-snow .welcome-kuromi { filter: drop-shadow(0 5px 12px rgba(125,190,245,.35)); }
-body.login-snow .welcome-title {
-  color: #e4f1ff;
-  text-shadow: 0 0 28px rgba(125,190,245,.38);
-}
-body.login-snow .welcome-sub { color: #b4cce3; }
-body.login-snow .welcome-skip {
-  border-color: rgba(150,200,240,.38);
-  background: rgba(190,225,255,.06);
-  color: #e4f1ff;
-}
-body.login-snow .welcome-skip:hover { background: rgba(100,160,220,.16); border-color: rgba(180,220,255,.65); }
-
-.welcome-card {
-  position: relative;
-  text-align: center;
-  padding: 36px 28px;
-  max-width: min(90vw,440px);
-  animation: welcomeRise 1.05s cubic-bezier(.2,.75,.25,1) both;
-}
-.welcome-card:before,.welcome-card:after {
-  content: "✦";
-  position: absolute;
-  color: #c58cae;
-  opacity: .7;
-  font-size: 18px;
-  animation: twinkle 2s ease-in-out infinite alternate;
-}
-.welcome-card:before { top: 5px; left: 8px; }
-.welcome-card:after { bottom: 8px; right: 8px; animation-delay: .6s; }
-.welcome-moon { font-size: 28px; color: #d8a6c5; letter-spacing: .5em; margin: 0 0 20px 8px; text-shadow: 0 0 22px rgba(193,115,164,.55); }
-
-/* Small Kuromi-style welcome mascot */
-.welcome-kuromi {
-  display: block;
-  width: 82px;
-  height: 94px;
-  margin: 0 auto 14px;
-  overflow: visible;
-  filter: drop-shadow(0 5px 12px rgba(187,104,157,.3));
-  animation: kuromiFloat 2.8s ease-in-out infinite;
-}
-.welcome-kuromi .ear-left {
-  transform-box: fill-box;
-  transform-origin: 100% 100%;
-  animation: kuromiEarLeft 3s ease-in-out infinite;
-}
-.welcome-kuromi .ear-right {
-  transform-box: fill-box;
-  transform-origin: 0% 100%;
-  animation: kuromiEarRight 3s ease-in-out infinite;
-}
-.welcome-kuromi .eye {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: kuromiBlink 4.5s infinite;
-}
-@keyframes kuromiFloat {
-  0%,100% { transform: translateY(0) rotate(0); }
-  50% { transform: translateY(-4px) rotate(1deg); }
-}
-@keyframes kuromiEarLeft {
-  0%,85%,100% { transform: rotate(0); }
-  90% { transform: rotate(-7deg); }
-  95% { transform: rotate(3deg); }
-}
-@keyframes kuromiEarRight {
-  0%,85%,100% { transform: rotate(0); }
-  90% { transform: rotate(7deg); }
-  95% { transform: rotate(-3deg); }
-}
-@keyframes kuromiBlink {
-  0%,43%,47%,100% { transform: scaleY(1); }
-  45% { transform: scaleY(.12); }
-}
-
-.welcome-title {
-  font-family: "Cormorant Garamond",Georgia,serif;
-  font-weight: 500;
-  font-size: clamp(2.6rem,9vw,4.3rem);
-  line-height: 1;
-  color: #f3dce9;
-  letter-spacing: .02em;
-  text-shadow: 0 0 28px rgba(184,96,151,.3);
-}
-.welcome-sub { margin-top: 15px; color: #c9b2c4; font-size: .72rem; letter-spacing: .24em; text-transform: uppercase; }
-.welcome-skip { margin-top: 28px; border: 1px solid rgba(214,162,195,.28); border-radius: 999px; background: rgba(255,255,255,.035); color: #ead8e5; padding: 8px 16px; font-size: .72rem; cursor: pointer; }
-
-@keyframes welcomeRise {
-  from { opacity: 0; transform: translateY(18px) scale(.97); filter: blur(5px); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-}
-@keyframes twinkle {
-  from { opacity: .25; transform: scale(.8) rotate(0); }
-  to { opacity: 1; transform: scale(1.2) rotate(18deg); }
-}
-
-.admin-entry { max-width: 560px; margin: 10px auto 45px; padding: 0 14px; text-align: center; }
-.admin-open { background: rgba(19,12,24,.68); color: #e9d5e4; border: 1px solid rgba(194,137,176,.28); border-radius: 999px; padding: 10px 17px; font-size: .78rem; letter-spacing: .06em; cursor: pointer; transition: background .25s,border-color .25s; }
-.admin-open:hover { background: rgba(75,35,67,.7); border-color: rgba(219,165,200,.6); }
-.admin-panel { display: none; margin: 14px auto 0; padding: 18px; max-width: 350px; text-align: left; background: rgba(12,8,17,.88); border: 1px solid rgba(194,137,176,.28); border-radius: 18px; box-shadow: 0 15px 50px #0005; backdrop-filter: blur(15px); }
-.admin-panel.open { display: grid; gap: 10px; animation: welcomeRise .35s ease both; }
-.admin-panel label { font-size: .75rem; color: #d7bed0; }
-.admin-panel input { width: 100%; padding: 11px 12px; border-radius: 11px; background: #100c16; border: 1px solid #493044; color: #f6eaf2; font: inherit; }
-.admin-panel button[type=submit] { width: 100%; padding: 11px; border-radius: 11px; border: 1px solid #8d587d; background: #45243f; color: #f8eaf3; cursor: pointer; }
-.admin-hint { font-size: .7rem; color: #aa94a8; line-height: 1.5; }
-.admin-status { min-height: 1.2em; font-size: .75rem; color: #e4c3d8; }
-
-/* Private login gate */
-.login-gate {
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-  display: grid;
-  place-items: center;
-  padding: 22px;
-  background: radial-gradient(ellipse at 50% 42%,rgba(69,27,63,.96),rgba(6,4,9,.985) 72%);
-  backdrop-filter: blur(18px);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity .28s ease,visibility .28s ease;
-  isolation: isolate;
-  overflow: hidden;
-}
-.login-gate.show { opacity: 1; visibility: visible; pointer-events: auto; }
-.login-wallpaper { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none; }
-.login-gate::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg,rgba(5,3,8,.28),rgba(5,3,8,.68)); }
-.login-card { position: relative; z-index: 2; width: min(420px,100%); padding: 30px 25px; border: 1px solid rgba(217,141,165,.3); border-radius: 22px; background: rgba(9,7,12,.78); backdrop-filter: blur(12px); box-shadow: 0 24px 80px rgba(0,0,0,.55); text-align: center; }
-.login-symbol { font-size: 1.35rem; color: #d99aae; letter-spacing: .25em; margin-bottom: 14px; }
-.login-title { font-family: "Cormorant Garamond",serif; font-size: 2.6rem; font-weight: 500; line-height: 1.05; color: #f3dce9; }
-.login-sub { margin: 12px auto 22px; max-width: 300px; color: #c5b7c1; font-size: .84rem; line-height: 1.6; }
-.login-form { display: grid; gap: 11px; text-align: left; }
-.login-form label { font-size: .76rem; letter-spacing: .04em; color: #d9c3d0; }
-.login-form input { width: 100%; margin-top: 6px; }
-.login-form button { margin-top: 5px; border: 1px solid rgba(217,141,165,.45); border-radius: 13px; padding: 12px 15px; background: linear-gradient(135deg,rgba(101,29,53,.9),rgba(57,28,71,.9)); color: #fff0f6; cursor: pointer; }
-.login-form button:disabled { opacity: .65; cursor: wait; }
-.login-status { min-height: 1.35em; margin-top: 2px; color: #e6b5c9; font-size: .78rem; line-height: 1.45; }
-body.auth-locked { overflow: hidden; }
-
-@media(prefers-reduced-motion:reduce) {
-  .welcome-kuromi,.welcome-kuromi .ear-left,.welcome-kuromi .ear-right,.welcome-kuromi .eye,
-  #welcomeVeil,.welcome-card,.welcome-card:before,.welcome-card:after,
-  .admin-panel.open,.login-gate {
-    animation: none !important;
-    transition: none !important;
-  }
-}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
 </head>
-
 <body>
-<script>(function(){var t="original";try{t=localStorage.getItem("layaTheme")||"original"}catch(e){}if(t==="live")document.body.classList.add("login-live");if(t==="snow")document.body.classList.add("login-snow");try{if(localStorage.getItem("layaLiveFx")==="rain")document.body.classList.add("live-rain")}catch(e){}})()</script>
-<!-- Login screen -->
-<div id="loginGate" class="login-gate show" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-  <video class="login-wallpaper" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
-    <source src="assets/login-wallpaper.mp4" type="video/mp4">
-  </video>
-  <section class="login-card">
-    <canvas class="card-snow" id="cardSnow" aria-hidden="true"></canvas>
-    <canvas class="card-rain" id="cardRain" aria-hidden="true"></canvas>
-    <div class="login-symbol">☾ ✦ ♡</div>
-    <h1 id="loginTitle" class="login-title">made by kimchi</h1>
-    <p class="login-sub">Enter your email and password.</p>
-    <form id="loginForm" class="login-form" autocomplete="on">
-      <label for="loginEmail">Email
-        <input id="loginEmail" name="email" type="email" autocomplete="username" required maxlength="254" placeholder="Your email address">
-      </label>
-      <label for="loginPass">Password
-        <input id="loginPass" name="password" type="password" autocomplete="current-password" required maxlength="256" placeholder="Your password">
-      </label>
-      <button id="loginSubmit" type="submit">Sign in ✦</button>
-      <p id="loginStatus" class="login-status" role="status" aria-live="polite"></p>
-    </form>
-    <div class="gothic-sign" aria-hidden="true">
-      <div class="gothic-rule">✦ † ☾ † ✦</div>
-      <div class="gothic-text">kimchi loves you</div>
-    </div>
-    <div class="theme-row" style="flex-wrap:wrap"><span>Look</span>
-      <button class="smallbtn theme-btn" type="button" data-theme="original">🖤 Original</button>
-      <button class="smallbtn theme-btn" type="button" data-theme="snow">❄ Snow</button>
-      <button class="smallbtn theme-btn" type="button" data-theme="live">🌊 Live wallpaper</button>
-    </div>
-    <div class="theme-row fx-row"><span>Effect</span>
-      <button class="smallbtn fx-btn" type="button" data-fx="snow">❄ Snow</button>
-      <button class="smallbtn fx-btn" type="button" data-fx="rain">🌧 Rain</button>
-    </div>
-  </section>
-</div>
-
-<!-- Welcome Laya screen: only the button dismisses it -->
-<div id="welcomeVeil" role="dialog" aria-label="Welcome Laya" aria-modal="true">
-  <div class="welcome-card">
-    <div class="welcome-moon">☾ ✦ ☽</div>
-
-    <svg class="welcome-kuromi" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A cute animated Kuromi-style mascot">
-      <path d="M81 108 C106 115 113 92 102 78" fill="none" stroke="#17131d" stroke-width="7" stroke-linecap="round"/>
-      <path d="M99 78 L111 78 L105 66 Z" fill="#17131d"/>
-
-      <path d="M47 92 C34 103 39 120 52 126 C61 131 69 123 63 115 L59 104 L78 116 C88 123 98 113 91 103 L79 90" fill="#fff8fb" stroke="#17131d" stroke-width="2.5" stroke-linejoin="round"/>
-      <path d="M43 76 C29 68 15 71 13 81 C12 90 27 92 40 87" fill="#fff8fb" stroke="#17131d" stroke-width="2.5"/>
-      <path d="M78 76 C91 66 105 69 108 80 C110 89 97 94 83 87" fill="#fff8fb" stroke="#17131d" stroke-width="2.5"/>
-
-      <g class="ear-left">
-        <path d="M43 39 L17 12 L24 52 L43 61 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
-        <circle cx="16" cy="11" r="5.5" fill="#d7a0eb" stroke="#17131d" stroke-width="2"/>
-      </g>
-      <g class="ear-right">
-        <path d="M77 39 L103 12 L96 52 L77 61 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
-        <circle cx="104" cy="11" r="5.5" fill="#d7a0eb" stroke="#17131d" stroke-width="2"/>
-      </g>
-
-      <path d="M19 58 C19 33 38 24 60 24 C82 24 101 33 101 58 C101 79 83 91 60 92 C37 91 19 79 19 58 Z" fill="#211a28" stroke="#08070b" stroke-width="2.5"/>
-      <path d="M29 62 C30 47 43 43 52 50 L60 55 L68 50 C78 43 91 47 91 62 C91 78 77 85 60 85 C43 85 29 78 29 62 Z" fill="#fff8fb" stroke="#17131d" stroke-width="2"/>
-
-      <path d="M48 43 C45 35 51 30 60 30 C69 30 75 35 72 43 L68 48 L65 48 L64 44 L61 44 L60 49 L57 49 L56 44 L53 44 L52 48 L49 48 Z" fill="#e991c3" stroke="#17131d" stroke-width="1"/>
-      <g fill="#211a28">
-        <ellipse cx="55" cy="40" rx="2" ry="3"/>
-        <ellipse cx="65" cy="40" rx="2" ry="3"/>
-      </g>
-
-      <ellipse class="eye" cx="46" cy="61" rx="5" ry="8" fill="#17131d"/>
-      <ellipse class="eye" cx="74" cy="61" rx="5" ry="8" fill="#17131d"/>
-      <ellipse cx="60" cy="70" rx="3.5" ry="2.5" fill="#e991c3"/>
-      <path d="M54 75 Q60 83 66 75" fill="#f18bb8" stroke="#17131d" stroke-width="1.8" stroke-linecap="round"/>
-
-      <path d="M37 87 L83 87 L77 97 L68 92 L60 100 L52 92 L43 97 Z" fill="#211a28" stroke="#17131d" stroke-width="2"/>
-      <circle cx="43" cy="97" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
-      <circle cx="60" cy="100" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
-      <circle cx="77" cy="97" r="4.2" fill="#d7a0eb" stroke="#17131d" stroke-width="1.5"/>
-    </svg>
-
-    <h1 class="welcome-title">welcome laya</h1>
-    <p class="welcome-sub">Kimchi Loves You</p>
-    <button class="welcome-skip" id="welcomeEnter" type="button">click here ✦</button>
-  </div>
-</div>
-
-<div class="wall" id="wallA"></div>
-<div class="wall" id="wallB"></div>
-<div class="shade"></div>
-<div class="starfield"></div>
-
+<div class="wall" id="wallA"></div><div class="wall" id="wallB"></div>
+<div class="shade"></div><div class="starfield"></div>
 <div class="cursor" id="cursor" aria-hidden="true">
   <div class="kuromi-ear ear-left"></div>
   <div class="kuromi-ear ear-right"></div>
@@ -803,572 +181,150 @@ body.auth-locked { overflow: hidden; }
     <button class="navbtn" data-go="wallpapers">Wallpaper</button>
     <button class="navbtn" data-go="fact">Random fact</button>
     <button class="navbtn" data-go="talk">Talk</button>
-    <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
+    <button class="theme-toggle" id="themeBtn">Light mode</button>
   </div>
 </header>
 
 <main class="app">
-  <section class="hero" id="home">
-    <div class="eyebrow">a little place made for you</div>
-    <h1>Hi <em>Laya.</em><br>stay a while.</h1>
-    <p>Pick whatever feels right. Something silly, something cozy, a song, a message for Kimchi, or simply a quiet corner to breathe.</p>
-    <div class="orn">☾ ✦ ♡ ✦ ☽</div>
-  </section>
+<section class="hero" id="home">
+  <div class="eyebrow">a little place made for you</div>
+  <h1>Hi <em>Laya.</em><br>stay a while.</h1>
+  <p>Pick whatever feels right. Something silly, something cozy, a song, a message for Kimchi, or simply a quiet corner to breathe.</p>
+  <div class="orn">☾ ✦ ♡ ✦ ☽</div>
+</section>
 
-  <section class="section" id="us">
-    <div class="section-head">
-      <div><div class="section-kicker">01 · us</div><h2>For the Kimchi-shaped hole in your day.</h2></div>
-      <p>Little things that let Kimchi know what is going on, even when he's not right beside you.</p>
-    </div>
-
-    <div class="grid">
-      <div class="card">
-        <div class="card-title">Missing him?</div>
-        <p>Be honest. There is no wrong answer here.</p>
-        <div class="pair">
-          <button class="action" id="yesBtn">Yes ♡</button>
-          <button class="action" id="alotBtn">A lot ♡♡</button>
-        </div>
-        <div class="resultbox" id="missResult"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">A little message</div>
-        <p>Write anything you want Kimchi to know.</p>
-        <textarea id="kimchiMsg" maxlength="2000" placeholder="Something you wish you could tell him..."></textarea>
-        <button class="action" id="sendMsg">Send it 💌</button>
-        <div class="status" id="msgStatus"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">What Kimchi wrote</div>
-        <p id="notesIntro">Your little collection of notes from him.</p>
-        <div class="notes" id="notesList"></div>
-        <div class="notes-actions" id="notesActions" hidden>
-          <button class="notes-more" id="notesMore" type="button">Show more</button>
-          <button class="notes-less" id="notesLess" type="button" hidden>Show less</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Give him a hug</div>
-        <p>One tap = one hug delivered.</p>
-        <button class="action" id="hugBtn" style="font-size:2rem">🤗</button>
-        <div class="resultbox" id="hugResult">No hugs sent yet.</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="music">
-    <div class="section-head">
-      <div><div class="section-kicker">02 · music</div><h2>Your twin's soundtrack.</h2></div>
-      <p>Currently playing if Spotify knows what he's listening to; otherwise a random song from <em>delusions</em>.</p>
+<section class="section" id="us">
+  <div class="section-head"><div><div class="section-kicker">01 · us</div><h2>For the Kimchi-shaped hole in your day.</h2></div><p>Little things that let Kimchi know what is going on, even when he's not right beside you.</p></div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">Missing him?</div><p>Be honest. There is no wrong answer here.</p>
+      <div class="pair"><button class="action" id="yesBtn">Yes ♡</button><button class="action" id="alotBtn">A lot ♡♡</button></div>
+      <div class="resultbox" id="missResult"></div>
     </div>
     <div class="card">
-      <img id="songArt" class="music-art" alt="Album artwork">
-      <div class="card-title" id="songTitle">Loading...</div>
-      <p id="songText">Checking Spotify...</p>
-      <div id="songBox" style="margin-top:14px"></div>
-      <button class="action" id="anotherSong">Another song</button>
-      <div class="toggle-row">
-        <span>Adaptive Colors</span>
-        <button class="switch on" id="colorToggle" aria-label="Toggle adaptive colors"><i></i></button>
-      </div>
-      <div class="status">When on, the site's mood subtly follows the album art without losing its dark identity.</div>
-    </div>
-  </section>
-
-  <section class="section" id="plush">
-    <div class="section-head">
-      <div><div class="section-kicker">03 · plushie room</div><h2>Pet the residents.</h2></div>
-      <p>They are very needy. Please give them attention.</p>
-    </div>
-    <div class="plush-grid" id="plushGrid"></div>
-    <div class="plush-msg" id="plushMsg">Choose a plushie.</div>
-  </section>
-
-  <section class="section" id="cozy">
-    <div class="section-head">
-      <div><div class="section-kicker">04 · cozy corner</div><h2>For when you need a softer minute.</h2></div>
-      <p>Food, cats, cute notes, and somewhere to put whatever is on your mind.</p>
-    </div>
-    <div class="grid">
-      <div class="card">
-        <div class="card-title">What are you craving?</div>
-        <p>Tell Kimchi what sounds good.</p>
-        <div class="options" id="foodBox"></div>
-        <div class="resultbox" id="foodResult"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Cat time</div>
-        <p>Pet the cat. Obviously.</p>
-        <button class="action" id="catBtn" style="font-size:2rem">🐱</button>
-        <div class="resultbox" id="catResult">Purr...</div>
-        <button class="smallbtn" id="realCat" style="margin-top:8px">Show me a real cat</button>
-        <div id="catPic" style="margin-top:10px"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">A cute note from your twin</div>
-        <div class="notes"><div class="note"><p id="cuteText">...</p></div></div>
-        <button class="action" id="anotherCute">Another one</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Upload your pics</div>
-        <p>Up to 10 photos at a time. They go straight to Kimchi.</p>
-        <input type="file" id="pics" accept="image/*" multiple hidden>
-        <button class="action" id="pickPics">Choose photos</button>
-        <div class="thumbs" id="thumbs"></div>
-        <div class="status" id="upmsg"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="wallpaper-only" id="wallpapers">
-    <div class="wallpaper-only-content">
-      <div class="wallpaper-float">
-        <button class="smallbtn active" id="liveToggle">🌊 Live</button>
-        <button class="smallbtn" id="stillModeBtn">🕯️ Still</button>
-        <span class="status" id="wallStatus">Live wallpaper on</span>
-        <button class="smallbtn" id="wallPrev">‹</button>
-        <button class="smallbtn" id="wallNext">›</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="fact">
-    <div class="section-head">
-      <div><div class="section-kicker">06 · tiny rabbit hole</div><h2>Random fact of the day.</h2></div>
-      <p>Something normal, strange, fascinating, or mildly unbelievable.</p>
+      <div class="card-title">A little message</div><p>Write anything you want Kimchi to know.</p>
+      <textarea id="kimchiMsg" maxlength="2000" placeholder="Something you wish you could tell him..."></textarea>
+      <button class="action" id="sendMsg">Send it 💌</button><div class="status" id="msgStatus"></div>
     </div>
     <div class="card">
-      <div class="fact" id="factText">Loading today's fact...</div>
-      <button class="action" id="factBtn">Give me today's fact ✦</button>
-      <div class="status" id="factStatus"></div>
-    </div>
-  </section>
-
-  <section class="section" id="talk">
-    <div class="section-head">
-      <div><div class="section-kicker">07 · quiet corner</div><h2>I'm here.</h2></div>
-      <p>Talk to the AI if you want company. It is not Kimchi and it is not a therapist.</p>
+      <div class="card-title">What Kimchi wrote</div><p id="notesIntro">Your little collection of notes from him.</p>
+      <div class="notes" id="notesList"></div>
     </div>
     <div class="card">
-      <div class="chat-log" id="log"></div>
-      <form class="chat-form" id="cform">
-        <input id="cin" autocomplete="off" placeholder="Tell me what's on your mind..." aria-label="Your message">
-        <button class="action" type="submit">Send</button>
-      </form>
-      <div class="fine">If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust in person right now.</div>
+      <div class="card-title">Give him a hug</div><p>One tap = one hug delivered.</p>
+      <button class="action" id="hugBtn" style="font-size:2rem">🤗</button><div class="resultbox" id="hugResult">No hugs sent yet.</div>
     </div>
-  </section>
+    <div class="card kiss-card">
+      <div class="card-title">Give Kimchi a kiss</div>
+      <p>Search for a cute GIF, choose your favorite, and send it to Kimchi.</p>
+      <div class="kiss-search-row">
+        <input id="kissSearch" type="search" placeholder="Search GIFs" aria-label="Search GIFs">
+        <button class="smallbtn" id="kissSearchBtn" type="button">Search</button>
+      </div>
+      <div class="kiss-results" id="kissResults" aria-live="polite"></div>
+      <div class="kiss-selected" id="kissSelected">Choose a GIF to preview it ♡</div>
+      <div class="kiss-actions">
+        <button class="action" id="kissSend" type="button" disabled>Send</button>
+      </div>
+      <div class="status" id="kissStatus" role="status"></div>
+      <div class="fine">GIF search needs an internet connection. Your selected GIF is sent to Kimchi as a link.</div>
+    </div>
+  </div>
+</section>
 
-  <div class="footer">made with a little midnight purple, a little burgundy, and a lot of love ✦</div>
+<section class="section" id="music">
+  <div class="section-head"><div><div class="section-kicker">02 · music</div><h2>Your twin's soundtrack.</h2></div><p>Currently playing if Spotify knows what he's listening to; otherwise a random song from <em>delusions</em>.</p></div>
+  <div class="card">
+    <img id="songArt" class="music-art" alt="Album artwork">
+    <div class="card-title" id="songTitle">Loading...</div><p id="songText">Checking Spotify...</p>
+    <div id="songBox" style="margin-top:14px"></div>
+    <button class="action" id="anotherSong">Another song</button>
+    <div class="toggle-row"><span>Adaptive Colors</span><button class="switch on" id="colorToggle" aria-label="Toggle adaptive colors"><i></i></button></div>
+    <div class="status">When on, the site's mood subtly follows the album art without losing its dark identity.</div>
+  </div>
+</section>
+
+<section class="section" id="plush">
+  <div class="section-head"><div><div class="section-kicker">03 · plushie room</div><h2>Pet the residents.</h2></div><p>They are very needy. Please give them attention.</p></div>
+  <div class="plush-grid" id="plushGrid"></div>
+  <div class="plush-msg" id="plushMsg">Choose a plushie.</div>
+</section>
+
+<section class="section" id="cozy">
+  <div class="section-head"><div><div class="section-kicker">04 · cozy corner</div><h2>For when you need a softer minute.</h2></div><p>Food, cats, cute notes, and somewhere to put whatever is on your mind.</p></div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">What are you craving?</div><p>Tell Kimchi what sounds good.</p>
+      <div class="options" id="foodBox"></div><div class="resultbox" id="foodResult"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cat time</div><p>Pet the cat. Obviously.</p>
+      <button class="action" id="catBtn" style="font-size:2rem">🐱</button><div class="resultbox" id="catResult">Purr...</div>
+      <button class="smallbtn" id="realCat" style="margin-top:8px">Show me a real cat</button>
+      <div id="catPic" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">A cute note from your twin</div><div class="notes"><div class="note"><p id="cuteText">...</p></div></div>
+      <button class="action" id="anotherCute">Another one</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Upload your pics</div><p>Up to 10 photos at a time. They go straight to Kimchi.</p>
+      <input type="file" id="pics" accept="image/*" multiple hidden><button class="action" id="pickPics">Choose photos</button>
+      <div class="thumbs" id="thumbs"></div><div class="status" id="upmsg"></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="wallpapers">
+  <div class="section-head"><div><div class="section-kicker">05 · atmosphere</div><h2>Wallpaper room.</h2></div><p>Three moving wallpapers and three gothic stills. Live wallpaper is on by default.</p></div>
+  <div class="card">
+    <div class="toggle-row" style="border-top:0;padding-top:0"><span>🌊 Live Wallpaper</span><button class="switch on" id="liveToggle"><i></i></button></div>
+    <div class="toggle-row"><span>🕯️ Current collection</span><span class="status" id="wallStatus">Live wallpaper on</span></div>
+    <div class="wallpaper-grid" id="wallGrid"></div>
+    <div class="fine">Tap any still to choose it. When live wallpaper is on, its matching video plays in the background; turning it off keeps the matching still image.</div>
+  </div>
+</section>
+
+<section class="section" id="fact">
+  <div class="section-head"><div><div class="section-kicker">06 · tiny rabbit hole</div><h2>Random fact of the day.</h2></div><p>Something normal, strange, fascinating, or mildly unbelievable.</p></div>
+  <div class="card">
+    <div class="fact" id="factText">Loading today's fact...</div>
+    <button class="action" id="factBtn">Give me today's fact ✦</button>
+    <div class="status" id="factStatus"></div>
+  </div>
+</section>
+
+<section class="section" id="talk">
+  <div class="section-head"><div><div class="section-kicker">07 · quiet corner</div><h2>I'm here.</h2></div><p>Talk to the AI if you want company. It is not Kimchi and it is not a therapist.</p></div>
+  <div class="card">
+    <div class="chat-log" id="log"></div>
+    <form class="chat-form" id="cform"><input id="cin" autocomplete="off" placeholder="Tell me what's on your mind..." aria-label="Your message"><button class="action" type="submit">Send</button></form>
+    <div class="fine">If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust in person right now.</div>
+  </div>
+</section>
+
+<div class="footer">made with a little midnight purple, a little burgundy, and a lot of love ✦</div>
 </main>
 
 <script src="notes.js"></script>
-
-<section class="admin-entry" aria-label="Admin login">
-  <button class="admin-open" id="adminOpen" type="button" aria-expanded="false" aria-controls="adminPanel">☾ Admin Login</button>
-  <form class="admin-panel" id="adminPanel" autocomplete="on">
-    <div class="card-title">private little doorway</div>
-    <label for="mainAdminUser">Username</label>
-    <input id="mainAdminUser" name="username" autocomplete="username" required placeholder="Admin username">
-    <label for="mainAdminPassword">Password</label>
-    <input id="mainAdminPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your existing admin password">
-    <button type="submit">Continue to admin ✦</button>
-    <p class="admin-hint">Your details are kept in this browser tab only and used to prefill the existing admin login.</p>
-    <p class="admin-status" id="adminLoginStatus" aria-live="polite"></p>
-  </form>
-</section>
-
 <script>
-/* Welcome screen: NO timer; user must click the button */
-(() => {
-  const veil = document.getElementById("welcomeVeil");
-  const enter = document.getElementById("welcomeEnter");
-
-  function showWelcome() {
-    veil.classList.remove("dismissed");
-  }
-
-  function dismissWelcome() {
-    veil.classList.add("dismissed");
-    try {
-      sessionStorage.setItem("layaWelcomeSeen", "1");
-    } catch (error) {}
-  }
-
-  // Keep it dismissed only if the button was clicked this session.
-  try {
-    if (sessionStorage.getItem("layaWelcomeSeen") === "1") {
-      veil.classList.add("dismissed");
-    }
-  } catch (error) {}
-
-  enter.addEventListener("click", dismissWelcome);
-
-  // Used by login and logout handlers below.
-  window.showLayaWelcome = showWelcome;
-  window.dismissLayaWelcome = dismissWelcome;
-
-  // Existing admin login handoff.
-  const open = document.getElementById("adminOpen");
-  const panel = document.getElementById("adminPanel");
-
-  open.addEventListener("click", () => {
-    const isOpen = !panel.classList.contains("open");
-    panel.classList.toggle("open", isOpen);
-    open.setAttribute("aria-expanded", String(isOpen));
-
-    if (isOpen) {
-      document.getElementById("mainAdminUser").focus();
-    }
-  });
-
-  panel.addEventListener("submit", event => {
-    event.preventDefault();
-
-    const username = document.getElementById("mainAdminUser").value.trim();
-    const password = document.getElementById("mainAdminPassword").value;
-    const status = document.getElementById("adminLoginStatus");
-
-    if (!username || !password) return;
-
-    try {
-      sessionStorage.setItem("adminUsername", username);
-      sessionStorage.setItem("adminPassword", password);
-      sessionStorage.setItem("pw", password);
-    } catch (error) {
-      status.textContent = "Could not prepare login in this browser.";
-      return;
-    }
-
-    status.textContent = "Opening your existing admin page…";
-    location.href = "admin.html";
-  });
-})();
-
-const CHAT_URL = "https://laya-site.manilimelight769.workers.dev";
-const $ = id => document.getElementById(id);
-
-const AUTH_KEY = "layaSiteToken";
-const LAST_ACTIVITY_KEY = "layaSiteLastActivity";
-const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
-
-let memoryToken = "";
-let idleTimer = null;
-let lastActivityWrite = 0;
-
-function getToken() {
-  if (memoryToken) return memoryToken;
-  try {
-    return sessionStorage.getItem(AUTH_KEY) || "";
-  } catch (error) {
-    return "";
-  }
-}
-
-function storeToken(value) {
-  memoryToken = value || "";
-
-  try {
-    if (value) {
-      sessionStorage.setItem(AUTH_KEY, value);
-      sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
-    } else {
-      sessionStorage.removeItem(AUTH_KEY);
-      sessionStorage.removeItem(LAST_ACTIVITY_KEY);
-    }
-  } catch (error) {}
-
-  try {
-    localStorage.removeItem(AUTH_KEY);
-  } catch (error) {}
-
-  if (value) scheduleIdleLogout();
-  else clearTimeout(idleTimer);
-}
-
-function setLocked(locked) {
-  document.body.classList.toggle("auth-locked", locked);
-
-  for (const element of document.body.children) {
-    if (element.id !== "loginGate") {
-      element.inert = locked;
-    }
-  }
-}
-
-function showLogin(message = "") {
-  const gate = $("loginGate");
-  if (!gate) return;
-
-  gate.classList.add("show");
-  setLocked(true);
-  $("loginStatus").textContent = message;
-
-  setTimeout(() => $("loginEmail")?.focus(), 50);
-}
-
-function hideLogin() {
-  const gate = $("loginGate");
-  if (gate) gate.classList.remove("show");
-  setLocked(false);
-}
-
-function readLastActivity() {
-  try {
-    return Number(sessionStorage.getItem(LAST_ACTIVITY_KEY) || 0);
-  } catch (error) {
-    return 0;
-  }
-}
-
-function recordActivity() {
-  if (!getToken()) return;
-
-  const now = Date.now();
-  if (now - lastActivityWrite < 1000) return;
-
-  lastActivityWrite = now;
-
-  try {
-    sessionStorage.setItem(LAST_ACTIVITY_KEY, String(now));
-  } catch (error) {}
-
-  scheduleIdleLogout();
-}
-
-function lockForInactivity() {
-  storeToken("");
-  try {
-    sessionStorage.removeItem("layaWelcomeSeen");
-  } catch (error) {}
-  showLogin("You’ve been signed out after 15 minutes of inactivity. Please sign in again.");
-}
-
-function scheduleIdleLogout() {
-  clearTimeout(idleTimer);
-  if (!getToken()) return;
-
-  let last = readLastActivity();
-
-  if (!last) {
-    last = Date.now();
-    try {
-      sessionStorage.setItem(LAST_ACTIVITY_KEY, String(last));
-    } catch (error) {}
-  }
-
-  const remaining = IDLE_TIMEOUT_MS - (Date.now() - last);
-
-  if (remaining <= 0) {
-    lockForInactivity();
-    return;
-  }
-
-  idleTimer = setTimeout(() => {
-    if (!getToken()) return;
-
-    const latest = readLastActivity();
-
-    if (Date.now() - latest >= IDLE_TIMEOUT_MS) {
-      lockForInactivity();
-    } else {
-      scheduleIdleLogout();
-    }
-  }, remaining);
-}
-
-function checkIdleOnReturn() {
-  if (!getToken()) return;
-
-  const last = readLastActivity();
-
-  if (last && Date.now() - last >= IDLE_TIMEOUT_MS) {
-    lockForInactivity();
-  } else {
-    scheduleIdleLogout();
-  }
-}
-
-try {
-  localStorage.removeItem(AUTH_KEY);
-} catch (error) {}
-
-["pointerdown","keydown","touchstart","scroll","wheel","click"].forEach(type => {
-  document.addEventListener(type, recordActivity, { passive: true });
-});
-document.addEventListener("pointermove", recordActivity, { passive: true });
-
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) checkIdleOnReturn();
-});
-
-async function api(path, opts = {}) {
-  const headers = new Headers(opts.headers || {});
-  const token = getToken();
-
-  if (token) headers.set("Authorization", "Bearer " + token);
-
-  const response = await fetch(CHAT_URL.replace(/\/$/,"") + path, {
-    ...opts,
-    headers
-  });
-
-  if (response.status === 401 && path !== "/login") {
-    storeToken("");
-
-    try {
-      sessionStorage.removeItem("layaWelcomeSeen");
-    } catch (error) {}
-
-    if (!$("loginGate").classList.contains("show")) {
-      showLogin("Your sign-in expired. Please sign in again.");
-    }
-  }
-
-  return response;
-}
-
-/* Login: clear the welcome dismissal marker only after successful login */
-(() => {
-  const form = $("loginForm");
-  const status = $("loginStatus");
-  const submit = $("loginSubmit");
-
-  if (getToken()) {
-    const last = readLastActivity();
-
-    if (last && Date.now() - last >= IDLE_TIMEOUT_MS) {
-      lockForInactivity();
-    } else {
-      if (!last) {
-        try {
-          sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
-        } catch (error) {}
-      }
-
-      scheduleIdleLogout();
-      hideLogin();
-    }
-  } else {
-    showLogin();
-  }
-
-  form.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    status.textContent = "Signing in…";
-    submit.disabled = true;
-
-    try {
-      const response = await fetch(
-        CHAT_URL.replace(/\/$/,"") + "/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: $("loginEmail").value.trim(),
-            password: $("loginPass").value
-          })
-        }
-      );
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok || !data.token) {
-        status.textContent = data.error || "Couldn’t sign in. Check the email and password.";
-        return;
-      }
-
-      // Successful sign-in: the welcome must show again.
-      try {
-        sessionStorage.removeItem("layaWelcomeSeen");
-      } catch (error) {}
-
-      storeToken(data.token);
-      $("loginPass").value = "";
-      status.textContent = "";
-      hideLogin();
-
-      const params = new URLSearchParams(location.search);
-
-      if (params.has("code") && params.has("state")) {
-        await api(
-          "/spotify/callback?code=" +
-          encodeURIComponent(params.get("code")) +
-          "&state=" +
-          encodeURIComponent(params.get("state")),
-          { cache: "no-store" }
-        );
-
-        history.replaceState({}, document.title, location.pathname + location.hash);
-      }
-
-      // Reload makes the welcome screen appear again with no old marker.
-      location.reload();
-    } catch (error) {
-      status.textContent = "Couldn’t connect. Check your internet and try again.";
-    } finally {
-      submit.disabled = false;
-    }
-  });
-})();
-
-function toast(message) {
-  const element = $("toast");
-  element.textContent = message;
-  element.classList.add("show");
-  clearTimeout(window.__toast);
-  window.__toast = setTimeout(() => element.classList.remove("show"), 2200);
-}
-
-function notify(event, extra = {}) {
-  api("/notify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event, ...extra })
-  }).catch(() => {});
-}
-
-/* Spotify OAuth callback */
-(() => {
-  const params = new URLSearchParams(location.search);
-  const code = params.get("code");
-  const state = params.get("state");
-
-  if (!code || !state || !getToken()) return;
-
-  api(
-    "/spotify/callback?code=" + encodeURIComponent(code) +
-    "&state=" + encodeURIComponent(state),
-    { cache: "no-store" }
-  )
-    .then(() => history.replaceState({}, document.title, location.pathname + location.hash))
-    .catch(() => {});
-})();
+const CHAT_URL="https://laya-site.manilimelight769.workers.dev";
+const $=id=>document.getElementById(id);
+const api=(path,opts={})=>fetch(CHAT_URL.replace(/\/$/,"")+path,opts);
+function toast(t){const x=$("toast");x.textContent=t;x.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>x.classList.remove("show"),2200)}
+function notify(event,extra={}){api("/notify",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({event,...extra})}).catch(()=>{})}
+
+/* Spotify callback */
+(()=>{const p=new URLSearchParams(location.search),code=p.get("code"),state=p.get("state");if(!code||!state)return;
+api("/spotify/callback?code="+encodeURIComponent(code)+"&state="+encodeURIComponent(state),{cache:"no-store"}).then(r=>r.ok&&history.replaceState({},document.title,location.pathname+location.hash)).catch(()=>{})})();
 
 /* Navigation */
-document.querySelectorAll("[data-go]").forEach(button => {
-  button.onclick = () => $(button.dataset.go).scrollIntoView({ behavior: "smooth" });
-});
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>$(b.dataset.go).scrollIntoView({behavior:"smooth"}));
 
-/* Manual sign out */
-$("signOutBtn").addEventListener("click", () => {
-  storeToken("");
-  $("loginPass").value = "";
-
-  // Clear the welcome state so it can appear after the next successful login.
-  try {
-    sessionStorage.removeItem("layaWelcomeSeen");
-  } catch (error) {}
-
-  showLogin("You’ve signed out. Sign in to continue.");
-});
+/* Theme */
+(()=>{const root=document.documentElement,btn=$("themeBtn");let saved=null;try{saved=localStorage.getItem("theme")}catch(e){}
+const set=t=>{root.dataset.theme=t;btn.textContent=t==="dark"?"Light mode":"Dark mode";try{localStorage.setItem("theme",t)}catch(e){}};
+set(saved==="light"?"light":"dark");btn.onclick=()=>set(root.dataset.theme==="dark"?"light":"dark")})();
 
 /* Kuromi-inspired desktop cursor + click sparkle */
 (() => {
@@ -1396,1024 +352,112 @@ $("signOutBtn").addEventListener("click", () => {
   });
 })();
 
-/* Wallpapers */
-const wallpapers = [
-  { id: "city", name: "Rem City", video: "assets/live-rem-city.mp4", still: "assets/live-rem-city.jpg" },
-  { id: "battle", name: "Rem Battle", video: "assets/live-rem-battle.mp4", still: "assets/live-rem-battle.jpg" },
-  { id: "remnant", name: "Remnant", video: "assets/live-remnant.mp4", still: "assets/live-remnant.jpg" },
-  { id: "g1", name: "Gothic I", still: "assets/wallpaper-1.jpg" },
-  { id: "g2", name: "Gothic II", still: "assets/wallpaper-2.jpg" },
-  { id: "g3", name: "Gothic III", still: "assets/wallpaper-3.jpg" }
+/* Wallpaper assets */
+const wallpapers=[
+ {id:"city",name:"Rem City",video:"assets/live-rem-city.mp4",still:"assets/live-rem-city.jpg"},
+ {id:"battle",name:"Rem Battle",video:"assets/live-rem-battle.mp4",still:"assets/live-rem-battle.jpg"},
+ {id:"remnant",name:"Remnant",video:"assets/live-remnant.mp4",still:"assets/live-remnant.jpg"},
+ {id:"g1",name:"Gothic I",still:"assets/gothic-1.jpg"},
+ {id:"g2",name:"Gothic II",still:"assets/gothic-2.jpg"},
+ {id:"g3",name:"Gothic III",still:"assets/gothic-3.jpg"}
 ];
-
-let selectedWall = 0;
-let liveOn = true;
-let wallVideo = null;
-let wallLayer = 0;
-
-function showStill(index) {
-  const wallpaper = wallpapers[index];
-  const layer = wallLayer ? $("wallA") : $("wallB");
-  wallLayer = 1 - wallLayer;
-
-  layer.style.backgroundImage = 'url("' + wallpaper.still + '")';
-  layer.classList.add("visible");
-
-  const otherLayer = wallLayer ? $("wallA") : $("wallB");
-  otherLayer.classList.remove("visible");
-
-  if (wallVideo) {
-    wallVideo.pause();
-    wallVideo.remove();
-    wallVideo = null;
-  }
-
-  if (liveOn && wallpaper.video) {
-    wallVideo = document.createElement("video");
-    wallVideo.src = wallpaper.video;
-    wallVideo.autoplay = true;
-    wallVideo.muted = true;
-    wallVideo.loop = true;
-    wallVideo.playsInline = true;
-
-    Object.assign(wallVideo.style, {
-      position: "fixed",
-      inset: "0",
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      zIndex: "-5",
-      opacity: "0",
-      filter: "saturate(.82) brightness(.88)",
-      transition: "opacity 1.2s ease"
-    });
-
-    document.body.insertBefore(wallVideo, document.body.firstChild);
-
-    wallVideo.oncanplay = () => {
-      wallVideo.style.opacity = "var(--wall-opacity)";
-      layer.classList.remove("visible");
-    };
-
-    wallVideo.play().catch(() => {});
-  }
-
-  $("wallStatus").textContent = liveOn && wallpaper.video
-    ? "🌊 " + wallpaper.name
-    : "🕯️ " + wallpaper.name;
+let selectedWall=0,liveOn=true,wallTimer=null,wallVideo=null,wallLayer=0;
+function showStill(i){
+ const w=wallpapers[i],layer=wallLayer?$("wallA"):$("wallB");wallLayer=1-wallLayer;
+ layer.style.backgroundImage='url("'+w.still+'")';layer.classList.add("visible");
+ const other=wallLayer?$("wallA"):$("wallB");other.classList.remove("visible");
+ if(wallVideo){wallVideo.pause();wallVideo.remove();wallVideo=null}
+ if(liveOn&&w.video){
+   wallVideo=document.createElement("video");wallVideo.src=w.video;wallVideo.autoplay=true;wallVideo.muted=true;wallVideo.loop=true;wallVideo.playsInline=true;
+   Object.assign(wallVideo.style,{position:"fixed",inset:"0",width:"100%",height:"100%",objectFit:"cover",zIndex:"-5",opacity:"0",filter:"saturate(.72) brightness(.62)",transition:"opacity 1.2s ease"});
+   document.body.insertBefore(wallVideo,document.body.firstChild);
+   wallVideo.oncanplay=()=>{wallVideo.style.opacity="var(--wall-opacity)";layer.classList.remove("visible")};wallVideo.play().catch(()=>{});
+ }
+ $("wallStatus").textContent=liveOn&&w.video?"Live wallpaper: "+w.name:"Still wallpaper: "+w.name;
 }
+function renderWallGrid(){const box=$("wallGrid");box.innerHTML="";wallpapers.forEach((w,i)=>{const b=document.createElement("button");b.className="wall-thumb";b.innerHTML='<img src="'+w.still+'" alt="'+w.name+'"><span>'+(w.video?"🌊 ":"🕯️ ")+w.name+"</span>";b.onclick=()=>{selectedWall=i;showStill(i)};box.appendChild(b)})}
+renderWallGrid();showStill(0);
+$("liveToggle").onclick=()=>{liveOn=!liveOn;$("liveToggle").classList.toggle("on",liveOn);showStill(selectedWall)};
+$("wallStatus").onclick=()=>{};
 
-function nextWall(step) {
-  selectedWall = (selectedWall + step + wallpapers.length) % wallpapers.length;
-  showStill(selectedWall);
-}
-
-showStill(0);
-
-$("liveToggle").onclick = () => {
-  liveOn = true;
-  $("liveToggle").classList.add("active");
-  $("stillModeBtn").classList.remove("active");
-  showStill(selectedWall);
-};
-
-$("stillModeBtn").onclick = () => {
-  liveOn = false;
-  $("stillModeBtn").classList.add("active");
-  $("liveToggle").classList.remove("active");
-  showStill(selectedWall);
-};
-
-$("wallPrev").onclick = () => nextWall(-1);
-$("wallNext").onclick = () => nextWall(1);
-
-/* Plushies */
-const plushies = [
-  { emoji: "", name: "Kuromi", kuromi: true, lines: [
-    "Kuromi gives you a tiny grumpy hug. 🖤",
-    "She pretends she doesn't care. She absolutely cares.",
-    "Head pats accepted. More head pats required."
-  ]},
-  { emoji: "🐰", name: "Bunbun", lines: [
-    "Bunbun wiggles their little ears at you. 🐰",
-    "A very soft bunny has chosen you.",
-    "Bunbun says: stay cozy."
-  ]},
-  { emoji: "🧸", name: "Teddy", lines: [
-    "Teddy is ready for maximum cuddles. 🧸",
-    "Emergency teddy bear deployed.",
-    "Teddy has decided you deserve a nap."
-  ]},
-  { emoji: "🐱", name: "Mochi", lines: [
-    "Mochi gives you the slow blink. 🐱",
-    "Mochi has judged you. The verdict is: adorable.",
-    "Mochi would like snacks."
-  ]},
-  { emoji: "🐧", name: "Pip", lines: [
-    "Pip waddles over for attention. 🐧",
-    "Pip is doing their best little penguin dance.",
-    "Pip says hello and refuses to elaborate."
-  ]},
-  { emoji: "🐸", name: "Froggy", lines: [
-    "Froggy has been gently booped. 🐸",
-    "Froggy says: everything will be okay.",
-    "Froggy has acquired one tiny leaf."
-  ]},
-  { emoji: "🦦", name: "Noodle", lines: [
-    "Noodle has entered cuddle mode. 🦦",
-    "Noodle is extremely pleased to see you.",
-    "Noodle has absolutely no thoughts, only vibes."
-  ]},
-  { emoji: "🐼", name: "Panda", lines: [
-    "Panda gives you the softest little hug. 🐼",
-    "Panda recommends snacks and blankets.",
-    "Panda is now sitting beside you."
-  ]}
-];
-
-const plushGrid = $("plushGrid");
-const plushMsg = $("plushMsg");
-
-plushies.forEach(plush => {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "plush";
-  button.setAttribute("aria-label", "Pet " + plush.name);
-
-  button.innerHTML = (plush.kuromi
-    ? `<svg class="kuromi-art" viewBox="0 0 120 120" aria-label="Kuromi plush" role="img">
-        <path class="hood" d="M31 48 L18 9 Q17 3 23 7 L47 25 Q60 19 73 25 L97 7 Q103 3 102 10 L89 48 Q101 57 96 77 Q91 98 60 102 Q29 98 24 77 Q19 57 31 48Z"/>
-        <path class="inner" d="M25 13 L45 29 L34 42Z M95 13 L75 29 L86 42Z"/>
-        <ellipse class="face" cx="60" cy="61" rx="31" ry="27"/>
-        <ellipse class="eye" cx="48" cy="62" rx="4.2" ry="6.5"/>
-        <ellipse class="eye" cx="72" cy="62" rx="4.2" ry="6.5"/>
-        <path class="nose" d="M57 70 Q60 67 63 70 Q60 74 57 70Z"/>
-        <path class="hood" d="M37 83 Q60 97 83 83 L78 95 Q60 105 42 95Z"/>
-        <g transform="translate(47 80)">
-          <path class="skull" d="M3 10 Q3 2 11 2 Q19 2 19 10 L17 16 L13 16 L12 13 L10 13 L9 16 L5 16Z"/>
-          <circle class="skull-eye" cx="8" cy="9" r="1.8"/>
-          <circle class="skull-eye" cx="14" cy="9" r="1.8"/>
-          <path class="skull-cross" d="M11 12 L11 16 M8.5 14 L13.5 14"/>
-        </g>
-      </svg>`
-    : '<span class="emoji">' + plush.emoji + '</span>') +
-    '<span class="name">' + plush.name + '</span>';
-
-  button.addEventListener("click", () => {
-    plushMsg.textContent = plush.lines[Math.floor(Math.random() * plush.lines.length)];
-
-    const visual = button.querySelector(".emoji, .kuromi-art");
-    visual.animate([
-      { transform: "scale(1) rotate(0deg)" },
-      { transform: "scale(1.28) rotate(-5deg)" },
-      { transform: "scale(1.08) rotate(4deg)" },
-      { transform: "scale(1) rotate(0deg)" }
-    ], { duration: 420, easing: "ease-out" });
-
-    for (let i = 0; i < 3; i++) {
-      const heart = document.createElement("span");
-      heart.textContent = ["♡","✦","♥"][i];
-      heart.style.position = "absolute";
-      heart.style.left = (38 + Math.random() * 24) + "%";
-      heart.style.top = (34 + Math.random() * 16) + "%";
-      heart.style.pointerEvents = "none";
-      heart.style.color = "var(--pink)";
-      heart.style.fontSize = ".9rem";
-      heart.style.animation = "plushHeart .75s ease-out forwards";
-      button.appendChild(heart);
-      setTimeout(() => heart.remove(), 800);
-    }
-  });
-
-  plushGrid.appendChild(button);
-});
-
-/* Food chooser */
-const mainFoods = ["Zinger","Fried rice","Noodles","Biryani","Pizza","Burger","Pasta","Something sweet","Something else"];
-const sweets = ["Cupcakes","Pastries","Red velvet cake","Cheesecake","Fruit","Candies","Cookies","Donuts","Brownies","Ice cream","Something else"];
-
-function foodButtons(items) {
-  const box = $("foodBox");
-  box.innerHTML = "";
-
-  items.forEach(food => {
-    const button = document.createElement("button");
-    button.className = "action";
-    button.textContent = food;
-
-    button.onclick = () => {
-      if (food === "Something sweet") {
-        foodButtons(["← Back to food", ...sweets]);
-        return;
-      }
-      if (food === "← Back to food") {
-        foodButtons(mainFoods);
-        return;
-      }
-      if (food === "Something else") {
-        const answer = prompt("What are you craving?");
-        if (answer && answer.trim()) chooseFood(answer.trim().slice(0,40));
-        return;
-      }
-      chooseFood(food);
-    };
-
-    box.appendChild(button);
-  });
-}
-
-function chooseFood(food) {
-  notify("food", { choice: food });
-  $("foodResult").textContent = "Noted. Kimchi knows you're craving " + food + ".";
-  $("foodBox").innerHTML = "";
-}
+/* Food */
+const mainFoods=["Zinger","Fried rice","Noodles","Biryani","Pizza","Burger","Pasta","Something sweet","Something else"];
+const sweets=["Cupcakes","Pastries","Red velvet cake","Cheesecake","Fruit","Candies","Cookies","Donuts","Brownies","Ice cream","Something else"];
+function foodButtons(list){const b=$("foodBox");b.innerHTML="";list.forEach(f=>{const x=document.createElement("button");x.className="action";x.textContent=f;x.onclick=()=>{if(f==="Something sweet")return foodButtons(["← Back to food",...sweets]);if(f==="← Back to food")return foodButtons(mainFoods);if(f==="Something else"){const a=prompt("What are you craving?");if(!a||!a.trim())return f=undefined;return chooseFood(a.trim().slice(0,40))}chooseFood(f)};b.appendChild(x)})}
+function chooseFood(f){notify("food",{choice:f});$("foodResult").textContent="Noted. Kimchi knows you're craving "+f+"."; $("foodBox").innerHTML=""}
 foodButtons(mainFoods);
 
-/* Missing him + hugs */
-function miss(kind) {
-  notify(kind);
-  $("missResult").textContent = "Kimchi misses you too. Probably more. Don't tell him I said that.";
-}
+/* Missing + hug */
+function miss(kind){notify(kind);$("missResult").textContent="Kimchi misses you too. Probably more. Don't tell him I said that."}
+$("yesBtn").onclick=()=>miss("yes");$("alotBtn").onclick=()=>miss("alot");
+let hugs=0;$("hugBtn").onclick=()=>{hugs++;if(hugs===1)notify("hug");$("hugResult").textContent=hugs===1?"Hug sent. Kimchi got it.":"Hugs sent: "+hugs+" ♡"};
 
-$("yesBtn").onclick = () => miss("yes");
-$("alotBtn").onclick = () => miss("alot");
+/* Notes */
+(()=>{const list=$("notesList"),local=(typeof notes!=="undefined"?notes:[]),fmt=d=>/^\d{4}-\d\d-\d\d/.test(d||"")?new Date(d).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"}):(d||"");
+function render(all){list.innerHTML="";if(!all.length){$("notesIntro").textContent="Nothing here yet. Check back soon.";return}$("notesIntro").textContent="A few words from Kimchi.";all.slice().reverse().forEach(n=>{const d=document.createElement("div");d.className="note";d.innerHTML="<small></small><p></p>";d.querySelector("small").textContent=fmt(n.date);d.querySelector("p").textContent=n.text;list.appendChild(d)})}
+api("/notes").then(r=>r.ok?r.json():Promise.reject()).then(d=>render(d.notes&&d.notes.length?d.notes:local)).catch(()=>render(local))})();
 
-let hugs = 0;
-$("hugBtn").onclick = () => {
-  hugs++;
-  if (hugs === 1) notify("hug");
-  $("hugResult").textContent = hugs === 1 ? "Hug sent. Kimchi got it." : "Hugs sent: " + hugs + " ♡";
-};
+/* Message */
+$("sendMsg").onclick=async()=>{const input=$("kimchiMsg"),status=$("msgStatus"),btn=$("sendMsg"),message=input.value.trim();if(!message){status.textContent="Write something first ♡";input.focus();return}btn.disabled=true;btn.textContent="Sending...";status.textContent="";
+try{const r=await api("/message",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message})});if(!r.ok)throw 0;input.value="";status.textContent="Sent 💌 Kimchi will get it.";btn.textContent="Send another 💌"}catch(e){status.textContent="Couldn't send it right now. Try again in a bit.";btn.textContent="Try again 💌"}btn.disabled=false};
 
-/* Notes: first show one, then six at a time */
-(() => {
-  const list = $("notesList");
-  const intro = $("notesIntro");
-  const actions = $("notesActions");
-  const moreBtn = $("notesMore");
-  const lessBtn = $("notesLess");
-  const localNotes = typeof notes !== "undefined" ? notes : [];
 
-  const PAGE_SIZE = 6;
-  let allNotes = [];
-  let visibleCount = 1;
 
-  function formatDate(date) {
-    if (/^\d{4}-\d\d-\d\d/.test(date || "")) {
-      return new Date(date).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-      });
-    }
-    return date || "";
-  }
-
-  function drawNotes() {
-    list.innerHTML = "";
-
-    if (!allNotes.length) {
-      intro.textContent = "Nothing here yet. Check back soon.";
-      actions.hidden = true;
-      return;
-    }
-
-    intro.textContent = "A few words from Kimchi.";
-
-    allNotes.slice(0, visibleCount).forEach(note => {
-      const card = document.createElement("div");
-      card.className = "note";
-
-      const date = document.createElement("small");
-      date.textContent = formatDate(note.date);
-
-      const message = document.createElement("p");
-      message.textContent = note.text || "";
-
-      card.append(date, message);
-      list.appendChild(card);
-    });
-
-    actions.hidden = allNotes.length <= 1;
-    moreBtn.hidden = visibleCount >= allNotes.length;
-    moreBtn.textContent = visibleCount === 1 ? "Show more" : "Show 6 more";
-    lessBtn.hidden = visibleCount <= 1;
-  }
-
-  function renderNotes(notesArray) {
-    allNotes = Array.isArray(notesArray) ? notesArray.slice().reverse() : [];
-    visibleCount = Math.min(1, allNotes.length);
-    drawNotes();
-  }
-
-  moreBtn.addEventListener("click", () => {
-    visibleCount = visibleCount === 1
-      ? Math.min(PAGE_SIZE, allNotes.length)
-      : Math.min(visibleCount + PAGE_SIZE, allNotes.length);
-
-    drawNotes();
-  });
-
-  lessBtn.addEventListener("click", () => {
-    visibleCount = 1;
-    drawNotes();
-  });
-
-  api("/notes")
-    .then(response => response.ok ? response.json() : Promise.reject())
-    .then(data => renderNotes(data.notes && data.notes.length ? data.notes : localNotes))
-    .catch(() => renderNotes(localNotes));
+/* Kiss Kimchi: search for a GIF and send the selected GIF link. */
+(()=>{
+ const search=$("kissSearch"),results=$("kissResults"),preview=$("kissSelected"),send=$("kissSend"),status=$("kissStatus");
+ let selected=null;
+ const setStatus=t=>status.textContent=t;
+ function chooseGif(gif,button){selected={url:gif.url,title:gif.title||"A kiss GIF"};preview.innerHTML="";const im=document.createElement("img");im.src=gif.preview||gif.url;im.alt="Selected kiss GIF";preview.appendChild(im);results.querySelectorAll(".kiss-gif").forEach(b=>b.classList.toggle("selected",b===button));send.disabled=false;setStatus("GIF selected. Press Send to send it to Kimchi.")}
+ async function searchGifs(){const q=search.value.trim();if(!q){setStatus("Type what kind of GIF you want first ♡");search.focus();return}results.innerHTML="";setStatus("Searching for GIFs…");const b=$("kissSearchBtn");b.disabled=true;
+ try{const url="https://tenor.googleapis.com/v2/search?q="+encodeURIComponent(q)+"&key=LIVDSRZULELA&client_key=laya_kiss_picker&limit=12&media_filter=tinygif,gif";const r=await fetch(url);if(!r.ok)throw new Error("GIF search unavailable");const d=await r.json();const gifs=(d.results||[]).map(x=>{const m=x.media_formats||{},gif=m.gif||m.mediumgif||m.tinygif;const thumb=m.tinygif||m.nanogif||gif;return gif?{url:gif.url,preview:(thumb||gif).url,title:x.content_description||q}:null}).filter(x=>x&&x.url);
+ if(!gifs.length){setStatus("No GIFs found. Try another search.");return}
+ gifs.forEach(g=>{const btn=document.createElement("button");btn.type="button";btn.className="kiss-gif";btn.title=g.title;const im=document.createElement("img");im.loading="lazy";im.src=g.preview;im.alt=g.title;btn.appendChild(im);btn.onclick=()=>chooseGif(g,btn);results.appendChild(btn)});setStatus("Choose a GIF to preview it, then press Send.")
+ }catch(e){setStatus("GIF search couldn't connect right now. Please try again.")}
+ finally{b.disabled=false}}
+ $("kissSearchBtn").onclick=searchGifs;search.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();searchGifs()}});
+ send.onclick=async()=>{if(!selected)return;send.disabled=true;setStatus("Sending…");
+ try{const message="A kiss GIF for Kimchi ♡\nGIF: "+selected.url+"\n"+selected.title;const r=await api("/message",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message})});if(!r.ok)throw new Error("message failed");setStatus("Sent! Kimchi will get the GIF link by email ♡");preview.textContent="GIF sent ♡";selected=null;results.querySelectorAll(".kiss-gif").forEach(b=>b.classList.remove("selected"))}
+ catch(e){setStatus("Couldn't send it right now. Please try again in a moment.")}
+ finally{send.disabled=!selected;send.textContent="Send"}
+ };
 })();
 
-/* Send message */
-$("sendMsg").onclick = async () => {
-  const input = $("kimchiMsg");
-  const status = $("msgStatus");
-  const button = $("sendMsg");
-  const message = input.value.trim();
-
-  if (!message) {
-    status.textContent = "Write something first ♡";
-    input.focus();
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "Sending...";
-  status.textContent = "";
-
-  try {
-    const response = await api("/message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
-    });
-
-    if (!response.ok) throw new Error("Message failed");
-
-    input.value = "";
-    status.textContent = "Sent 💌 Kimchi will get it.";
-    button.textContent = "Send another 💌";
-  } catch (error) {
-    status.textContent = "Couldn't send it right now. Try again in a bit.";
-    button.textContent = "Try again 💌";
-  }
-
-  button.disabled = false;
-};
-
-/* Cute note */
-function loadCute() {
-  $("cuteText").textContent = "...";
-
-  api("/cute", { cache: "no-store" })
-    .then(response => response.ok ? response.json() : Promise.reject())
-    .then(data => {
-      $("cuteText").textContent = data.text || "No cute notes yet.";
-    })
-    .catch(() => {
-      $("cuteText").textContent = "Couldn't load a note. Try again.";
-    });
-}
-
-$("anotherCute").onclick = loadCute;
-loadCute();
+/* Cute */
+function loadCute(){$("cuteText").textContent="...";api("/cute",{cache:"no-store"}).then(r=>r.ok?r.json():Promise.reject()).then(d=>$("cuteText").textContent=d.text||"No cute notes yet.").catch(()=>$("cuteText").textContent="Couldn't load a note. Try again.")}
+$("anotherCute").onclick=loadCute;loadCute();
 
 /* Cat */
-const catLines = [
-  "Purr...",
-  "The cat loves you.",
-  "Kimchi is jealous of the cat.",
-  "More. The cat demands more.",
-  "Slow blink. That means I love you."
-];
-let catN = 0;
-
-$("catBtn").onclick = () => {
-  $("catResult").textContent = catLines[catN++ % catLines.length];
-};
-
-$("realCat").onclick = () => {
-  const box = $("catPic");
-  box.textContent = "";
-
-  const image = new Image();
-  image.alt = "A cat";
-  image.style.maxWidth = "100%";
-  image.style.borderRadius = "15px";
-  image.onerror = () => box.textContent = "The cat is hiding. Try again.";
-  image.src = "https://cataas.com/cat?width=500&t=" + Date.now();
-
-  box.appendChild(image);
-};
+const catLines=["Purr...","The cat loves you.","Kimchi is jealous of the cat.","More. The cat demands more.","Slow blink. That means I love you."];let catN=0;
+$("catBtn").onclick=()=>{$("catResult").textContent=catLines[catN++%catLines.length]};
+$("realCat").onclick=()=>{const box=$("catPic");box.textContent="";const im=new Image();im.alt="A cat";im.style.maxWidth="100%";im.style.borderRadius="15px";im.onerror=()=>box.textContent="The cat is hiding. Try again.";im.src="https://cataas.com/cat?width=500&t="+Date.now();box.appendChild(im)};
 
 /* Spotify + adaptive colors */
-let adaptive = true;
-let lastArt = "";
+let adaptive=true,lastArt="";
+function applySongColor(url){if(!adaptive||!url)return;const img=new Image();img.crossOrigin="anonymous";img.onload=()=>{try{const c=document.createElement("canvas"),ctx=c.getContext("2d");c.width=1;c.height=1;ctx.drawImage(img,0,0,1,1);const d=ctx.getImageData(0,0,1,1).data;let r=d[0],g=d[1],b=d[2];const mx=Math.max(r,g,b),mn=Math.min(r,g,b);const f=mx<100?1.5:.85;r=Math.min(255,r*f);g=Math.min(255,g*f);b=Math.min(255,b*f);document.documentElement.style.setProperty("--song-rgb",`${r},${g},${b}`);document.documentElement.style.setProperty("--burg",`rgb(${Math.min(140,r+25)},${Math.max(15,g*.45)},${Math.max(25,b*.55)})`)}catch(e){}};img.src=CHAT_URL.replace(/\/$/,"")+"/spotify-art?url="+encodeURIComponent(url)}
+async function loadSong(){const title=$("songTitle"),txt=$("songText"),box=$("songBox"),more=$("anotherSong"),art=$("songArt");more.disabled=true;title.textContent="Loading...";try{const r=await api("/song",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();if(d.kind==="none"||!/^[A-Za-z0-9]{22}$/.test(d.id||"")){title.textContent="No Spotify song available";txt.textContent="Kimchi may need to connect Spotify.";box.innerHTML="";more.style.display="none";return}
+title.textContent=d.title||"A song";txt.textContent=d.kind==="now"?"Your twin is listening to this right now.":"Nothing playing right now, so here's a random song from the delusions playlist.";more.style.display=d.kind==="now"?"none":"block";
+if(d.image){art.src=CHAT_URL.replace(/\/$/,"")+"/spotify-art?url="+encodeURIComponent(d.image);art.style.display="block";if(d.image!==lastArt){lastArt=d.image;applySongColor(d.image)}}
+box.innerHTML='<iframe class="music-embed" title="Spotify song" src="https://open.spotify.com/embed/track/'+d.id+'" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>'}
+catch(e){title.textContent="Couldn't load a song";txt.textContent="Try again in a moment."}finally{more.disabled=false}}
+$("anotherSong").onclick=loadSong;$("colorToggle").onclick=()=>{adaptive=!adaptive;$("colorToggle").classList.toggle("on",adaptive);if(!adaptive){document.documentElement.style.removeProperty("--song-rgb");document.documentElement.style.removeProperty("--burg") }else if(lastArt)applySongColor(lastArt)};loadSong();
 
-function applySongColor(url) {
-  if (!adaptive || !url) return;
-
-  const image = new Image();
-  image.crossOrigin = "anonymous";
-
-  image.onload = () => {
-    try {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      canvas.width = 1;
-      canvas.height = 1;
-      context.drawImage(image, 0, 0, 1, 1);
-
-      const data = context.getImageData(0, 0, 1, 1).data;
-      let r = data[0], g = data[1], b = data[2];
-      const maximum = Math.max(r,g,b);
-      const factor = maximum < 100 ? 1.5 : .85;
-
-      r = Math.min(255,r * factor);
-      g = Math.min(255,g * factor);
-      b = Math.min(255,b * factor);
-
-      document.documentElement.style.setProperty("--song-rgb", `${r},${g},${b}`);
-      document.documentElement.style.setProperty("--burg", `rgb(${Math.min(140,r+25)},${Math.max(15,g*.45)},${Math.max(25,b*.55)})`);
-    } catch (error) {}
-  };
-
-  image.src = CHAT_URL.replace(/\/$/,"") + "/spotify-art?url=" + encodeURIComponent(url);
-}
-
-async function loadSong() {
-  const title = $("songTitle");
-  const text = $("songText");
-  const box = $("songBox");
-  const button = $("anotherSong");
-  const art = $("songArt");
-
-  button.disabled = true;
-  title.textContent = "Loading...";
-
-  try {
-    const response = await api("/song", { cache: "no-store" });
-    if (!response.ok) throw new Error("Song request failed");
-
-    const data = await response.json();
-
-    if (data.kind === "none" || !/^[A-Za-z0-9]{22}$/.test(data.id || "")) {
-      title.textContent = "No Spotify song available";
-      text.textContent = "Kimchi may need to connect Spotify.";
-      box.innerHTML = "";
-      button.style.display = "none";
-      return;
-    }
-
-    title.textContent = data.title || "A song";
-    text.textContent = data.kind === "now"
-      ? "Your twin is listening to this right now."
-      : "Nothing playing right now, so here's a random song from the delusions playlist.";
-
-    button.style.display = data.kind === "now" ? "none" : "block";
-
-    if (data.image) {
-      art.src = CHAT_URL.replace(/\/$/,"") + "/spotify-art?url=" + encodeURIComponent(data.image);
-      art.style.display = "block";
-
-      if (data.image !== lastArt) {
-        lastArt = data.image;
-        applySongColor(data.image);
-      }
-    }
-
-    box.innerHTML = '<iframe class="music-embed" title="Spotify song" src="https://open.spotify.com/embed/track/' + data.id + '" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
-  } catch (error) {
-    title.textContent = "Couldn't load a song";
-    text.textContent = "Try again in a moment.";
-  } finally {
-    button.disabled = false;
-  }
-}
-
-$("anotherSong").onclick = loadSong;
-
-$("colorToggle").onclick = () => {
-  adaptive = !adaptive;
-  $("colorToggle").classList.toggle("on", adaptive);
-
-  if (!adaptive) {
-    document.documentElement.style.removeProperty("--song-rgb");
-    document.documentElement.style.removeProperty("--burg");
-  } else if (lastArt) {
-    applySongColor(lastArt);
-  }
-};
-
-loadSong();
-
-/* Random facts — rotate without repeating recently shown facts */
-const randomFacts = [
-  "A day on Venus is longer than a Venusian year.",
-  "Octopuses have three hearts.",
-  "Bananas are botanically berries, but strawberries are not.",
-  "Wombat droppings are cube-shaped.",
-  "Some sea otters hold hands while sleeping so they don't drift apart.",
-  "A group of flamingos is called a flamboyance.",
-  "Sharks existed before trees appeared on Earth.",
-  "The Eiffel Tower can become slightly taller in hot weather.",
-  "A cloud can weigh more than a million pounds.",
-  "Butterflies taste with sensors on their feet.",
-  "The heart of a blue whale can weigh hundreds of pounds.",
-  "There are more possible chess games than atoms in the observable universe.",
-  "Scotland's national animal is the unicorn.",
-  "A bolt of lightning is hotter than the surface of the Sun.",
-  "Some cats make a chirping sound when watching birds.",
-  "The Moon moves away from Earth by about 3.8 centimetres each year.",
-  "Honey can remain edible for an extraordinarily long time when sealed and stored well.",
-  "Crows can recognize human faces and remember them.",
-  "An adult human has fewer bones than a newborn baby.",
-  "A day on Jupiter lasts about ten hours.",
-  "Sea stars have no centralized brain.",
-  "The fingerprints of koalas are remarkably similar to human fingerprints.",
-  "Some fungi can glow in the dark through bioluminescence.",
-  "The word for the smell after rain is petrichor.",
-  "Hummingbirds are the only birds that can fly backward for sustained periods.",
-  "A snail can have thousands of tiny teeth on its radula.",
-  "Saturn's average density is lower than water's.",
-  "The shortest war in recorded history lasted less than an hour, according to common historical accounts.",
-  "A blue whale's tongue can weigh as much as an elephant.",
-  "Some bamboo species can grow several dozen centimetres in a single day.",
-  "Penguins have knees; their legs are mostly hidden beneath their feathers.",
-  "The fingerprints of every person are formed before birth.",
-  "An ostrich's eye is larger than its brain.",
-  "A day on Mars is only a little longer than a day on Earth.",
-  "The mantis shrimp can detect types of light humans cannot see.",
-  "A group of ravens is sometimes called an unkindness.",
-  "The largest known living structure by area is a network of seagrass in Australia.",
-  "Some plants can respond to touch by folding or moving their leaves.",
-  "The human nose can distinguish a vast number of different odors.",
-  "A newborn kangaroo is roughly the size of a grape."
-];
-let factDeck = [];
-let lastFactText = "";
-
-function nextRandomFact() {
-  if (!factDeck.length) {
-    factDeck = [...randomFacts];
-    for (let i = factDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [factDeck[i], factDeck[j]] = [factDeck[j], factDeck[i]];
-    }
-    if (factDeck.length > 1 && factDeck[factDeck.length - 1] === lastFactText) {
-      [factDeck[0], factDeck[factDeck.length - 1]] = [factDeck[factDeck.length - 1], factDeck[0]];
-    }
-  }
-  const next = factDeck.pop();
-  lastFactText = next;
-  return next;
-}
-
-async function loadFact() {
-  const fact = $("factText");
-  const status = $("factStatus");
-  const button = $("factBtn");
-
-  button.disabled = true;
-  fact.textContent = "Finding something weird...";
-  status.textContent = "";
-
-  // Use a local shuffled deck so every click changes the fact and the deck
-  // is exhausted before any fact can repeat, even if the API returns one fixed fact.
-  const nextFact = nextRandomFact();
-  fact.textContent = nextFact;
-  status.textContent = "A new fact ✦";
-  button.disabled = false;
-}
-
-$("factBtn").onclick = loadFact;
-loadFact();
+/* Random fact */
+async function loadFact(){const f=$("factText"),s=$("factStatus"),b=$("factBtn");b.disabled=true;f.textContent="Finding something weird...";s.textContent="";
+try{const r=await api("/fact",{cache:"no-store"});if(!r.ok)throw 0;const d=await r.json();f.textContent=d.fact||"No fact today.";s.textContent="Today's fact ✦"}catch(e){const fallback=["A day on Venus is longer than a Venusian year.","Octopuses have three hearts.","Bananas are berries, but strawberries are not botanically berries.","Wombat poop is cube-shaped.","Some turtles can breathe through specialized tissue near their rear end."];f.textContent=fallback[Math.floor(Math.random()*fallback.length)];s.textContent="Offline fact ✦"}finally{b.disabled=false}}
+$("factBtn").onclick=loadFact;loadFact();
 
 /* AI chat */
-const chatHistory = [];
-const chatLog = $("log");
-
-function addMsg(who, text) {
-  const element = document.createElement("div");
-  element.className = "msg " + who;
-  element.textContent = text;
-  chatLog.appendChild(element);
-  chatLog.scrollTop = chatLog.scrollHeight;
-  return element;
-}
-
+const history=[],log=$("log");function addMsg(who,t){const d=document.createElement("div");d.className="msg "+who;d.textContent=t;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
 addMsg("ai","Hey Laya. What's going on? You can tell me as much or as little as you want.");
+$("cform").onsubmit=async e=>{e.preventDefault();const input=$("cin"),t=input.value.trim();if(!t)return;input.value="";addMsg("me",t);history.push({role:"user",content:t});const wait=addMsg("ai","...");
+try{const r=await api("",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:history.slice(-20)})});if(!r.ok)throw 0;const d=await r.json();wait.textContent=d.reply||"I'm here.";history.push({role:"assistant",content:d.reply||""})}catch(e){history.pop();wait.textContent="I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you."}};
 
-$("cform").onsubmit = async event => {
-  event.preventDefault();
-
-  const input = $("cin");
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  input.value = "";
-  addMsg("me",text);
-  chatHistory.push({ role: "user", content: text });
-
-  const waiting = addMsg("ai","...");
-
-  try {
-    const response = await api("", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: chatHistory.slice(-20) })
-    });
-
-    if (!response.ok) throw new Error("Chat request failed");
-
-    const data = await response.json();
-    waiting.textContent = data.reply || "I'm here.";
-    chatHistory.push({ role: "assistant", content: data.reply || "" });
-  } catch (error) {
-    chatHistory.pop();
-    waiting.textContent = "I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you.";
-  }
-};
-
-/* Photo uploads */
-$("pickPics").onclick = () => $("pics").click();
-
-const shrink = file => new Promise((resolve,reject) => {
-  const image = new Image();
-  const url = URL.createObjectURL(file);
-
-  image.onload = () => {
-    const maximum = 1800;
-    const scale = Math.min(1,maximum / Math.max(image.width,image.height));
-    const canvas = document.createElement("canvas");
-
-    canvas.width = Math.round(image.width * scale);
-    canvas.height = Math.round(image.height * scale);
-    canvas.getContext("2d").drawImage(image,0,0,canvas.width,canvas.height);
-    URL.revokeObjectURL(url);
-
-    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Image conversion failed")),"image/jpeg",.88);
-  };
-
-  image.onerror = reject;
-  image.src = url;
-});
-
-$("pics").onchange = async () => {
-  let files = [...$("pics").files];
-
-  if (!files.length) return;
-  if (files.length > 10) files = files.slice(0,10);
-
-  const tags = files.map(file => {
-    const box = document.createElement("div");
-    const image = document.createElement("img");
-    const tag = document.createElement("span");
-
-    image.src = URL.createObjectURL(file);
-    tag.textContent = "...";
-    box.append(image,tag);
-    $("thumbs").appendChild(box);
-
-    return tag;
-  });
-
-  $("upmsg").textContent = "Sending " + files.length + " photo" + (files.length > 1 ? "s" : "") + "...";
-
-  try {
-    const formData = new FormData();
-
-    for (const file of files) {
-      formData.append("photos",await shrink(file),"photo.jpg");
-    }
-
-    const response = await api("/upload", {
-      method: "POST",
-      body: formData
-    });
-
-    if (!response.ok) throw new Error("Upload failed");
-
-    tags.forEach(tag => tag.textContent = "sent");
-    $("upmsg").textContent = "All sent. Kimchi got them.";
-  } catch (error) {
-    tags.forEach(tag => tag.textContent = "failed");
-    $("upmsg").textContent = "Couldn't send. Try again in a bit.";
-  }
-
-  $("pics").value = "";
-};
-</script>
-<!-- login looks: effects -->
-<style>
-.theme-row { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 16px; font-size: .74rem; color: var(--muted); }
-.theme-row .smallbtn { padding: 6px 11px; font-size: .72rem; }
-.theme-row.fx-row { display: none; margin-top: 10px; }
-body.login-live .fx-row { display: flex; }
-
-.gothic-sign { margin-top: 18px; text-align: center; }
-.gothic-rule { display: flex; align-items: center; gap: 10px; color: #d99aae; font-size: .8rem; letter-spacing: .3em; }
-.gothic-rule::before, .gothic-rule::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(217,141,165,.55), transparent); }
-.gothic-text { font-family: "UnifrakturCook", "Cormorant Garamond", serif; font-size: 1.6rem; line-height: 1.2; color: #f3dce9; margin-top: 6px; text-shadow: 0 0 14px rgba(217,141,165,.35); }
-
-/* Snow on the sign-in page (Snow look): few flakes along the sides */
-.snow-layer { display: none; position: fixed; inset: 0; width: 100%; height: 100%; z-index: 10050; pointer-events: none; opacity: .8;
-  -webkit-mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%);
-  mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%); }
-body.login-snow:not(.snow-off) .snow-layer { display: block; }
-
-/* inside the login panel (Live wallpaper look) */
-.card-snow, .card-rain { display: none; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; border-radius: inherit; pointer-events: none; }
-body.login-live:not(.live-rain) .card-snow { display: block; }
-body.login-live.live-rain .card-rain { display: block; opacity: .6; }
-
-/* Rain on the sign-in page (Original look): few drops along the sides */
-.rain-layer { display: none; position: fixed; inset: 0; width: 100%; height: 100%; z-index: 10050; pointer-events: none; opacity: .55;
-  -webkit-mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%);
-  mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%); }
-body:not(.login-live):not(.login-snow):not(.snow-off) .rain-layer { display: block; }
-
-/* Video wallpaper only shows in the Live look */
-.login-wallpaper { display: none; }
-body.login-live .login-wallpaper { display: block; }
-
-/* Snow look: icy blue instead of burgundy/purple */
-body.login-snow .login-gate {
-  background: radial-gradient(ellipse at 50% 42%, rgba(28,58,98,.96), rgba(4,8,16,.985) 72%);
-}
-body.login-snow .login-card {
-  background: rgba(6,10,18,.78);
-  border-color: rgba(150,200,240,.32);
-}
-body.login-snow .login-symbol,
-body.login-snow .gothic-rule { color: #9cc6ec; }
-body.login-snow .gothic-rule::before,
-body.login-snow .gothic-rule::after {
-  background: linear-gradient(90deg, transparent, rgba(150,200,240,.55), transparent);
-}
-body.login-snow .login-title,
-body.login-snow .gothic-text { color: #e4f1ff; }
-body.login-snow .gothic-text { text-shadow: 0 0 14px rgba(150,200,240,.4); }
-body.login-snow .login-sub { color: #b4c8dc; }
-body.login-snow .login-form label { color: #c3d8ec; }
-body.login-snow .login-form button {
-  border-color: rgba(150,200,240,.45);
-  background: linear-gradient(135deg, rgba(40,90,150,.9), rgba(25,45,90,.9));
-  color: #f0f8ff;
-}
-body.login-snow .login-status { color: #a8cdee; }
-body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
-
-
-/* === LAYA UI polish: spacing, gothic dividers, and a roomier message card === */
-:root {
-  --ui-gothic-line: rgba(211, 177, 204, .38);
-  --ui-gothic-glow: rgba(173, 127, 181, .12);
-}
-html { scroll-padding-top: 78px; }
-.app { width: min(1080px, calc(100% - 36px)); }
-.topbar { padding: 8px 12px; }
-.topbar-inner { gap: 8px; width: min(1240px, 100%); }
-.navbtn,.theme-toggle { padding: 8px 12px; font-size: .76rem; }
-.brand { font-size: 1.08rem; margin-right: 8px; }
-.section { margin-top: 28px; }
-.section-head {
-  position: relative;
-  align-items: center;
-  gap: 28px;
-  margin-bottom: 24px;
-  padding: 16px 4px 22px;
-}
-.section-head:after {
-  content: "✦ ────────────── ❦ ────────────── ✦";
-  display: block;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: rgba(220, 190, 215, .68);
-  letter-spacing: .18em;
-  font-family: "Cormorant Garamond", serif;
-  font-size: .88rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-shadow: 0 0 14px var(--ui-gothic-glow);
-}
-.section-kicker { letter-spacing: .23em; margin-bottom: 8px; }
-.section-head h2 { line-height: 1.12; max-width: 620px; }
-.section-head p { max-width: 390px; line-height: 1.7; }
-.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
-.grid > .card { min-width: 0; padding: 22px; border-radius: 18px; }
-.grid > .card:nth-child(3) { grid-column: 1 / -1; }
-.card {
-  background: linear-gradient(145deg, rgba(24,16,29,.82), rgba(8,7,12,.76));
-  border-color: rgba(220,190,215,.2);
-  box-shadow: 0 18px 48px rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.045);
-}
-.card-title { font-size: 1.48rem; margin-bottom: 8px; }
-.card p { line-height: 1.7; margin-bottom: 10px; }
-#kimchiMsg {
-  display: block;
-  width: 100%;
-  min-height: 172px;
-  resize: vertical;
-  padding: 16px 17px;
-  margin-top: 14px;
-  border-radius: 16px;
-  line-height: 1.7;
-  background: rgba(7,6,11,.68);
-  border: 1px solid rgba(220,190,215,.24);
-  box-sizing: border-box;
-}
-#kimchiMsg:focus {
-  border-color: rgba(220,190,215,.62);
-  box-shadow: 0 0 0 3px rgba(173,127,181,.1);
-  outline: none;
-}
-#sendMsg { min-height: 48px; margin-top: 16px; border-radius: 14px; }
-.pair { gap: 12px; }
-.resultbox,.notes { margin-top: 14px; }
-.card:hover { border-color: rgba(220,190,215,.38); }
-.section-head > div { min-width: 0; }
-@media (min-width: 761px) {
-  #us .grid > .card:nth-child(2) { padding: 25px; }
-  #us .grid > .card:nth-child(2) #kimchiMsg { min-height: 190px; }
-}
-@media (max-width: 760px) {
-  .app { width: min(calc(100% - 22px), 620px); }
-  .topbar { padding: 7px 8px; }
-  .topbar-inner { gap: 5px; }
-  .navbtn,.theme-toggle { padding: 7px 10px; font-size: .72rem; }
-  .brand { margin-right: 3px; }
-  .section-head { padding: 10px 2px 22px; margin-bottom: 18px; }
-  .section-head:after { font-size: .72rem; letter-spacing: .08em; }
-  .grid { grid-template-columns: 1fr; gap: 14px; }
-  .grid > .card { grid-column: auto; padding: 19px; }
-  #kimchiMsg { min-height: 160px; }
-}
-</style>
-
-<canvas class="rain-layer" id="rainCanvas" aria-hidden="true"></canvas>
-<canvas class="snow-layer" id="snowCanvas" aria-hidden="true"></canvas>
-
-
-
-<script>
-/* Colors: "snow" = icy blue + falling snow, "original" = the old burgundy look with no snow */
-(() => {
-  function setTheme(name) {
-    document.body.classList.toggle("login-live", name === "live");
-    document.body.classList.toggle("login-snow", name === "snow");
-    document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.dataset.theme === name));
-
-    // Video only plays in the Live look; paused (and hidden by CSS) otherwise
-    const vid = document.querySelector(".login-wallpaper");
-    if (vid) {
-      if (name === "live") vid.play().catch(() => {});
-      else vid.pause();
-    }
-
-    try { localStorage.setItem("layaTheme", name); } catch (e) {}
-  }
-  document.querySelectorAll(".theme-btn").forEach(b => b.addEventListener("click", () => setTheme(b.dataset.theme)));
-  setTheme(document.body.classList.contains("login-live") ? "live" : document.body.classList.contains("login-snow") ? "snow" : "original");
-
-  /* Snow only falls on the sign-in page */
-  const veil = document.getElementById("welcomeVeil"), gate = document.getElementById("loginGate");
-  const syncSnow = () => document.body.classList.toggle("snow-off", !gate.classList.contains("show"));
-  const mo = new MutationObserver(syncSnow);
-  mo.observe(veil, { attributes: true, attributeFilter: ["class"] });
-  mo.observe(gate, { attributes: true, attributeFilter: ["class"] });
-  syncSnow();
-
-  /* Live wallpaper effect choice: snow or rain inside the login panel */
-  function setFx(fx) {
-    document.body.classList.toggle("live-rain", fx === "rain");
-    document.querySelectorAll(".fx-btn").forEach(b => b.classList.toggle("active", b.dataset.fx === fx));
-    try { localStorage.setItem("layaLiveFx", fx); } catch (e) {}
-  }
-  document.querySelectorAll(".fx-btn").forEach(b => b.addEventListener("click", () => setFx(b.dataset.fx)));
-  setFx(document.body.classList.contains("live-rain") ? "rain" : "snow");
-
-  (() => {
-    const c = document.getElementById("cardRain"), ctx = c.getContext("2d");
-    let W = 0, H = 0, drops = [];
-    const make = init => ({ x: Math.random() * W, y: init ? Math.random() * H : -20, len: 9 + Math.random() * 10, v: 5 + Math.random() * 4 });
-    function size() {
-      const r = c.parentElement.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
-      W = r.width; H = r.height;
-      c.width = W * dpr; c.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drops = Array.from({ length: 28 }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        if (!W) size();
-        ctx.clearRect(0, 0, W, H);
-        ctx.strokeStyle = "rgba(240,205,225,.8)"; ctx.lineWidth = 1; ctx.lineCap = "round";
-        ctx.beginPath();
-        for (const d of drops) {
-          ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - d.len * .12, d.y + d.len);
-          d.y += d.v; d.x -= d.v * .12;
-          if (d.y > H + 20) Object.assign(d, make(false), { x: Math.random() * (W + 30) });
-        }
-        ctx.stroke();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-
-  /* Snow inside the login panel: small, slow, no glow, no image file (light on the GPU) */
-  (() => {
-    const c = document.getElementById("cardSnow"), ctx = c.getContext("2d");
-    let W = 0, H = 0, t = 0, flakes = [];
-    const make = init => ({ x: Math.random() * W, y: init ? Math.random() * H : -6, r: 1 + Math.random() * 1.6, v: .25 + Math.random() * .45, p: Math.random() * 6.28 });
-    function size() {
-      const r = c.parentElement.getBoundingClientRect();
-      W = r.width; H = r.height;
-      c.width = W; c.height = H;
-      flakes = Array.from({ length: 26 }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        if (!W) size();
-        t += .01;
-        ctx.clearRect(0, 0, W, H);
-        ctx.fillStyle = "rgba(235,245,255,.7)";
-        ctx.beginPath();
-        for (const f of flakes) {
-          f.y += f.v; f.x += Math.sin(t + f.p) * .25;
-          if (f.y > H + 6) Object.assign(f, make(false));
-          ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r, 0, 6.283);
-        }
-        ctx.fill();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-
-  /* Snow on the sign-in page (Snow look): same light flakes, whole screen, few */
-  (() => {
-    const c = document.getElementById("snowCanvas"), ctx = c.getContext("2d");
-    let W = 0, H = 0, t = 0, flakes = [];
-    const make = init => ({ x: Math.random() * W, y: init ? Math.random() * H : -8, r: 1.2 + Math.random() * 2, v: .3 + Math.random() * .5, p: Math.random() * 6.28 });
-    function size() {
-      W = innerWidth; H = innerHeight;
-      c.width = W; c.height = H;
-      flakes = Array.from({ length: Math.round(Math.min(45, W / 30)) }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        t += .01;
-        ctx.clearRect(0, 0, W, H);
-        ctx.fillStyle = "rgba(235,245,255,.75)";
-        ctx.beginPath();
-        for (const f of flakes) {
-          f.y += f.v; f.x += Math.sin(t + f.p) * .3;
-          if (f.y > H + 8) Object.assign(f, make(false), { x: Math.random() * W });
-          ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r, 0, 6.283);
-        }
-        ctx.fill();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-
-  /* Rain (Original look, sign-in page): soft pink-tinted streaks, canvas only draws while visible */
-  (() => {
-    const c = document.getElementById("rainCanvas"), ctx = c.getContext("2d");
-    let W = 0, H = 0, drops = [];
-    const make = initial => ({ x: Math.random() * W, y: initial ? Math.random() * H : -30, len: 12 + Math.random() * 14, v: 9 + Math.random() * 7 });
-    function size() {
-      const dpr = Math.min(devicePixelRatio || 1, 2);
-      W = innerWidth; H = innerHeight;
-      c.width = W * dpr; c.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drops = Array.from({ length: Math.round(Math.min(90, W / 14)) }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        ctx.clearRect(0, 0, W, H);
-        ctx.strokeStyle = "rgba(240,205,225,.75)"; ctx.lineWidth = 1; ctx.lineCap = "round";
-        ctx.beginPath();
-        for (const d of drops) {
-          ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - d.len * .12, d.y + d.len);
-          d.y += d.v; d.x -= d.v * .12;
-          if (d.y > H + 30) Object.assign(d, make(false), { x: Math.random() * (W + 80) });
-        }
-        ctx.stroke();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-})();
+/* Uploads */
+$("pickPics").onclick=()=>$("pics").click();
+const shrink=file=>new Promise((res,rej)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{const max=1800,k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);c.toBlob(b=>b?res(b):rej(),"image/jpeg",.88)};img.onerror=rej;img.src=url});
+$("pics").onchange=async()=>{let files=[...$("pics").files];if(!files.length)return;if(files.length>10)files=files.slice(0,10);const tags=files.map(f=>{const box=document.createElement("div"),im=document.createElement("img"),tag=document.createElement("span");im.src=URL.createObjectURL(f);tag.textContent="...";box.append(im,tag);$("thumbs").appendChild(box);return tag});$("upmsg").textContent="Sending "+files.length+" photo"+(files.length>1?"s":"")+"...";
+try{const data=new FormData();for(const f of files)data.append("photos",await shrink(f),"photo.jpg");const r=await api("/upload",{method:"POST",body:data});if(!r.ok)throw 0;tags.forEach(t=>t.textContent="sent");$("upmsg").textContent="All sent. Kimchi got them."}catch(e){tags.forEach(t=>t.textContent="failed");$("upmsg").textContent="Couldn't send. Try again in a bit."}$("pics").value=""};
 </script>
 </body>
 </html>
