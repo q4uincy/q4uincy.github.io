@@ -349,6 +349,16 @@ textarea { min-height: 140px; resize: vertical; }
 }
 .music-embed { border: 0; border-radius: 12px; width: 100%; height: 92px; }
 
+
+/* Gothic places explorer */
+.gothic-place-card { margin-top: 12px; padding: 18px; border: 1px solid rgba(217,141,165,.24); border-radius: 16px; background: linear-gradient(145deg,rgba(28,14,31,.78),rgba(8,7,11,.7)); }
+.gothic-place-name { font-family: "Cormorant Garamond",serif; font-size: clamp(1.65rem,4vw,2.35rem); line-height: 1.1; color: #f0dce5; }
+.gothic-place-meta { margin-top: 7px; color: var(--pink); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
+.gothic-place-description { margin-top: 12px; line-height: 1.65; color: var(--muted); }
+.gothic-place-link { display: inline-block; margin-top: 13px; color: #f0c4d5; text-decoration: underline; text-underline-offset: 3px; }
+.gothic-place-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.gothic-place-actions .action { flex: 1 1 220px; }
+
 .fact {
   font-family: "Cormorant Garamond",serif;
   font-size: 1.35rem;
@@ -468,7 +478,14 @@ textarea { min-height: 140px; resize: vertical; }
 .toast.show { opacity: 1; transform: translate(-50%,0); }
 .hidden { display: none !important; }
 
-@media(max-width:760px) {
+
+/* Kimchi kiss and GIF/sticker picker */
+#giphyResults img, #kissImagePreview img { cursor: pointer; }
+#giphyResults .selected { outline: 2px solid var(--pink); outline-offset: 2px; }
+#giphyResults button { border: 0; background: transparent; padding: 0; width: 100%; height: 100%; cursor: pointer; }
+#giphyResults button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+#sendGiphyBtn:disabled { opacity: .45; cursor: not-allowed; }
+\n@media(max-width:760px) {
   .app { padding-top: 58px; width: min(100% - 16px,680px); }
   .hero { min-height: 43vh; padding-top: 25px; }
   .grid { grid-template-columns: 1fr; }
@@ -802,6 +819,7 @@ body.auth-locked { overflow: hidden; }
     <button class="navbtn" data-go="cozy">Cozy</button>
     <button class="navbtn" data-go="wallpapers">Wallpaper</button>
     <button class="navbtn" data-go="fact">Random fact</button>
+    <button class="navbtn" data-go="gothicPlaces">Gothic places</button>
     <button class="navbtn" data-go="talk">Talk</button>
     <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
   </div>
@@ -855,6 +873,34 @@ body.auth-locked { overflow: hidden; }
         <p>One tap = one hug delivered.</p>
         <button class="action" id="hugBtn" style="font-size:2rem">🤗</button>
         <div class="resultbox" id="hugResult">No hugs sent yet.</div>
+      </div>
+
+      <div class="card" id="kissKimchiCard">
+        <div class="card-title">Give Kimchi a kiss</div>
+        <p>Send him a little kiss, a GIF, or a sticker.</p>
+        <button class="action" id="kissKimchiBtn" type="button">Give Kimchi a kiss</button>
+        <div class="status" id="kissStatus" role="status" aria-live="polite"></div>
+        <div style="margin-top:14px">
+          <label for="giphySearch" class="status" style="display:block;margin-bottom:6px">Find a GIF or sticker</label>
+          <div class="chat-form">
+            <input id="giphySearch" type="search" maxlength="100" placeholder="Search cute GIFs or stickers">
+            <button class="action" id="giphySearchBtn" type="button">Search</button>
+          </div>
+          <div class="controls">
+            <button class="smallbtn active" type="button" data-giphy-kind="gifs">GIFs</button>
+            <button class="smallbtn" type="button" data-giphy-kind="stickers">Stickers</button>
+          </div>
+          <div id="giphyResults" class="thumbs" aria-live="polite"></div>
+          <div class="status" id="giphyStatus">Search for something cute, then choose one to send.</div>
+          <button class="action" id="sendGiphyBtn" type="button" disabled>Send selected GIF or sticker</button>
+        </div>
+        <div style="margin-top:14px">
+          <label for="kissImageUpload" class="status" style="display:block;margin-bottom:6px">Or upload an image</label>
+          <input type="file" id="kissImageUpload" accept="image/*" hidden>
+          <button class="action" id="pickKissImage" type="button">Choose an image</button>
+          <div class="thumbs" id="kissImagePreview"></div>
+          <div class="status" id="kissImageStatus"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -947,6 +993,28 @@ body.auth-locked { overflow: hidden; }
       <div class="fact" id="factText">Loading today's fact...</div>
       <button class="action" id="factBtn">Give me today's fact ✦</button>
       <div class="status" id="factStatus"></div>
+    </div>
+  </section>
+
+
+  <section class="section" id="gothicPlaces">
+    <div class="section-head">
+      <div><div class="section-kicker">07 · places of shadow</div><h2>Gothic places to get lost in.</h2></div>
+      <p>Discover castles, graveyards, abbeys, and beautifully eerie places around the world. Each place appears once before the list resets.</p>
+    </div>
+    <div class="card">
+      <div class="gothic-place-meta" id="gothicPlaceCount">Your next dark little discovery</div>
+      <div class="gothic-place-card" aria-live="polite">
+        <h3 class="gothic-place-name" id="gothicPlaceName">Ready to wander?</h3>
+        <div class="gothic-place-meta" id="gothicPlaceLocation">✦ somewhere atmospheric</div>
+        <p class="gothic-place-description" id="gothicPlaceDescription">Tap below to discover a gothic place.</p>
+        <a class="gothic-place-link" id="gothicPlaceLink" href="https://en.wikipedia.org/wiki/Gothic_architecture" target="_blank" rel="noopener noreferrer">Read more ↗</a>
+      </div>
+      <div class="gothic-place-actions">
+        <button class="action" id="nextGothicPlace" type="button">Discover a random place ✦</button>
+        <button class="smallbtn" id="resetGothicPlaces" type="button">Start the list again</button>
+      </div>
+      <div class="status" id="gothicPlaceStatus" role="status" aria-live="polite">No API key needed — the place collection is built in.</div>
     </div>
   </section>
 
@@ -1990,6 +2058,87 @@ async function loadFact() {
 $("factBtn").onclick = loadFact;
 loadFact();
 
+
+/* Gothic places: curated local collection; each entry is shown once before reset. */
+(() => {
+  const places = [
+    {name:"Bran Castle", location:"Bran, Romania", description:"A dramatic hilltop castle with towers, winding staircases, and a silhouette tied to centuries of vampire folklore.", url:"https://en.wikipedia.org/wiki/Bran_Castle"},
+    {name:"Père Lachaise Cemetery", location:"Paris, France", description:"A sprawling, tree-shaded cemetery filled with sculpted tombs, ornate mausoleums, and quiet cobbled paths.", url:"https://en.wikipedia.org/wiki/P%C3%A8re_Lachaise_Cemetery"},
+    {name:"Sedlec Ossuary", location:"Kutná Hora, Czechia", description:"A small chapel famously decorated with elaborate arrangements made from human bones — haunting, historic, and unlike anywhere else.", url:"https://en.wikipedia.org/wiki/Sedlec_Ossuary"},
+    {name:"Hohenzollern Castle", location:"Baden-Württemberg, Germany", description:"A romantic castle perched high on a wooded mountain, with pointed towers and misty views when the weather turns moody.", url:"https://en.wikipedia.org/wiki/Hohenzollern_Castle"},
+    {name:"Whitby Abbey", location:"Whitby, England", description:"Ruined Gothic arches stand above the sea, inspiring writers and visitors with their windswept, atmospheric beauty.", url:"https://en.wikipedia.org/wiki/Whitby_Abbey"},
+    {name:"Highgate Cemetery", location:"London, England", description:"An overgrown Victorian cemetery of ivy-covered tombs, stone angels, and atmospheric pathways beneath old trees.", url:"https://en.wikipedia.org/wiki/Highgate_Cemetery"},
+    {name:"Neuschwanstein Castle", location:"Bavaria, Germany", description:"A fairy-tale castle with soaring turrets, forested mountains, and a romantic, slightly otherworldly atmosphere.", url:"https://en.wikipedia.org/wiki/Neuschwanstein_Castle"},
+    {name:"The Catacombs of Paris", location:"Paris, France", description:"A vast underground ossuary beneath the city, with long stone corridors and a solemn, eerie stillness.", url:"https://en.wikipedia.org/wiki/Catacombs_of_Paris"},
+    {name:"Edinburgh Castle", location:"Edinburgh, Scotland", description:"A fortress rising over the old city, surrounded by dark stone closes, legends, and centuries of dramatic history.", url:"https://en.wikipedia.org/wiki/Edinburgh_Castle"},
+    {name:"Glasgow Necropolis", location:"Glasgow, Scotland", description:"A Victorian garden cemetery on a hill, with elaborate monuments and sweeping views over the city’s historic rooftops.", url:"https://en.wikipedia.org/wiki/Glasgow_Necropolis"},
+    {name:"Pena Palace", location:"Sintra, Portugal", description:"A vivid Romanticist palace among misty hills, with ornate details, towers, and an almost dreamlike setting.", url:"https://en.wikipedia.org/wiki/Pena_Palace"},
+    {name:"Miramare Castle", location:"Trieste, Italy", description:"A pale castle overlooking the Adriatic Sea, surrounded by dark evergreen trees and romantic coastal gardens.", url:"https://en.wikipedia.org/wiki/Miramare_Castle"},
+    {name:"Burg Eltz", location:"Wierschem, Germany", description:"A medieval castle tucked into a forested valley, with clustered towers that look lifted from a gothic storybook.", url:"https://en.wikipedia.org/wiki/Eltz_Castle"},
+    {name:"St. Dunstan in the East", location:"London, England", description:"The roofless remains of a church transformed into a garden, where plants climb ancient stone walls and empty windows.", url:"https://en.wikipedia.org/wiki/St_Dunstan-in-the-East"},
+    {name:"Château de Chambord", location:"Loir-et-Cher, France", description:"A grand Renaissance château with a forest setting, intricate rooflines, and countless chimneys and towers.", url:"https://en.wikipedia.org/wiki/Ch%C3%A2teau_de_Chambord"},
+    {name:"Basilica Cistern", location:"Istanbul, Türkiye", description:"An underground chamber of ancient columns reflected in shallow water, lit with a mysterious, cinematic glow.", url:"https://en.wikipedia.org/wiki/Basilica_Cistern"},
+    {name:"Kronborg Castle", location:"Helsingør, Denmark", description:"A formidable Renaissance fortress beside the sea, famously associated with Shakespeare’s Hamlet.", url:"https://en.wikipedia.org/wiki/Kronborg"},
+    {name:"The Dark Hedges", location:"County Antrim, Northern Ireland", description:"A tunnel-like avenue of intertwined beech trees that creates a wonderfully uncanny silhouette over the road.", url:"https://en.wikipedia.org/wiki/Dark_Hedges"},
+    {name:"La Recoleta Cemetery", location:"Buenos Aires, Argentina", description:"A city of ornate mausoleums and narrow passages, full of sculpted stonework and elaborate architectural details.", url:"https://en.wikipedia.org/wiki/La_Recoleta_Cemetery"},
+    {name:"The Royal Pavilion", location:"Brighton, England", description:"An extravagant palace with domes and minarets, a fantastical silhouette that feels both romantic and surreal.", url:"https://en.wikipedia.org/wiki/Royal_Pavilion"},
+    {name:"Mont-Saint-Michel", location:"Normandy, France", description:"A medieval abbey-topped island rising from tidal sands, with narrow lanes and a dramatic skyline above the sea.", url:"https://en.wikipedia.org/wiki/Mont-Saint-Michel"},
+    {name:"Kilchurn Castle", location:"Argyll, Scotland", description:"A ruined castle beside a loch, especially atmospheric when low clouds and mountain mist roll across the water.", url:"https://en.wikipedia.org/wiki/Kilchurn_Castle"},
+    {name:"Ponte dei Sospiri", location:"Venice, Italy", description:"The Bridge of Sighs is an enclosed white-stone bridge crossing a canal, wrapped in romantic legends and old-world mood.", url:"https://en.wikipedia.org/wiki/Bridge_of_Sighs"},
+    {name:"Bodiam Castle", location:"East Sussex, England", description:"A picturesque medieval castle surrounded by a moat, with round towers and a striking, storybook outline.", url:"https://en.wikipedia.org/wiki/Bodiam_Castle"},
+    {name:"Kruja Castle", location:"Krujë, Albania", description:"A historic hilltop stronghold with stone paths and sweeping views across the surrounding landscape.", url:"https://en.wikipedia.org/wiki/Kruj%C3%AB_Castle"}
+  ];
+  const key = "layaGothicPlacesSeen_v1";
+  const name = $("gothicPlaceName"), location = $("gothicPlaceLocation"), description = $("gothicPlaceDescription"), link = $("gothicPlaceLink");
+  const count = $("gothicPlaceCount"), status = $("gothicPlaceStatus"), next = $("nextGothicPlace");
+  if (!name || !next) return;
+  function readSeen() {
+    try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value.filter(Number.isInteger) : []; }
+    catch (_) { return []; }
+  }
+  function writeSeen(value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} }
+  function showNext() {
+    let seen = readSeen().filter(i => i >= 0 && i < places.length);
+    const remaining = places.map((_, i) => i).filter(i => !seen.includes(i));
+    if (!remaining.length) {
+      name.textContent = "You found every shadowy corner.";
+      location.textContent = "✦ journey complete";
+      description.textContent = "You have discovered all " + places.length + " places in this collection. Start the list again whenever you want another wander.";
+      link.hidden = true;
+      count.textContent = places.length + " / " + places.length + " places explored";
+      status.textContent = "Every place has been shown once. No repeats until you restart the list.";
+      next.disabled = true;
+      next.textContent = "All places discovered";
+      return;
+    }
+    const index = remaining[Math.floor(Math.random() * remaining.length)];
+    seen.push(index); writeSeen(seen);
+    const place = places[index];
+    name.textContent = place.name;
+    location.textContent = place.location;
+    description.textContent = place.description;
+    link.href = place.url; link.hidden = false; link.textContent = "Read about this place ↗";
+    count.textContent = seen.length + " / " + places.length + " places explored";
+    status.textContent = (places.length - seen.length) + " new places left before the list resets.";
+    next.disabled = false; next.textContent = "Discover another place ✦";
+  }
+  next.addEventListener("click", showNext);
+  $("resetGothicPlaces").addEventListener("click", () => {
+    writeSeen([]); next.disabled = false; next.textContent = "Discover a random place ✦";
+    status.textContent = "The list has been reset. Your next discovery is waiting.";
+    showNext();
+  });
+  const seen = readSeen();
+  if (seen.length >= places.length) {
+    name.textContent = "You found every shadowy corner.";
+    location.textContent = "✦ journey complete";
+    description.textContent = "You have discovered all " + places.length + " places in this collection. Start the list again whenever you want another wander.";
+    link.hidden = true; count.textContent = places.length + " / " + places.length + " places explored";
+    status.textContent = "Every place has been shown once. No repeats until you restart the list.";
+    next.disabled = true; next.textContent = "All places discovered";
+  }
+})();
+
 /* AI chat */
 const chatHistory = [];
 const chatLog = $("log");
@@ -2105,6 +2254,152 @@ $("pics").onchange = async () => {
 
   $("pics").value = "";
 };
+
+/* Give Kimchi a kiss, send a GIPHY GIF/sticker, or upload a separate image. */
+const GIPHY_API_KEY = "j0Mx5XH6nEDBz1jfBVAjkcAOYnbIrH3X";
+let giphyKind = "gifs";
+let selectedGiphy = null;
+
+$("kissKimchiBtn").addEventListener("click", async () => {
+  const button = $("kissKimchiBtn");
+  const status = $("kissStatus");
+  button.disabled = true;
+  status.textContent = "Sending Kimchi a kiss...";
+  try {
+    const response = await api("/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "Kimchi, you just got a kiss from Laya. ♡" })
+    });
+    if (!response.ok) throw new Error("Could not send kiss");
+    notify("kiss");
+    status.textContent = "A kiss has been sent to Kimchi. ♡";
+  } catch (error) {
+    status.textContent = "Couldn't send the kiss right now. Please try again.";
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.querySelectorAll("[data-giphy-kind]").forEach(button => {
+  button.addEventListener("click", () => {
+    giphyKind = button.dataset.giphyKind;
+    document.querySelectorAll("[data-giphy-kind]").forEach(item => item.classList.toggle("active", item === button));
+    selectedGiphy = null;
+    $("sendGiphyBtn").disabled = true;
+    $("giphyResults").replaceChildren();
+    $("giphyStatus").textContent = "Search for a " + (giphyKind === "stickers" ? "sticker" : "GIF") + ".";
+  });
+});
+
+async function searchGiphy() {
+  const query = $("giphySearch").value.trim() || "cute love";
+  const results = $("giphyResults");
+  const status = $("giphyStatus");
+  selectedGiphy = null;
+  $("sendGiphyBtn").disabled = true;
+  results.replaceChildren();
+  status.textContent = "Searching...";
+  try {
+    const endpoint = giphyKind === "stickers" ? "stickers" : "gifs";
+    const url = "https://api.giphy.com/v1/" + endpoint + "/search?api_key=" +
+      encodeURIComponent(GIPHY_API_KEY) + "&q=" + encodeURIComponent(query) +
+      "&limit=12&rating=g&lang=en";
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("GIPHY search failed");
+    const data = await response.json();
+    const items = data.data || [];
+    if (!items.length) {
+      status.textContent = "No results found. Try another search.";
+      return;
+    }
+    items.forEach(item => {
+      const media = item.images || {};
+      const imageUrl = media.fixed_width_small?.url || media.preview_gif?.url || media.original?.url;
+      const sendUrl = media.original?.url || media.fixed_width?.url || imageUrl;
+      if (!imageUrl || !sendUrl) return;
+      const wrap = document.createElement("div");
+      const choose = document.createElement("button");
+      choose.type = "button";
+      choose.setAttribute("aria-label", "Select this " + (giphyKind === "stickers" ? "sticker" : "GIF"));
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = item.title || "GIPHY result";
+      img.loading = "lazy";
+      choose.appendChild(img);
+      choose.addEventListener("click", () => {
+        results.querySelectorAll("div").forEach(el => el.classList.remove("selected"));
+        wrap.classList.add("selected");
+        selectedGiphy = { url: sendUrl, title: item.title || (giphyKind === "stickers" ? "sticker" : "GIF"), kind: giphyKind };
+        $("sendGiphyBtn").disabled = false;
+        status.textContent = "Selected. Send it to Kimchi when you're ready.";
+      });
+      wrap.appendChild(choose);
+      results.appendChild(wrap);
+    });
+    status.textContent = "Choose one to send to Kimchi.";
+  } catch (error) {
+    status.textContent = "GIPHY couldn't load. Check your connection and try again.";
+  }
+}
+$("giphySearchBtn").addEventListener("click", searchGiphy);
+$("giphySearch").addEventListener("keydown", event => {
+  if (event.key === "Enter") { event.preventDefault(); searchGiphy(); }
+});
+$("sendGiphyBtn").addEventListener("click", async () => {
+  if (!selectedGiphy) return;
+  const button = $("sendGiphyBtn");
+  const status = $("giphyStatus");
+  button.disabled = true;
+  status.textContent = "Sending...";
+  try {
+    const response = await api("/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "A " + (selectedGiphy.kind === "stickers" ? "sticker" : "GIF") +
+        " for Kimchi: " + selectedGiphy.url })
+    });
+    if (!response.ok) throw new Error("Could not send media");
+    notify("media", { url: selectedGiphy.url, kind: selectedGiphy.kind });
+    status.textContent = "Sent to Kimchi. ♡";
+  } catch (error) {
+    status.textContent = "Couldn't send it right now. Please try again.";
+    button.disabled = false;
+  }
+});
+
+$("pickKissImage").addEventListener("click", () => $("kissImageUpload").click());
+$("kissImageUpload").addEventListener("change", async () => {
+  const file = $("kissImageUpload").files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    $("kissImageStatus").textContent = "Please choose an image file.";
+    return;
+  }
+  const preview = $("kissImagePreview");
+  preview.replaceChildren();
+  const box = document.createElement("div");
+  const img = document.createElement("img");
+  const tag = document.createElement("span");
+  img.src = URL.createObjectURL(file);
+  img.alt = "Image selected to send";
+  tag.textContent = "...";
+  box.append(img, tag);
+  preview.appendChild(box);
+  $("kissImageStatus").textContent = "Sending image...";
+  try {
+    const formData = new FormData();
+    formData.append("photos", await shrink(file), "kimchi-kiss.jpg");
+    const response = await api("/upload", { method: "POST", body: formData });
+    if (!response.ok) throw new Error("Image upload failed");
+    tag.textContent = "sent";
+    $("kissImageStatus").textContent = "Image sent. Kimchi got it. ♡";
+  } catch (error) {
+    tag.textContent = "failed";
+    $("kissImageStatus").textContent = "Couldn't send the image. Try again.";
+  }
+  $("kissImageUpload").value = "";
+});
 </script>
 <!-- login looks: effects -->
 <style>
