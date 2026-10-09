@@ -105,6 +105,12 @@
   :root[data-theme="snow"] #loginPanel{box-shadow:0 24px 80px rgba(10,28,50,.18)}
   :root[data-theme="snow"] .quick-nav a:hover{background:rgba(117,142,172,.16)}
   :root[data-theme="space"] .quick-nav a:hover{background:rgba(186,155,255,.15)}
+  /* Falling snow / rain, clipped inside each panel */
+  :root{--fx-snow:#8aa3c2;--fx-rain:#3f6a9e}
+  :root[data-theme="space"]{--fx-snow:#ffffff;--fx-rain:#d6e4ff}
+  .panel,.section{position:relative;overflow:hidden}
+  .fx-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;border-radius:inherit}
+  .panel>*:not(.fx-canvas),.section>*:not(.fx-canvas){position:relative;z-index:1}
   @media(max-width:760px){body{padding:16px}.dashboard-header{display:grid;align-items:start}.header-actions{justify-content:flex-start}.dashboard-grid{grid-template-columns:1fr}#photosSection{grid-column:auto}.quick-nav{gap:3px}.quick-nav a{padding:8px 10px}.panel{margin-top:10vh}}
   @media(max-width:420px){body{padding:11px}.panel{padding:23px 18px;border-radius:20px}.section{padding:17px;border-radius:19px}.header-actions{display:grid;grid-template-columns:1fr;width:100%}.header-actions button{width:100%}.form-actions{align-items:stretch;flex-direction:column}.form-actions button{width:100%}.form-actions .status{text-align:left}.quick-nav{display:grid;grid-template-columns:1fr 1fr}.photo-toolbar button{width:100%}}
   @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
@@ -130,6 +136,7 @@
       <button class="secondary wallpaper-switch" id="wallpaperSwitch" type="button">Switch to main-site wallpaper ↗</button>
       <p class="status" id="wallpaperSwitchHint">Choose either wallpaper. Your choice stays saved in this browser.</p>
       <button class="secondary theme-switch" id="themeSwitchLogin" type="button">Enter outer-space mode ✦</button>
+      <button class="secondary" id="fxSwitchLogin" type="button">Switch to rain mode ☂</button>
       <button class="secondary" id="forgot" type="button">Forgot password? Email a reset link</button>
       <p class="status" id="loginStatus" aria-live="polite"></p>
     </div>
@@ -146,6 +153,7 @@
         <span class="status-chip"><span class="status-dot" aria-hidden="true"></span> Dashboard unlocked</span>
         <button id="wallpaperSwitchDashboard" class="secondary wallpaper-switch" type="button">Switch to main-site wallpaper ↗</button>
         <button id="themeSwitchDashboard" class="secondary theme-switch" type="button">Enter outer-space mode ✦</button>
+        <button id="fxToggleDashboard" class="secondary" type="button" aria-pressed="true">Panel snow: On ❄</button>
         <button id="lock" class="secondary" type="button">Lock dashboard ↗</button>
       </div>
     </header>
@@ -253,6 +261,104 @@
     applyAdminTheme();
   }));
   applyAdminTheme();
+
+  // ---- Falling snow / rain, clipped inside each panel ----
+  const fxReduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let loginFx = "snow", dashSnow = true;
+  try {
+    const savedFx = localStorage.getItem("layaLoginFx");
+    loginFx = ["snow", "rain", "off"].includes(savedFx) ? savedFx : "snow";
+    dashSnow = localStorage.getItem("layaDashSnow") !== "off";
+  } catch (e) {}
+  const fxPanels = [];
+  let fxTheme = "", fxColors = {snow:"#fff", rain:"#fff"};
+  const rnd = (a, b) => a + Math.random() * (b - a);
+
+  function addFx(panel, getMode) {
+    const canvas = document.createElement("canvas");
+    canvas.className = "fx-canvas";
+    canvas.setAttribute("aria-hidden", "true");
+    panel.prepend(canvas);
+    const fx = {panel, canvas, ctx: canvas.getContext("2d"), getMode, parts: [], w: 0, h: 0, kind: null};
+    new ResizeObserver(() => sizeFx(fx)).observe(panel);
+    fxPanels.push(fx);
+  }
+  function sizeFx(fx) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    fx.w = fx.panel.clientWidth; fx.h = fx.panel.clientHeight;
+    fx.canvas.width = fx.w * dpr; fx.canvas.height = fx.h * dpr;
+    fx.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    fx.kind = null; // reseed for the new size
+  }
+  function seedFx(fx, kind) {
+    const area = fx.w * fx.h;
+    const n = kind === "snow" ? Math.min(Math.max(area / 6000, 20), 90) : Math.min(Math.max(area / 9000, 15), 55);
+    fx.parts = Array.from({length: Math.round(n)}, () => kind === "snow"
+      ? {x: rnd(0, fx.w), y: rnd(0, fx.h), r: rnd(1, 3.2), vy: rnd(.3, 1), ph: rnd(0, 6.28), sw: rnd(.3, .9)}
+      : {x: rnd(0, fx.w), y: rnd(0, fx.h), len: rnd(7, 13), vy: rnd(2, 3.5), vx: -0.4});
+    fx.kind = kind;
+  }
+  function fxFrame(t) {
+    requestAnimationFrame(fxFrame);
+    if (document.hidden) return;
+    const theme = document.documentElement.dataset.theme;
+    if (theme !== fxTheme) {
+      fxTheme = theme;
+      const cs = getComputedStyle(document.documentElement);
+      fxColors = {snow: cs.getPropertyValue("--fx-snow").trim(), rain: cs.getPropertyValue("--fx-rain").trim()};
+    }
+    for (const fx of fxPanels) {
+      const mode = fx.getMode();
+      if ((!fx.w || !fx.h) && fx.panel.clientWidth) sizeFx(fx);
+      if (mode === "off" || !fx.w || !fx.h) {
+        if (fx.kind) { fx.ctx.clearRect(0, 0, fx.w, fx.h); fx.kind = null; fx.parts = []; }
+        continue;
+      }
+      if (fx.kind !== mode) seedFx(fx, mode);
+      const c = fx.ctx;
+      c.clearRect(0, 0, fx.w, fx.h);
+      if (mode === "snow") {
+        c.fillStyle = fxColors.snow; c.globalAlpha = .8;
+        for (const p of fx.parts) {
+          p.y += p.vy; p.x += Math.sin(t / 900 + p.ph) * p.sw * .5;
+          if (p.y > fx.h + 4) { p.y = -4; p.x = rnd(0, fx.w); }
+          c.beginPath(); c.arc(p.x, p.y, p.r, 0, 6.283); c.fill();
+        }
+      } else {
+        c.strokeStyle = fxColors.rain; c.globalAlpha = .7; c.lineWidth = 1.1; c.lineCap = "round";
+        c.beginPath();
+        for (const p of fx.parts) {
+          p.y += p.vy; p.x += p.vx;
+          if (p.y > fx.h + p.len) { p.y = -p.len; p.x = rnd(0, fx.w + 20); }
+          c.moveTo(p.x, p.y); c.lineTo(p.x + p.vx * 1.4, p.y + p.len);
+        }
+        c.stroke();
+      }
+      c.globalAlpha = 1;
+    }
+  }
+  addFx(document.getElementById("loginPanel"), () => loginFx);
+  document.querySelectorAll(".section").forEach(s => addFx(s, () => dashSnow ? "snow" : "off"));
+  requestAnimationFrame(fxFrame);
+
+  const fxSwitchLogin = document.getElementById("fxSwitchLogin");
+  const fxToggleDash = document.getElementById("fxToggleDashboard");
+  function applyFxLabels() {
+    fxSwitchLogin.textContent = loginFx === "snow" ? "Panel effect: Snow ❄" : loginFx === "rain" ? "Panel effect: Rain ☂" : "Panel effect: Off";
+    fxToggleDash.textContent = dashSnow ? "Panel snow: On ❄" : "Panel snow: Off";
+    fxToggleDash.setAttribute("aria-pressed", String(dashSnow));
+  }
+  fxSwitchLogin.addEventListener("click", () => {
+    loginFx = loginFx === "snow" ? "rain" : loginFx === "rain" ? "off" : "snow";
+    try { localStorage.setItem("layaLoginFx", loginFx); } catch (e) {}
+    applyFxLabels();
+  });
+  fxToggleDash.addEventListener("click", () => {
+    dashSnow = !dashSnow;
+    try { localStorage.setItem("layaDashSnow", dashSnow ? "on" : "off"); } catch (e) {}
+    applyFxLabels();
+  });
+  applyFxLabels();
 
   const IDLE_TIMEOUT_MS=15*60*1000;
   let authenticated=false, idleTimer=null, lastActivityAt=0, lastPointerMoveAt=0;
