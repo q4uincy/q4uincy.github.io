@@ -121,12 +121,12 @@
 <div id="adminLoginWallpaperShade" aria-hidden="true"></div>
 <main>
   <section id="loginPanel" class="panel">
-    <div class="section-head"><span class="snow-icon" aria-hidden="true">☾</span><div class="section-title-group"><p class="eyebrow">PRIVATE LITTLE DOORWAY</p><h1>Welcome back <span>♡</span></h1></div></div>
-    <p class="muted login-description">A quiet little corner for Laya. Sign in to open your private dashboard.</p>
+    <div class="section-head"><span class="snow-icon" aria-hidden="true">☾</span><div class="section-title-group"><p class="eyebrow">ADMIN PAGE LOGIN</p><h1>Welcome quincy <span>♡</span></h1></div></div>
+    <p class="muted login-description">Enter your usename and password.</p>
     <div class="fields">
       <input id="user" type="text" placeholder="Admin username" autocomplete="username" aria-label="Admin username" required>
       <input id="pw" type="password" placeholder="Admin password" autocomplete="current-password" aria-label="Admin password" required>
-      <button id="login" type="button">Unlock dashboard ✦</button>
+      <button id="login" type="button">Continue ✦</button>
       <button class="secondary wallpaper-switch" id="wallpaperSwitch" type="button">Switch to main-site wallpaper ↗</button>
       <p class="status" id="wallpaperSwitchHint">Choose either wallpaper. Your choice stays saved in this browser.</p>
       <button class="secondary theme-switch" id="themeSwitchLogin" type="button">Enter outer-space mode ✦</button>
@@ -218,7 +218,7 @@
     }
     wallpaperSwitchButtons.forEach(button => {
       button.textContent = useMainWallpaper
-        ? "Switch to admin wallpaper ↗"
+        ? "Change Wallpaper ↗"
         : "Switch to main-site wallpaper ↗";
       button.setAttribute("aria-label", useMainWallpaper
         ? "Switch to admin wallpaper"
@@ -242,7 +242,7 @@
     document.documentElement.dataset.theme = adminTheme;
     const switchToSpace = adminTheme !== "space";
     themeSwitchButtons.forEach(button => {
-      button.textContent = switchToSpace ? "Enter outer-space mode ✦" : "Switch to snowy mode ❄";
+      button.textContent = switchToSpace ? "Enter outer-space mode ✦" : "Change theme ❄";
       button.setAttribute("aria-label", switchToSpace ? "Switch to outer-space theme" : "Switch to snowy theme");
       button.setAttribute("aria-pressed", String(adminTheme === "space"));
     });
