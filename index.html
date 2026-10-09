@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -668,6 +667,7 @@ body.auth-locked { overflow: hidden; }
 </head>
 
 <body>
+<script>try{if(localStorage.getItem("layaTheme")!=="original")document.body.classList.add("theme-snow")}catch(e){document.body.classList.add("theme-snow")}</script>
 <!-- Login screen -->
 <div id="loginGate" class="login-gate show" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
   <video class="login-wallpaper" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
@@ -687,6 +687,10 @@ body.auth-locked { overflow: hidden; }
       <button id="loginSubmit" type="submit">Sign in ✦</button>
       <p id="loginStatus" class="login-status" role="status" aria-live="polite"></p>
     </form>
+    <div class="theme-row"><span>Colors</span>
+      <button class="smallbtn theme-btn" type="button" data-theme="snow">❄ Snow</button>
+      <button class="smallbtn theme-btn" type="button" data-theme="original">🖤 Original</button>
+    </div>
   </section>
 </div>
 
@@ -896,6 +900,8 @@ body.auth-locked { overflow: hidden; }
         <span class="status" id="wallStatus">Live wallpaper on</span>
         <button class="smallbtn" id="wallPrev">‹</button>
         <button class="smallbtn" id="wallNext">›</button>
+        <button class="smallbtn theme-btn" type="button" data-theme="snow">❄ Snow</button>
+        <button class="smallbtn theme-btn" type="button" data-theme="original">🖤 Original</button>
       </div>
     </div>
   </section>
@@ -2021,6 +2027,139 @@ $("pics").onchange = async () => {
 
   $("pics").value = "";
 };
+</script>
+<!-- ❄ SNOW THEME ❄ -->
+<style>
+/* ---------- palette ---------- */
+body.theme-snow {
+  --ink: #07101c;
+  --ink2: #0d1a2b;
+  --burg: #4a7fb0;
+  --burg2: #6aa6da;
+  --purple: #16304d;
+  --purple2: #274c75;
+  --text: #eef6ff;
+  --muted: #b4c6d9;
+  --pink: #a9d6ff;                  /* accent is now ice blue */
+  --line: rgba(190,225,255,.2);
+  --glow: rgba(120,190,255,.38);
+}
+
+body.theme-snow { background: radial-gradient(circle at 20% 10%, #1b3452 0, #09121f 45%, #04070d 100%); }
+body.theme-snow .topbar { background: rgba(6,13,24,.62); border-bottom-color: rgba(190,225,255,.14); }
+body.theme-snow .brand { color: #e4f2ff; }
+body.theme-snow .navbtn, body.theme-snow .theme-toggle { color: #d4e6f7; border-color: rgba(190,225,255,.16); background: rgba(210,235,255,.045); }
+body.theme-snow .navbtn:hover { border-color: rgba(190,225,255,.5); }
+body.theme-snow .navbtn.sign-out { color: #bfe0ff; border-color: rgba(150,205,255,.4); background: rgba(70,120,170,.2); }
+body.theme-snow .navbtn.sign-out:hover { border-color: rgba(190,225,255,.8); background: rgba(70,120,170,.42); }
+
+body.theme-snow h1 em { color: #bfe3ff; }
+body.theme-snow .card { background: linear-gradient(145deg, rgba(14,28,46,.68), rgba(6,11,19,.58)); }
+body.theme-snow .card:hover { border-color: rgba(170,215,255,.4); }
+
+/* buttons */
+body.theme-snow .action { border-color: rgba(170,215,255,.3); background: linear-gradient(135deg, rgba(60,110,160,.62), rgba(28,52,88,.72)); }
+body.theme-snow .action:hover { border-color: rgba(200,230,255,.7); }
+body.theme-snow .notes-more, body.theme-snow .notes-less { border-color: rgba(170,215,255,.34); background: linear-gradient(135deg, rgba(60,110,160,.42), rgba(28,52,88,.45)); }
+body.theme-snow .notes-more:hover, body.theme-snow .notes-less:hover { border-color: rgba(200,230,255,.75); }
+body.theme-snow .smallbtn.active { background: rgba(70,125,180,.55); border-color: rgba(190,225,255,.55); }
+body.theme-snow .switch { background: #1d2f45; }
+body.theme-snow .switch.on { background: #4f90c8; }
+body.theme-snow .msg.me { background: rgba(60,115,170,.6); }
+body.theme-snow .note, body.theme-snow .msg.ai { background: rgba(210,235,255,.05); }
+body.theme-snow .plush { background: rgba(10,22,38,.74); }
+body.theme-snow .plush:hover { border-color: rgba(190,225,255,.5); }
+body.theme-snow textarea, body.theme-snow input { background: rgba(3,8,16,.5); }
+body.theme-snow ::placeholder { color: #8da3b9; }
+body.theme-snow .toast { background: #0d1a2b; }
+body.theme-snow .footer { color: #86a0b9; }
+body.theme-snow .fact { color: #eaf5ff; }
+body.theme-snow .resultbox { color: #dcecfa; }
+body.theme-snow .plush-msg { color: #dcecfa; }
+body.theme-snow .wallpaper-float { border-color: rgba(190,225,255,.18); background: rgba(6,13,24,.46); }
+
+/* Kuromi plush (cards) */
+body.theme-snow .kuromi-art .hood { fill: #121c2b; stroke: #a9d6ff; }
+body.theme-snow .kuromi-art .inner { fill: #2b4f77; }
+body.theme-snow .kuromi-art .face { fill: #f4faff; }
+body.theme-snow .kuromi-art .nose { fill: #8cc6f5; }
+
+/* Kuromi cursor */
+body.theme-snow .kuromi-head, body.theme-snow .kuromi-ear { background: #111b2a; border-color: #a9d6ff; }
+body.theme-snow .kuromi-eye { background: #e8f4ff; }
+body.theme-snow .kuromi-skull, body.theme-snow .kuromi-skull:before, body.theme-snow .kuromi-skull:after { background: #eaf5ff; }
+body.theme-snow .ripple { border-color: #a9d6ff; }
+
+/* Welcome screen */
+body.theme-snow #welcomeVeil { background: radial-gradient(ellipse at 50% 45%, rgba(28,62,100,.94), rgba(5,9,16,.99) 68%); }
+body.theme-snow .welcome-card:before, body.theme-snow .welcome-card:after { color: #b9dcfa; }
+body.theme-snow .welcome-moon { color: #c4e2fb; text-shadow: 0 0 22px rgba(140,200,255,.6); }
+body.theme-snow .welcome-title { color: #f2f9ff; text-shadow: 0 0 28px rgba(150,205,255,.4); }
+body.theme-snow .welcome-sub { color: #b4cde4; }
+body.theme-snow .welcome-skip { border-color: rgba(170,215,255,.34); color: #e6f3ff; }
+body.theme-snow .welcome-kuromi { filter: drop-shadow(0 5px 14px rgba(140,200,255,.4)); }
+body.theme-snow .welcome-kuromi [fill="#d7a0eb"] { fill: #cfe8ff; }   /* ear balls + skirt dots */
+body.theme-snow .welcome-kuromi [fill="#e991c3"] { fill: #8cc6f5; }   /* bow + nose */
+body.theme-snow .welcome-kuromi [fill="#f18bb8"] { fill: #9fd0f7; }   /* mouth */
+
+/* Login */
+body.theme-snow .login-gate { background: radial-gradient(ellipse at 50% 42%, rgba(24,56,92,.96), rgba(4,7,13,.985) 72%); }
+body.theme-snow .login-card { border-color: rgba(170,215,255,.34); background: rgba(7,13,22,.78); }
+body.theme-snow .login-symbol { color: #bfe3ff; }
+body.theme-snow .login-title { color: #f2f9ff; }
+body.theme-snow .login-form label { color: #cfe2f3; }
+body.theme-snow .login-form button { border-color: rgba(170,215,255,.5); background: linear-gradient(135deg, rgba(60,115,170,.9), rgba(30,58,96,.9)); color: #f4faff; }
+body.theme-snow .login-status { color: #b9dcfa; }
+
+/* Admin */
+body.theme-snow .admin-open { background: rgba(10,20,34,.68); color: #dcecfa; border-color: rgba(150,200,240,.3); }
+body.theme-snow .admin-open:hover { background: rgba(40,80,120,.7); border-color: rgba(190,225,255,.65); }
+body.theme-snow .admin-panel { background: rgba(8,15,26,.9); border-color: rgba(150,200,240,.3); }
+body.theme-snow .admin-panel label { color: #cfe2f3; }
+body.theme-snow .admin-panel input { background: #0a1320; border-color: #2c4766; color: #eef6ff; }
+body.theme-snow .admin-panel button[type=submit] { border-color: #4f7fb0; background: #254567; color: #f2f9ff; }
+body.theme-snow .admin-hint { color: #8fa8c0; }
+body.theme-snow .admin-status { color: #bcdcf6; }
+
+/* Theme switcher buttons */
+.theme-row { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 16px; font-size: .74rem; color: var(--muted); }
+.theme-row .smallbtn { padding: 6px 11px; font-size: .72rem; }
+
+/* GIF snow: exists only in the snow theme. The black GIF background vanishes with the "screen" blend. */
+.snow-gif { display: none; }
+body.theme-snow .snow-gif { display: block; position: fixed; inset: 0; z-index: 10050; pointer-events: none; mix-blend-mode: screen;
+  background-image: url("assets/snow.gif"); background-repeat: repeat; filter: brightness(1.7) contrast(1.1); }
+body.theme-snow .snow-gif.one { background-size: cover; opacity: .9; }
+body.theme-snow .snow-gif.two { background-size: 700px auto; opacity: .6; transform: scaleX(-1); }
+/* snow stops once the welcome screen is dismissed */
+body.theme-snow.snow-off .snow-gif { display: none; }
+@media (prefers-reduced-motion: reduce) { body.theme-snow .snow-gif { display: none; } }
+</style>
+
+<div class="snow-gif one" aria-hidden="true"></div>
+<div class="snow-gif two" aria-hidden="true"></div>
+
+
+
+<script>
+/* Colors: "snow" = icy blue + falling snow, "original" = the old burgundy look with no snow */
+(() => {
+  function setTheme(name) {
+    document.body.classList.toggle("theme-snow", name === "snow");
+    document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.dataset.theme === name));
+    try { localStorage.setItem("layaTheme", name); } catch (e) {}
+  }
+  document.querySelectorAll(".theme-btn").forEach(b => b.addEventListener("click", () => setTheme(b.dataset.theme)));
+  setTheme(document.body.classList.contains("theme-snow") ? "snow" : "original");
+
+  /* Snow only falls on the login + welcome screens; it stops after "enter softly" */
+  const veil = document.getElementById("welcomeVeil"), gate = document.getElementById("loginGate");
+  const syncSnow = () => document.body.classList.toggle("snow-off", veil.classList.contains("dismissed") && !gate.classList.contains("show"));
+  const mo = new MutationObserver(syncSnow);
+  mo.observe(veil, { attributes: true, attributeFilter: ["class"] });
+  mo.observe(gate, { attributes: true, attributeFilter: ["class"] });
+  syncSnow();
+})();
 </script>
 </body>
 </html>
