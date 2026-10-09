@@ -2119,6 +2119,95 @@ body.login-snow .login-form button {
 }
 body.login-snow .login-status { color: #a8cdee; }
 body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
+
+
+/* === LAYA UI polish: spacing, gothic dividers, and a roomier message card === */
+:root {
+  --ui-gothic-line: rgba(211, 177, 204, .38);
+  --ui-gothic-glow: rgba(173, 127, 181, .12);
+}
+html { scroll-padding-top: 78px; }
+.app { width: min(1080px, calc(100% - 36px)); }
+.topbar { padding: 8px 12px; }
+.topbar-inner { gap: 8px; width: min(1240px, 100%); }
+.navbtn,.theme-toggle { padding: 8px 12px; font-size: .76rem; }
+.brand { font-size: 1.08rem; margin-right: 8px; }
+.section { margin-top: 28px; }
+.section-head {
+  position: relative;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 24px;
+  padding: 16px 4px 22px;
+}
+.section-head:after {
+  content: "✦ ────────────── ❦ ────────────── ✦";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: rgba(220, 190, 215, .68);
+  letter-spacing: .18em;
+  font-family: "Cormorant Garamond", serif;
+  font-size: .88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow: 0 0 14px var(--ui-gothic-glow);
+}
+.section-kicker { letter-spacing: .23em; margin-bottom: 8px; }
+.section-head h2 { line-height: 1.12; max-width: 620px; }
+.section-head p { max-width: 390px; line-height: 1.7; }
+.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
+.grid > .card { min-width: 0; padding: 22px; border-radius: 18px; }
+.grid > .card:nth-child(3) { grid-column: 1 / -1; }
+.card {
+  background: linear-gradient(145deg, rgba(24,16,29,.82), rgba(8,7,12,.76));
+  border-color: rgba(220,190,215,.2);
+  box-shadow: 0 18px 48px rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.045);
+}
+.card-title { font-size: 1.48rem; margin-bottom: 8px; }
+.card p { line-height: 1.7; margin-bottom: 10px; }
+#kimchiMsg {
+  display: block;
+  width: 100%;
+  min-height: 172px;
+  resize: vertical;
+  padding: 16px 17px;
+  margin-top: 14px;
+  border-radius: 16px;
+  line-height: 1.7;
+  background: rgba(7,6,11,.68);
+  border: 1px solid rgba(220,190,215,.24);
+  box-sizing: border-box;
+}
+#kimchiMsg:focus {
+  border-color: rgba(220,190,215,.62);
+  box-shadow: 0 0 0 3px rgba(173,127,181,.1);
+  outline: none;
+}
+#sendMsg { min-height: 48px; margin-top: 16px; border-radius: 14px; }
+.pair { gap: 12px; }
+.resultbox,.notes { margin-top: 14px; }
+.card:hover { border-color: rgba(220,190,215,.38); }
+.section-head > div { min-width: 0; }
+@media (min-width: 761px) {
+  #us .grid > .card:nth-child(2) { padding: 25px; }
+  #us .grid > .card:nth-child(2) #kimchiMsg { min-height: 190px; }
+}
+@media (max-width: 760px) {
+  .app { width: min(calc(100% - 22px), 620px); }
+  .topbar { padding: 7px 8px; }
+  .topbar-inner { gap: 5px; }
+  .navbtn,.theme-toggle { padding: 7px 10px; font-size: .72rem; }
+  .brand { margin-right: 3px; }
+  .section-head { padding: 10px 2px 22px; margin-bottom: 18px; }
+  .section-head:after { font-size: .72rem; letter-spacing: .08em; }
+  .grid { grid-template-columns: 1fr; gap: 14px; }
+  .grid > .card { grid-column: auto; padding: 19px; }
+  #kimchiMsg { min-height: 160px; }
+}
 </style>
 
 <canvas class="rain-layer" id="rainCanvas" aria-hidden="true"></canvas>
