@@ -99,6 +99,7 @@ textarea { min-height: 92px; resize: vertical; }
 .gothic-place-meta { margin-top: 7px; color: var(--pink); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
 .gothic-place-description { margin-top: 8px; line-height: 1.55; color: var(--muted); }
 .gothic-place-preview { display: block; width: 100%; height: clamp(260px,38vw,520px); max-height: 520px; aspect-ratio: 16/9; object-fit: cover; object-position: center; border-radius: 12px; margin: 0 0 14px; background: rgba(255,255,255,.04); border: 1px solid var(--line); }
+.gothic-photo-note { display: grid; place-items: center; width: 100%; height: 120px; margin: 0 0 14px; border-radius: 12px; border: 1px dashed var(--line); color: var(--muted); font-size: .85rem; background: rgba(255,255,255,.03); }
 .gothic-search-row { display: flex; gap: 8px; margin-top: 12px; }
 .gothic-search-row input { min-width: 0; flex: 1; }
 .gothic-search-row .smallbtn { flex-shrink: 0; }
@@ -650,7 +651,8 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     <div class="card">
       <div class="gothic-place-meta" id="gothicPlaceCount">Your next dark little discovery</div>
       <div class="gothic-place-card" aria-live="polite">
-        <img class="gothic-place-preview hidden" id="gothicPlaceImage" alt="Photograph of the discovered place" loading="lazy">
+        <div class="gothic-photo-note hidden" id="gothicPhotoNote">Loading photo…</div>
+        <img class="gothic-place-preview hidden" id="gothicPlaceImage" alt="Photograph of the discovered place" referrerpolicy="no-referrer">
         <h3 class="gothic-place-name" id="gothicPlaceName">Ready to wander?</h3>
         <div class="gothic-place-meta" id="gothicPlaceLocation">✦ somewhere atmospheric</div>
         <p class="gothic-place-description" id="gothicPlaceDescription">Tap below to discover a gothic place.</p>
@@ -1513,24 +1515,51 @@ const GOTHIC_FACTS = [
     } finally { busy = false; el.searchBtn.disabled = false; }
   }
 
+  async function wikiImage(params) {
+    const url = "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=pageimages|extract&piprop=thumbnail&pithumbsize=1600&exintro=1&explaintext=1&" + params;
+    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error("No page image");
+    const payload = await response.json();
+    const pages = Object.values(payload?.query?.pages || {}).sort((a, b) => (a.index || 0) - (b.index || 0));
+    return pages.find(p => p.thumbnail?.source) || pages[0] || {};
+  }
+
+  function preload(src) {
+    return new Promise((resolve, reject) => {
+      const probe = new Image();
+      probe.onload = () => resolve(src);
+      probe.onerror = reject;
+      probe.src = src;
+    });
+  }
+
   async function showPhoto(place) {
+    const note = $("gothicPhotoNote");
+    const stillCurrent = () => el.name.textContent === place.name;
     el.image.classList.add("hidden");
     el.image.removeAttribute("src");
     el.image.alt = "Photograph of " + place.name;
+    note.textContent = "Loading photo…";
+    note.classList.remove("hidden");
     const title = place.wikiTitle || place.name;
     try {
-      const api = "https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages|extract&piprop=thumbnail&pithumbsize=1800&exintro=1&explaintext=1&titles=" + encodeURIComponent(title);
-      const response = await fetch(api, { headers: { Accept: "application/json" } });
-      if (!response.ok) throw new Error("No page image");
-      const payload = await response.json();
-      const data = Object.values(payload?.query?.pages || {})[0] || {};
-      if (data.thumbnail?.source && el.name.textContent === place.name) {
-        el.image.onload = () => { if (el.name.textContent === place.name) el.image.classList.remove("hidden"); };
-        el.image.onerror = () => el.image.classList.add("hidden");
-        el.image.src = data.thumbnail.source;
+      let data = await wikiImage("redirects=1&titles=" + encodeURIComponent(title));
+      if (!data.thumbnail?.source) {
+        // Fallback: search Wikipedia for the place name and take the first result that has a photo
+        data = await wikiImage("generator=search&gsrlimit=5&gsrsearch=" + encodeURIComponent(place.name + (place.location && !/worldwide/i.test(place.location) ? " " + place.location : "")));
       }
-      if (data.extract && data.extract.length > el.desc.textContent.length && el.name.textContent === place.name) el.desc.textContent = data.extract;
-    } catch (_) {}
+      if (!stillCurrent()) return;
+      if (data.extract && data.extract.length > el.desc.textContent.length && data.title && data.title.toLowerCase() === title.toLowerCase()) el.desc.textContent = data.extract;
+      const src = data.thumbnail?.source;
+      if (!src) { note.textContent = "No photo available for this place — use the link below to see more."; return; }
+      await preload(src);
+      if (!stillCurrent()) return;
+      el.image.src = src;
+      el.image.classList.remove("hidden");
+      note.classList.add("hidden");
+    } catch (_) {
+      if (stillCurrent()) note.textContent = "Couldn't load a photo for this place — use the link below to see more.";
+    }
   }
 
   function updateCounter() {
@@ -1580,6 +1609,7 @@ const GOTHIC_FACTS = [
       : "Every place we could find has been explored. Read some Gothic history while you rest, or start the list again to wander once more.";
     el.link.hidden = true;
     el.image.classList.add("hidden");
+    $("gothicPhotoNote").classList.add("hidden");
     el.next.disabled = false;
     el.next.textContent = offline ? "Try again ✦" : "Discover a place ✦";
     showKnowledge(true);
