@@ -1370,25 +1370,111 @@ const GOTHIC_CHAPTERS = [
   {title:"Cemeteries as cultural records", era:"History · memorial art", body:"Historic cemeteries can reveal changing beliefs about death, family, status, craftsmanship, and public health. Their monuments range from modest markers to elaborate mausoleums and sculptures. They are meaningful heritage sites, so visitors should follow local rules, respect mourners, and avoid disturbing graves or memorials.", url:"https://en.wikipedia.org/wiki/Cemetery", summary:"What monuments and burial grounds can tell us about the past."}
 ];
 const GOTHIC_FACTS = [
-  "Gothic architecture first developed in 12th-century France; it was not originally a name for a dark fashion style.",
-  "A gargoyle is technically a carved waterspout. A similar sculpture that does not drain water is usually called a grotesque.",
-  "The pointed arch is a hallmark of Gothic design, but it also appeared in other architectural traditions.",
-  "Flying buttresses help transfer the outward forces of tall vaulted buildings to external supports.",
-  "Many medieval stained-glass windows told stories through images, making them meaningful even to visitors who could not read.",
-  "The Castle of Otranto appeared in 1764 and is often described as a foundational Gothic novel.",
-  "Gothic Revival architecture became especially popular in the 18th and 19th centuries, long after medieval Gothic’s first flourishing.",
-  "Not every castle is Gothic, and not every building with a spooky atmosphere is Gothic architecture.",
-  "Gothic fiction often uses old buildings as more than scenery: they can hold family secrets, memories, and threats.",
-  "The modern Goth subculture grew from post-punk music around the late 1970s and early 1980s.",
-  "The word ‘Gothic’ has had different meanings in art, architecture, literature, and popular culture across time.",
-  "Ruins became especially evocative subjects for Romantic-era artists and writers, who used them to explore time and memory.",
-  "The rose window is a large circular window often divided by intricate stone tracery, especially associated with Gothic churches.",
-  "Medieval Gothic buildings were constructed over generations, so a single cathedral can contain several architectural periods.",
-  "A cemetery’s monuments can document local history, social customs, and changes in sculpture and design.",
-  "Renaissance writers originally used the word ‘Gothic’ as an insult for medieval buildings they considered crude.",
-  "Frankenstein was begun by Mary Shelley when she was a teenager, during a rainy summer holiday in 1816.",
-  "Ribbed vaults let builders make ceilings lighter than the thick stone barrel vaults used before them."
+  "The word ‘Gothic’ began as an insult. Renaissance writers in Italy used it for medieval buildings they thought were crude, as if only the barbarian Goths could have made them.",
+  "Medieval builders never called their own style Gothic. Contemporaries sometimes referred to it as ‘French work’.",
+  "Many historians point to the rebuilt choir of the Abbey of Saint-Denis near Paris, finished in the 1140s under Abbot Suger, as the first major Gothic building.",
+  "Notre-Dame de Paris was begun in 1163, and its construction stretched across roughly two centuries.",
+  "Cologne Cathedral was started in 1248 and not completed until 1880, after building work had stopped for several centuries.",
+  "Milan Cathedral was begun in 1386, and finishing touches were still being added in the 20th century.",
+  "St. Vitus Cathedral in Prague was begun in 1344 and wasn’t considered finished until 1929.",
+  "Beauvais Cathedral tried to build the tallest Gothic vault of all, around 48 metres high. Part of it collapsed in 1284, and the cathedral was never completed as planned.",
+  "Ulm Minster in Germany has the tallest church spire in the world, at about 161 metres.",
+  "Strasbourg Cathedral was the tallest building in the world from 1647 until 1874.",
+  "Lincoln Cathedral is believed to have been the tallest building in the world for over two centuries, until its central spire collapsed in 1548.",
+  "Salisbury Cathedral has the tallest church spire in the United Kingdom, at about 123 metres.",
+  "Salisbury Cathedral also keeps one of only four surviving copies of the 1215 Magna Carta.",
+  "Durham Cathedral, begun in 1093, was among the first large buildings to use pointed ribbed vaults.",
+  "The pointed arch lets builders make tall openings without needing the width to match, which is one reason Gothic interiors can feel so high and narrow.",
+  "Ribbed vaults work like a stone skeleton: the ribs carry the load, so the sections between them can be thinner and lighter.",
+  "Pinnacles on Gothic buildings aren’t just decoration. Their weight presses down on the buttresses and helps keep them stable.",
+  "Flying buttresses carry the outward push of a high roof across to heavy piers outside, which is what allowed walls to be filled with windows.",
+  "King’s College Chapel in Cambridge is famous for what is often described as the largest fan vault in the world.",
+  "Sainte-Chapelle in Paris, consecrated in 1248, has an upper chapel whose walls are almost entirely stained glass.",
+  "Chartres Cathedral still holds much of its original 12th and 13th-century stained glass, which is why it’s one of the best places to see medieval glasswork.",
+  "Some of Chartres’s windows were donated by trade guilds, and they show bakers, butchers, and other workers at their crafts.",
+  "During the Second World War, many of Chartres’s windows were taken down and stored to protect them from damage.",
+  "The labyrinth set into the floor of Chartres Cathedral dates from around 1200 and is roughly 13 metres across.",
+  "Stonemasons often carved a small personal mark into the blocks they shaped, so their work could be identified and paid for.",
+  "Medieval cathedral builders lifted heavy stone with wooden cranes powered by people walking inside large treadwheels.",
+  "Tall, narrow Gothic windows with pointed tops are called lancet windows, named after the shape of a lance.",
+  "Tracery is the thin stonework that divides a Gothic window, and its patterns grew more elaborate over the centuries.",
+  "The English Perpendicular style, with its strong vertical lines, is a style found only in England.",
+  "The word gargoyle comes from an Old French word related to the throat, linked to the gurgling sound of water.",
+  "A true gargoyle is a rainspout. Carved creatures that don’t carry water are called grotesques or chimeras.",
+  "Many of the chimeras on Notre-Dame, including the famous brooding figure on the towers, were designed by Eugène Viollet-le-Duc in the 19th century.",
+  "Victor Hugo’s 1831 novel The Hunchback of Notre-Dame helped draw public attention to the neglected state of the cathedral.",
+  "The spire of Notre-Dame that burned in April 2019 had been added in the 19th century, not in the Middle Ages. The cathedral reopened in December 2024.",
+  "Carved Green Man faces, with leaves growing from their mouths, appear in many Gothic churches. The name ‘Green Man’ was only coined in 1939.",
+  "Under many medieval choir seats are small ledges called misericords, often carved with funny, strange, or monstrous scenes.",
+  "Most medieval cathedrals are laid out in the shape of a cross, with the altar at the eastern end.",
+  "Rosslyn Chapel in Scotland, begun in 1446, is covered in dense carving and became even more famous after appearing in a bestselling thriller.",
+  "Brick Gothic is a regional style around the Baltic Sea, where builders used brick because good building stone was scarce.",
+  "Malbork Castle in Poland is a brick Gothic fortress and is often described as the largest castle in the world by land area.",
+  "The Doge’s Palace in Venice is a famous example of Venetian Gothic, which blends pointed arches with Byzantine and Islamic influences.",
+  "The Bridge of Sighs in Venice was built in the early 1600s, and the romantic name became popular largely through the poet Lord Byron.",
+  "Whitby Abbey was first founded in 657 by Hild, but the ruins you see today are mostly from the 13th century.",
+  "Henry VIII’s dissolution of the monasteries between 1536 and 1541 left many English abbeys, including Whitby, as roofless ruins.",
+  "The ruins of Tintern Abbey in Wales were a favorite subject of Romantic painters and inspired a famous poem by William Wordsworth.",
+  "Fountains Abbey in England was turned into a dramatic feature of an 18th-century landscape garden, with the ruins as the centerpiece.",
+  "Horace Walpole’s home, Strawberry Hill, was one of the earliest Gothic Revival houses, and he wrote The Castle of Otranto there.",
+  "Horace Walpole said the idea for The Castle of Otranto came from a dream of a giant armored hand on a staircase.",
+  "The first edition of The Castle of Otranto in 1764 pretended to be a translation of an old Italian manuscript. Walpole admitted he wrote it in the second edition.",
+  "Ann Radcliffe’s The Mysteries of Udolpho (1794) was hugely popular, and Jane Austen gently made fun of Gothic novels in Northanger Abbey.",
+  "In Ann Radcliffe’s novels, spooky events are usually given natural explanations by the end, a style often called the ‘explained supernatural’.",
+  "Matthew Lewis wrote his shocking Gothic novel The Monk in 1796 when he was about 19, and was nicknamed ‘Monk’ Lewis for the rest of his life.",
+  "Mary Shelley began Frankenstein at 18, during a gloomy summer in 1816 near Lake Geneva, and it was published anonymously in 1818.",
+  "The summer of 1816 is called the Year Without a Summer, because the 1815 eruption of Mount Tambora cooled the weather and produced stormy skies across Europe.",
+  "Frankenstein started as a ghost story challenge among friends at Villa Diodati, which also led John Polidori to write The Vampyre (1819).",
+  "Carmilla by Sheridan Le Fanu, a vampire novella published in 1872, came out 25 years before Dracula.",
+  "Bram Stoker visited Whitby in 1890, and the town’s abbey ruins and harbor appear in Dracula, published in 1897.",
+  "Bran Castle is often called Dracula’s Castle, but there is little evidence that Vlad the Impaler, the historical figure who partly inspired the name, ever lived there.",
+  "Bran Castle was later a royal residence, and Queen Marie of Romania loved it and decorated it in the 1920s.",
+  "Emily and Charlotte Brontë’s Wuthering Heights and Jane Eyre, both published in 1847, mix Gothic elements like stormy moors, mysterious houses, and hidden secrets.",
+  "Edgar Allan Poe’s The Fall of the House of Usher (1839) is a classic Gothic story in which the house itself seems to be dying with its family.",
+  "Daphne du Maurier’s Rebecca (1938) is often called a modern Gothic novel, with its great house, Manderley, almost acting like a character.",
+  "Shirley Jackson’s The Haunting of Hill House (1959) is considered one of the great modern haunted house stories.",
+  "The 1922 film Nosferatu was an unauthorized adaptation of Dracula. Stoker’s widow sued, and a court ordered copies destroyed, but some survived.",
+  "Bela Lugosi played Dracula in the 1931 Universal film, and the image of the cape and slicked hair has defined the character ever since.",
+  "The Palace of Westminster in London was rebuilt in Gothic Revival style after a fire in 1834, with the architect Augustus Pugin designing much of the detailing.",
+  "Augustus Pugin, a leading Gothic Revival designer, died in 1852 aged just 40, after producing an astonishing amount of work.",
+  "The Victoria Terminus railway station in Mumbai, completed in 1887, is a famous example of Victorian Gothic Revival in India.",
+  "Frere Hall in Karachi, completed in 1865, is built in the Venetian Gothic style.",
+  "St. Patrick’s Cathedral in New York City is a major American example of Gothic Revival and opened in 1879.",
+  "Fonthill Abbey, a giant Gothic fantasy house built by William Beckford, had a huge tower that collapsed in 1825.",
+  "Neuschwanstein Castle, begun by King Ludwig II in 1869, looks medieval but is mainly Romanesque Revival, a good reminder that not every castle is Gothic.",
+  "Caspar David Friedrich, a German Romantic painter, filled his work with ruined abbeys, bare trees, and misty graveyards.",
+  "Giovanni Battista Piranesi’s imaginary prison etchings, with their endless stairs and arches, helped shape the Gothic imagination.",
+  "Père Lachaise Cemetery opened in 1804 and was designed like a garden, with winding paths among the tombs.",
+  "Oscar Wilde’s tomb at Père Lachaise was covered in lipstick kisses for years, until a glass barrier was added in 2011.",
+  "Highgate Cemetery in London opened in 1839 and is the resting place of Karl Marx.",
+  "Glasgow Necropolis opened in 1833 and was inspired in part by Père Lachaise.",
+  "The Catacombs of Paris contain the remains of an estimated six million people, moved from overcrowded cemeteries beginning in the late 1700s.",
+  "The Sedlec Ossuary in Czechia holds the bones of an estimated 40,000 to 70,000 people, arranged into chandeliers, garlands, and a coat of arms.",
+  "The earliest Goth music is often traced to Bauhaus’s 1979 song ‘Bela Lugosi’s Dead’, and bands like Siouxsie and the Banshees, The Cure, and Sisters of Mercy shaped the sound.",
+  "The Batcave club opened in London’s Soho in 1982 and became a famous meeting place for the early Goth scene.",
+  "Whitby Goth Weekend, first held in 1994, now takes place twice a year in the same seaside town that inspired Dracula.",
+  "Blackletter lettering, the angular style used on the sign-in page’s ‘kimchi loves you’, is sometimes called Gothic script, and it was used for early printed books like the Gutenberg Bible.",
+  "The Goths were a Germanic people who played a role in the fall of the Western Roman Empire, but they had almost nothing to do with Gothic architecture."
 ];
+
+let lastGothicFactIndex = -1;
+function nextGothicFact() {
+  const KEY = "layaGothicFactsSeen_v1";
+  let seen = [];
+  try { seen = JSON.parse(localStorage.getItem(KEY) || "[]").filter(n => Number.isInteger(n) && n >= 0 && n < GOTHIC_FACTS.length); } catch (_) {}
+  let pool = GOTHIC_FACTS.map((_, i) => i).filter(i => !seen.includes(i));
+  let restarted = false;
+  if (!pool.length) {                         // every fact has been read: start a new round
+    seen = [];
+    restarted = true;
+    pool = GOTHIC_FACTS.map((_, i) => i).filter(i => i !== lastGothicFactIndex);
+  }
+  const index = pool[Math.floor(Math.random() * pool.length)];
+  seen.push(index);
+  lastGothicFactIndex = index;
+  try { localStorage.setItem(KEY, JSON.stringify(seen)); } catch (_) {}
+  return { text: GOTHIC_FACTS[index], number: seen.length, total: GOTHIC_FACTS.length, restarted };
+}
 
 /* ============ Gothic places: never-ending discovery with knowledge breaks ============ */
 (() => {
@@ -1569,7 +1655,7 @@ const GOTHIC_FACTS = [
   /* A little knowledge card, shown every few places */
   function showKnowledge(final) {
     const chapter = GOTHIC_CHAPTERS[Math.floor(Math.random() * GOTHIC_CHAPTERS.length)];
-    const fact = GOTHIC_FACTS[Math.floor(Math.random() * GOTHIC_FACTS.length)];
+    const fact = nextGothicFact().text;
     el.know.replaceChildren();
     const kick = document.createElement("div"); kick.className = "gk-kicker"; kick.textContent = final ? "✦ the path ends here — keep reading" : "✦ a little gothic knowledge";
     const h = document.createElement("h4"); h.textContent = chapter.title;
@@ -1660,7 +1746,7 @@ const GOTHIC_FACTS = [
 (() => {
   const title = $("gothicHistoryTitle"), body = $("gothicHistoryBody"), era = $("gothicHistoryProgress"), source = $("gothicHistorySource"), fact = $("gothicHistoryFact"), cards = $("gothicHistoryChapters");
   if (!title || !cards) return;
-  let current = 0, lastFact = -1;
+  let current = 0;
   function render(index) {
     current = (index + GOTHIC_CHAPTERS.length) % GOTHIC_CHAPTERS.length;
     const c = GOTHIC_CHAPTERS[current];
@@ -1673,10 +1759,10 @@ const GOTHIC_FACTS = [
     });
   }
   function randomFact() {
-    let n = Math.floor(Math.random() * GOTHIC_FACTS.length);
-    if (GOTHIC_FACTS.length > 1 && n === lastFact) n = (n + 1) % GOTHIC_FACTS.length;
-    lastFact = n;
-    fact.textContent = GOTHIC_FACTS[n];
+    const f = nextGothicFact();
+    fact.textContent = f.text;
+    const label = document.querySelector(".gothic-history-fact span");
+    if (label) label.textContent = "✦ FACT " + f.number + " OF " + f.total + (f.restarted ? " · you've read them all, starting a new round" : "");
   }
   GOTHIC_CHAPTERS.forEach((c, i) => {
     const b = document.createElement("button");
