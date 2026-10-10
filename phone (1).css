@@ -1,0 +1,124 @@
+/* phone.css: phone cleanup layer. Loads AFTER the main styles in index.html. */
+
+html { -webkit-text-size-adjust: 100%; }
+* { -webkit-tap-highlight-color: transparent; }
+button, .smallbtn, .action, .navbtn, .spine { touch-action: manipulation; }
+[hidden] { display: none !important; }
+
+/* Touch screens: no sticky "hover" lifts */
+@media (hover: none) {
+  .spine:hover, .plush:hover, .action:hover, .notes-more:hover, .notes-less:hover { transform: none; }
+}
+
+@media (max-width: 760px) {
+  /* 16px inputs stop iPhones zooming in when you tap a box */
+  input, textarea, select { font-size: 16px; }
+
+  .app { width: calc(100% - 24px); }
+  .hero { min-height: 0; padding: 10px 2px 4px; }
+  h1 { font-size: clamp(2.2rem, 11vw, 2.8rem); }
+  .section { margin: 18px 0; }
+  .section-head { padding: 8px 2px 20px; margin-bottom: 12px; }
+  h2 { font-size: 1.6rem; }
+  .section-head p { font-size: .84rem; line-height: 1.6; }
+  .card, .grid > .card { padding: 14px; border-radius: 14px; }
+  .card-title { font-size: 1.35rem; }
+  .action { min-height: 46px; font-size: .95rem; }
+  .plush { min-height: 108px; }
+  .fact { font-size: 1.25rem; }
+  .chat-log { max-height: 46vh; }
+  .msg { max-width: 92%; }
+
+  /* Gothic places */
+  .gothic-place-preview { height: 210px; max-height: none; }
+  .gothic-place-name { font-size: 1.6rem; }
+  .gothic-place-actions .action { flex: 1 1 100%; }
+  .gothic-knowledge { padding: 14px; }
+  .gothic-history-fact p { font-size: 1.15rem; }
+
+  /* Reading room */
+  .books-top { flex-direction: column; align-items: stretch; }
+  #continueBook { width: 100% !important; }
+  #catFilters, .controls:has(> [data-bfilter]) {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;
+  }
+  #catFilters::-webkit-scrollbar, .controls:has(> [data-bfilter])::-webkit-scrollbar { display: none; }
+  #catFilters .smallbtn, [data-bfilter] { flex: 0 0 auto; white-space: nowrap; }
+  .shelf { padding: 4px 4px 0; }
+  .shelf-row { gap: 3px; padding: 14px 4px 0; }
+  .spine { width: 40px; font-size: .82rem; padding: 20px 0; }
+  .shelf-pager { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  #shelfPageInfo { grid-column: 1 / -1; order: -1; text-align: center; }
+  #randomBook { min-height: 48px; }
+}
+
+/* Book reader on phones */
+@media (max-width: 640px) {
+  .reader { padding: calc(6px + env(safe-area-inset-top)) 8px calc(6px + env(safe-area-inset-bottom)); }
+  .reader-bar { gap: 6px; padding: 2px 0 8px; }
+  .reader-title { font-size: 1.02rem; flex-basis: 100%; }
+  .reader-tools { display: grid; grid-template-columns: 1.7fr .6fr .6fr .6fr 1fr; gap: 6px; }
+  .reader-tools .smallbtn { min-height: 38px; padding: 6px 4px; font-size: .78rem; white-space: nowrap; }
+  .book-open { max-height: none; padding: 16px 18px; border-radius: 4px; }
+  .book-text { line-height: 1.6; text-align: left; }
+  .reader-foot { padding: 8px 4px 2px; }
+  .reader-foot .status { margin-top: 4px; }
+}
+
+/* ---- Reader themes (controlled by reader-themes.js) ---- */
+.book-text { line-height: var(--rlh, 1.65); }
+.reader[data-rfont="book"] .book-text { font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; }
+.reader[data-rfont="clean"] .book-text { font-family: "Manrope", system-ui, sans-serif; }
+
+.reader[data-rtheme="light"] .book-open { background: #fbfaf7; color: #1d1a1c; }
+.reader[data-rtheme="sepia"] .book-open { background: #f1e4c8; color: #4a3a26; }
+.reader[data-rtheme="dusk"] .book-open { background: #2a1f33; color: #e6d9e4; box-shadow: 0 20px 70px rgba(0,0,0,.6); }
+.reader[data-rtheme="night"] .book-open { background: #121014; color: #cfc6cc; box-shadow: 0 20px 70px rgba(0,0,0,.6); }
+.reader[data-rtheme="black"] .book-open { background: #000; color: #b9b2b7; box-shadow: none; border: 1px solid rgba(255,255,255,.08); }
+.reader[data-rtheme="black"] { background: #000; }
+.reader[data-rtheme="dusk"] .book-text a, .reader[data-rtheme="night"] .book-text a, .reader[data-rtheme="black"] .book-text a { color: #e0a3b8; }
+.reader[data-rtheme="dusk"] .book-open.spread::after, .reader[data-rtheme="night"] .book-open.spread::after, .reader[data-rtheme="black"] .book-open.spread::after { background: linear-gradient(90deg, transparent, rgba(0,0,0,.45), transparent); }
+
+/* Style panel (the "Aa" button) */
+.rpanel { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); width: min(420px, calc(100% - 16px)); z-index: 10; display: grid; gap: 12px; padding: 14px; border-radius: 16px; background: rgba(14,10,18,.97); border: 1px solid var(--line); box-shadow: 0 18px 50px rgba(0,0,0,.65); }
+.rrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rrow > span { width: 64px; font-size: .76rem; color: var(--muted); }
+.rrow .smallbtn { min-height: 36px; padding: 6px 12px; font-size: .78rem; }
+.rsw { width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.25); cursor: pointer; }
+.rsw.on { outline: 2px solid var(--pink); outline-offset: 2px; }
+
+/* ---- Live wallpaper on phones ---- */
+body > video {                       /* the live wallpaper video the page inserts */
+  pointer-events: none;
+  transform: translateZ(0);          /* smoother playback on phones */
+  backface-visibility: hidden;
+}
+@supports (height: 100lvh) {         /* stops the wallpaper jumping when the browser bar hides */
+  .wall { height: 100lvh; }
+  body > video { height: 100lvh !important; }
+}
+
+@media (max-width: 760px) {
+  :root { --wall-opacity: .6; }
+  .shade { background: linear-gradient(180deg, rgba(5,4,7,.22), rgba(5,4,7,.5) 65%, rgba(6,5,8,.72)); }
+
+  /* Wallpaper controls: name on top, then  ‹  Live  Still  › */
+  .wallpaper-only { padding: 16px 12px calc(16px + env(safe-area-inset-bottom)); margin: 0 0 24px; }
+  .wallpaper-only-content { width: 100%; }
+  .wallpaper-float { width: 100%; display: grid; grid-template-columns: 48px 1fr 1fr 48px; gap: 8px; padding: 10px; }
+  .wallpaper-float .smallbtn { min-height: 44px; padding: 8px 6px; font-size: .8rem; }
+  #wallStatus { grid-row: 1; grid-column: 1 / -1; text-align: center; margin: 0; font-size: .8rem; }
+  #wallPrev { grid-row: 2; grid-column: 1; }
+  #liveToggle { grid-row: 2; grid-column: 2; }
+  #stillModeBtn { grid-row: 2; grid-column: 3; }
+  #wallNext { grid-row: 2; grid-column: 4; }
+}
+
+/* ---- Reader style panel on phones ---- */
+@media (max-width: 640px) {
+  .rpanel { width: calc(100% - 16px); padding: 14px 12px; gap: 14px; }
+  .rrow { gap: 6px; }
+  .rrow > span { width: 58px; }
+  .rsw { width: 36px; height: 36px; }
+  .rrow .smallbtn { min-height: 40px; flex: 1 1 0; padding: 6px 4px; }
+}
