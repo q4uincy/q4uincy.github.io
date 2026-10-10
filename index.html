@@ -1000,34 +1000,11 @@ input { padding: 10px 12px; border-radius: 12px; }
             <button class="smallbtn active" type="button" data-klipy-kind="gifs">GIFs</button>
             <button class="smallbtn" type="button" data-klipy-kind="stickers">Stickers</button>
           </div>
-          <div class="controls" aria-label="Popular KLIPY searches">
-            <button class="smallbtn" type="button" data-klipy-query="anime hug">Anime hug</button>
-            <button class="smallbtn" type="button" data-klipy-query="cute love">Cute love</button>
-            <button class="smallbtn" type="button" data-klipy-query="cat">Cats</button>
-            <button class="smallbtn" type="button" data-klipy-query="blush">Blush</button>
-          </div>
+          <div class="controls" id="klipyRecentSearches" aria-label="Recent searches" hidden></div>
           <div id="klipyResults" class="thumbs" aria-live="polite"></div>
           <button class="action" id="klipyLoadMore" type="button" hidden>Load more</button>
-          <div class="status" id="klipyStatus">Add your KLIPY test key to load trending GIFs.</div>
+          <div class="status" id="klipyStatus">Search for a GIF or sticker to send to Kimchi.</div>
           <button class="action" id="sendKlipyBtn" type="button" disabled>Send to Kimchi</button>
-          <p class="fine">Powered by KLIPY. Your test key is saved only in this browser. Avoid putting a production secret in a public website.</p>
-          <details style="margin-top:10px">
-            <summary class="status" style="cursor:pointer">KLIPY test key settings</summary>
-            <label for="klipyKey" class="status" style="display:block;margin:8px 0 6px">API app key</label>
-            <input id="klipyKey" type="password" autocomplete="off" placeholder="Paste your KLIPY test key here">
-            <div class="controls">
-              <button class="smallbtn" id="klipyShowKey" type="button">Show key</button>
-              <button class="smallbtn" id="klipySaveKey" type="button">Save key</button>
-              <button class="smallbtn" id="klipyClearKey" type="button">Clear</button>
-            </div>
-          </details>
-        </div>
-        <div style="margin-top:14px">
-          <label for="kissImageUpload" class="status" style="display:block;margin-bottom:6px">Or upload an image</label>
-          <input type="file" id="kissImageUpload" accept="image/*" hidden>
-          <button class="action" id="pickKissImage" type="button">Choose an image</button>
-          <div class="thumbs" id="kissImagePreview"></div>
-          <div class="status" id="kissImageStatus"></div>
         </div>
       </div>
     </div>
@@ -2682,7 +2659,23 @@ let klipyLoading = false;
 let selectedKlipy = null;
 let klipySeen = new Set();
 
-try { $("klipyKey").value = localStorage.getItem(KLIPY_KEY_STORAGE) || ""; } catch (_) {}
+function getKlipyKey() { try { return localStorage.getItem(KLIPY_KEY_STORAGE) || ""; } catch (_) { return ""; } }
+const KLIPY_HISTORY_STORAGE = "layaKlipyRecentSearches";
+function renderKlipyHistory() {
+  const box = $("klipyRecentSearches");
+  if (!box) return;
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(KLIPY_HISTORY_STORAGE) || "[]"); } catch (_) {}
+  box.replaceChildren();
+  history.forEach(term => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "smallbtn"; b.textContent = term;
+    b.addEventListener("click", () => { $("klipySearch").value = term; loadKlipyPage(true); });
+    box.appendChild(b);
+  });
+  box.hidden = history.length === 0;
+}
+renderKlipyHistory();
 
 document.querySelectorAll("[data-media-source]").forEach(button => {
   button.addEventListener("click", () => {
@@ -2703,33 +2696,6 @@ document.querySelectorAll("[data-klipy-kind]").forEach(button => button.addEvent
   document.querySelectorAll("[data-klipy-kind]").forEach(b => b.classList.toggle("active", b === button));
   loadKlipyPage(true);
 }));
-$("klipyShowKey").addEventListener("click", () => {
-  $("klipyKey").type = $("klipyKey").type === "password" ? "text" : "password";
-  $("klipyShowKey").textContent = $("klipyKey").type === "password" ? "Show key" : "Hide key";
-});
-$("klipySaveKey").addEventListener("click", () => {
-  const key = $("klipyKey").value.trim();
-  try {
-    if (key) localStorage.setItem(KLIPY_KEY_STORAGE, key);
-    else localStorage.removeItem(KLIPY_KEY_STORAGE);
-    $("klipyStatus").textContent = key ? "KLIPY key saved in this browser. Loading trending…" : "Paste your KLIPY test key first.";
-    if (key) loadKlipyPage(true);
-  } catch (_) {
-    $("klipyStatus").textContent = "Could not save the key in this browser. Keep the key entered and try Search.";
-  }
-});
-$("klipyClearKey").addEventListener("click", () => {
-  $("klipyKey").value = "";
-  try { localStorage.removeItem(KLIPY_KEY_STORAGE); } catch (_) {}
-  $("klipyResults").replaceChildren();
-  $("sendKlipyBtn").disabled = true;
-  selectedKlipy = null;
-  $("klipyStatus").textContent = "KLIPY key cleared.";
-});
-document.querySelectorAll("[data-klipy-query]").forEach(button => button.addEventListener("click", () => {
-  $("klipySearch").value = button.dataset.klipyQuery;
-  loadKlipyPage(true);
-}));
 $("klipySearchBtn").addEventListener("click", () => loadKlipyPage(true));
 $("klipySearch").addEventListener("keydown", event => {
   if (event.key === "Enter") { event.preventDefault(); loadKlipyPage(true); }
@@ -2738,10 +2704,18 @@ $("klipyLoadMore").addEventListener("click", () => loadKlipyPage(false));
 
 async function loadKlipyPage(reset = false) {
   if (klipyLoading) return;
-  const key = $("klipyKey").value.trim();
+  const key = getKlipyKey();
   const query = $("klipySearch").value.trim();
+  if (query) {
+    try {
+      let history = JSON.parse(localStorage.getItem(KLIPY_HISTORY_STORAGE) || "[]");
+      history = [query, ...history.filter(item => item.toLowerCase() !== query.toLowerCase())].slice(0, 6);
+      localStorage.setItem(KLIPY_HISTORY_STORAGE, JSON.stringify(history));
+      renderKlipyHistory();
+    } catch (_) {}
+  }
   if (!key) {
-    $("klipyStatus").textContent = "Open “KLIPY test key settings” and paste your KLIPY test key. It stays in this browser.";
+    $("klipyStatus").textContent = "KLIPY key is not saved in this browser. Add it once in the original setup file, then reopen this page.";
     return;
   }
   if (reset || query !== klipyQuery) {
@@ -2831,7 +2805,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
     notify("media", { url: selectedKlipy.url, kind: selectedKlipy.kind });
     $("klipyStatus").textContent = "Sent to Kimchi. ♡";
     if (selectedKlipy.slug) {
-      const key = $("klipyKey").value.trim();
+      const key = getKlipyKey();
       fetch("https://api.klipy.com/api/v1/" + encodeURIComponent(key) + "/" + selectedKlipy.kind + "/share/" + encodeURIComponent(selectedKlipy.slug), {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ customer_id: "laya-kimchi", q: selectedKlipy.query || "" })
@@ -2846,366 +2820,3 @@ $("sendKlipyBtn").addEventListener("click", async () => {
 /* Populate trending GIFs when the page opens; stickers remain on-demand. */
 loadGiphyPage(true);
 
-$("pickKissImage").addEventListener("click", () => $("kissImageUpload").click());
-$("kissImageUpload").addEventListener("change", async () => {
-  const file = $("kissImageUpload").files?.[0];
-  if (!file) return;
-  if (!file.type.startsWith("image/")) {
-    $("kissImageStatus").textContent = "Please choose an image file.";
-    return;
-  }
-  const preview = $("kissImagePreview");
-  preview.replaceChildren();
-  const box = document.createElement("div");
-  const img = document.createElement("img");
-  const tag = document.createElement("span");
-  img.src = URL.createObjectURL(file);
-  img.alt = "Image selected to send";
-  tag.textContent = "...";
-  box.append(img, tag);
-  preview.appendChild(box);
-  $("kissImageStatus").textContent = "Sending image...";
-  try {
-    const formData = new FormData();
-    formData.append("photos", await shrink(file), "kimchi-kiss.jpg");
-    const response = await api("/upload", { method: "POST", body: formData });
-    if (!response.ok) throw new Error("Image upload failed");
-    tag.textContent = "sent";
-    $("kissImageStatus").textContent = "Image sent. Kimchi got it. ♡";
-  } catch (error) {
-    tag.textContent = "failed";
-    $("kissImageStatus").textContent = "Couldn't send the image. Try again.";
-  }
-  $("kissImageUpload").value = "";
-});
-</script>
-<!-- login looks: effects -->
-<style>
-.theme-row { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 16px; font-size: .74rem; color: var(--muted); }
-.theme-row .smallbtn { padding: 6px 11px; font-size: .72rem; }
-.theme-row.fx-row { display: none; margin-top: 10px; }
-body.login-live .fx-row { display: flex; }
-
-.gothic-sign { margin-top: 18px; text-align: center; }
-.gothic-rule { display: flex; align-items: center; gap: 10px; color: #d99aae; font-size: .8rem; letter-spacing: .3em; }
-.gothic-rule::before, .gothic-rule::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(217,141,165,.55), transparent); }
-.gothic-text { font-family: "UnifrakturCook", "Cormorant Garamond", serif; font-size: 1.6rem; line-height: 1.2; color: #f3dce9; margin-top: 6px; text-shadow: 0 0 14px rgba(217,141,165,.35); }
-
-/* Snow on the sign-in page (Snow look): few flakes along the sides */
-.snow-layer { display: none; position: fixed; inset: 0; width: 100%; height: 100%; z-index: 10050; pointer-events: none; opacity: .8;
-  -webkit-mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%);
-  mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%); }
-body.login-snow:not(.snow-off) .snow-layer { display: block; }
-
-/* inside the login panel (Live wallpaper look) */
-.card-snow, .card-rain { display: none; position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; border-radius: inherit; pointer-events: none; }
-body.login-live:not(.live-rain) .card-snow { display: block; }
-body.login-live.live-rain .card-rain { display: block; opacity: .6; }
-
-/* Rain on the sign-in page (Original look): few drops along the sides */
-.rain-layer { display: none; position: fixed; inset: 0; width: 100%; height: 100%; z-index: 10050; pointer-events: none; opacity: .55;
-  -webkit-mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%);
-  mask-image: linear-gradient(90deg,#000 0,transparent 30%,transparent 70%,#000 100%); }
-body:not(.login-live):not(.login-snow):not(.snow-off) .rain-layer { display: block; }
-
-/* Video wallpaper only shows in the Live look */
-.login-wallpaper { display: none; }
-body.login-live .login-wallpaper { display: block; }
-
-/* Snow look: icy blue instead of burgundy/purple */
-body.login-snow .login-gate {
-  background: radial-gradient(ellipse at 50% 42%, rgba(28,58,98,.96), rgba(4,8,16,.985) 72%);
-}
-body.login-snow .login-card {
-  background: rgba(6,10,18,.78);
-  border-color: rgba(150,200,240,.32);
-}
-body.login-snow .login-symbol,
-body.login-snow .gothic-rule { color: #9cc6ec; }
-body.login-snow .gothic-rule::before,
-body.login-snow .gothic-rule::after {
-  background: linear-gradient(90deg, transparent, rgba(150,200,240,.55), transparent);
-}
-body.login-snow .login-title,
-body.login-snow .gothic-text { color: #e4f1ff; }
-body.login-snow .gothic-text { text-shadow: 0 0 14px rgba(150,200,240,.4); }
-body.login-snow .login-sub { color: #b4c8dc; }
-body.login-snow .login-form label { color: #c3d8ec; }
-body.login-snow .login-form button {
-  border-color: rgba(150,200,240,.45);
-  background: linear-gradient(135deg, rgba(40,90,150,.9), rgba(25,45,90,.9));
-  color: #f0f8ff;
-}
-body.login-snow .login-status { color: #a8cdee; }
-body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
-
-
-/* === LAYA UI polish: spacing, gothic dividers, and a roomier message card === */
-:root {
-  --ui-gothic-line: rgba(211, 177, 204, .38);
-  --ui-gothic-glow: rgba(173, 127, 181, .12);
-}
-html { scroll-padding-top: 78px; }
-.app { width: min(1080px, calc(100% - 36px)); }
-.topbar { padding: 8px 12px; }
-.topbar-inner { gap: 8px; width: min(1240px, 100%); }
-.navbtn,.theme-toggle { padding: 8px 12px; font-size: .76rem; }
-.brand { font-size: 1.08rem; margin-right: 8px; }
-.section { margin-top: 28px; }
-.section-head {
-  position: relative;
-  align-items: center;
-  gap: 28px;
-  margin-bottom: 24px;
-  padding: 16px 4px 22px;
-}
-.section-head:after {
-  content: "✦ ────────────── ❦ ────────────── ✦";
-  display: block;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: rgba(220, 190, 215, .68);
-  letter-spacing: .18em;
-  font-family: "Cormorant Garamond", serif;
-  font-size: .88rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-shadow: 0 0 14px var(--ui-gothic-glow);
-}
-.section-kicker { letter-spacing: .23em; margin-bottom: 8px; }
-.section-head h2 { line-height: 1.12; max-width: 620px; }
-.section-head p { max-width: 390px; line-height: 1.7; }
-.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
-.grid > .card { min-width: 0; padding: 22px; border-radius: 18px; }
-.grid > .card:nth-child(3) { grid-column: 1 / -1; }
-.card {
-  background: linear-gradient(145deg, rgba(24,16,29,.82), rgba(8,7,12,.76));
-  border-color: rgba(220,190,215,.2);
-  box-shadow: 0 18px 48px rgba(0,0,0,.24), inset 0 1px rgba(255,255,255,.045);
-}
-.card-title { font-size: 1.48rem; margin-bottom: 8px; }
-.card p { line-height: 1.7; margin-bottom: 10px; }
-#kimchiMsg {
-  display: block;
-  width: 100%;
-  min-height: 172px;
-  resize: vertical;
-  padding: 16px 17px;
-  margin-top: 14px;
-  border-radius: 16px;
-  line-height: 1.7;
-  background: rgba(7,6,11,.68);
-  border: 1px solid rgba(220,190,215,.24);
-  box-sizing: border-box;
-}
-#kimchiMsg:focus {
-  border-color: rgba(220,190,215,.62);
-  box-shadow: 0 0 0 3px rgba(173,127,181,.1);
-  outline: none;
-}
-#sendMsg { min-height: 48px; margin-top: 16px; border-radius: 14px; }
-.pair { gap: 12px; }
-.resultbox,.notes { margin-top: 14px; }
-.card:hover { border-color: rgba(220,190,215,.38); }
-.section-head > div { min-width: 0; }
-@media (min-width: 761px) {
-  #us .grid > .card:nth-child(2) { padding: 25px; }
-  #us .grid > .card:nth-child(2) #kimchiMsg { min-height: 190px; }
-}
-@media (max-width: 760px) {
-  .app { width: min(calc(100% - 22px), 620px); }
-  .topbar { padding: 7px 8px; }
-  .topbar-inner { gap: 5px; }
-  .navbtn,.theme-toggle { padding: 7px 10px; font-size: .72rem; }
-  .brand { margin-right: 3px; }
-  .section-head { padding: 10px 2px 22px; margin-bottom: 18px; }
-  .section-head:after { font-size: .72rem; letter-spacing: .08em; }
-  .grid { grid-template-columns: 1fr; gap: 14px; }
-  .grid > .card { grid-column: auto; padding: 19px; }
-  #kimchiMsg { min-height: 160px; }
-}
-</style>
-
-<canvas class="rain-layer" id="rainCanvas" aria-hidden="true"></canvas>
-<canvas class="snow-layer" id="snowCanvas" aria-hidden="true"></canvas>
-
-
-
-<script>
-/* Colors: "snow" = icy blue + falling snow, "original" = the old burgundy look with no snow */
-(() => {
-  function setTheme(name) {
-    document.body.classList.toggle("login-live", name === "live");
-    document.body.classList.toggle("login-snow", name === "snow");
-    document.querySelectorAll(".theme-btn").forEach(b => b.classList.toggle("active", b.dataset.theme === name));
-
-    // Video only plays in the Live look; paused (and hidden by CSS) otherwise
-    const vid = document.querySelector(".login-wallpaper");
-    if (vid) {
-      if (name === "live") vid.play().catch(() => {});
-      else vid.pause();
-    }
-
-    try { localStorage.setItem("layaTheme", name); } catch (e) {}
-  }
-  document.querySelectorAll(".theme-btn").forEach(b => b.addEventListener("click", () => setTheme(b.dataset.theme)));
-  setTheme(document.body.classList.contains("login-live") ? "live" : document.body.classList.contains("login-snow") ? "snow" : "original");
-
-  /* Snow only falls on the sign-in page */
-  const veil = document.getElementById("welcomeVeil"), gate = document.getElementById("loginGate");
-  const syncSnow = () => document.body.classList.toggle("snow-off", !gate.classList.contains("show"));
-  const mo = new MutationObserver(syncSnow);
-  mo.observe(veil, { attributes: true, attributeFilter: ["class"] });
-  mo.observe(gate, { attributes: true, attributeFilter: ["class"] });
-  syncSnow();
-
-  /* Live wallpaper effect choice: snow or rain inside the login panel */
-  function setFx(fx) {
-    document.body.classList.toggle("live-rain", fx === "rain");
-    document.querySelectorAll(".fx-btn").forEach(b => b.classList.toggle("active", b.dataset.fx === fx));
-    try { localStorage.setItem("layaLiveFx", fx); } catch (e) {}
-  }
-  document.querySelectorAll(".fx-btn").forEach(b => b.addEventListener("click", () => setFx(b.dataset.fx)));
-  setFx(document.body.classList.contains("live-rain") ? "rain" : "snow");
-
-  (() => {
-    const c = document.getElementById("cardRain"), ctx = c.getContext("2d");
-    let W = 0, H = 0, drops = [];
-    const make = init => ({ x: Math.random() * W, y: init ? Math.random() * H : -20, len: 9 + Math.random() * 10, v: 5 + Math.random() * 4 });
-    function size() {
-      const r = c.parentElement.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
-      W = r.width; H = r.height;
-      c.width = W * dpr; c.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drops = Array.from({ length: 28 }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        if (!W) size();
-        ctx.clearRect(0, 0, W, H);
-        ctx.strokeStyle = "rgba(240,205,225,.8)"; ctx.lineWidth = 1; ctx.lineCap = "round";
-        ctx.beginPath();
-        for (const d of drops) {
-          ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - d.len * .12, d.y + d.len);
-          d.y += d.v; d.x -= d.v * .12;
-          if (d.y > H + 20) Object.assign(d, make(false), { x: Math.random() * (W + 30) });
-        }
-        ctx.stroke();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-
-  /* Snow inside the login panel: small, slow, no glow, no image file (light on the GPU) */
-  (() => {
-    const c = document.getElementById("cardSnow"), ctx = c.getContext("2d");
-    let W = 0, H = 0, t = 0, flakes = [];
-    const make = init => ({ x: Math.random() * W, y: init ? Math.random() * H : -6, r: 1 + Math.random() * 1.6, v: .25 + Math.random() * .45, p: Math.random() * 6.28 });
-    function size() {
-      const r = c.parentElement.getBoundingClientRect();
-      W = r.width; H = r.height;
-      c.width = W; c.height = H;
-      flakes = Array.from({ length: 26 }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        if (!W) size();
-        t += .01;
-        ctx.clearRect(0, 0, W, H);
-        ctx.fillStyle = "rgba(235,245,255,.7)";
-        ctx.beginPath();
-        for (const f of flakes) {
-          f.y += f.v; f.x += Math.sin(t + f.p) * .25;
-          if (f.y > H + 6) Object.assign(f, make(false));
-          ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r, 0, 6.283);
-        }
-        ctx.fill();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-
-  /* Snow on the sign-in page (Snow look): same light flakes, whole screen, few */
-  (() => {
-    const c = document.getElementById("snowCanvas"), ctx = c.getContext("2d");
-    let W = 0, H = 0, t = 0, flakes = [];
-    const make = init => ({ x: Math.random() * W, y: init ? Math.random() * H : -8, r: 1.2 + Math.random() * 2, v: .3 + Math.random() * .5, p: Math.random() * 6.28 });
-    function size() {
-      W = innerWidth; H = innerHeight;
-      c.width = W; c.height = H;
-      flakes = Array.from({ length: Math.round(Math.min(45, W / 30)) }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        t += .01;
-        ctx.clearRect(0, 0, W, H);
-        ctx.fillStyle = "rgba(235,245,255,.75)";
-        ctx.beginPath();
-        for (const f of flakes) {
-          f.y += f.v; f.x += Math.sin(t + f.p) * .3;
-          if (f.y > H + 8) Object.assign(f, make(false), { x: Math.random() * W });
-          ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r, 0, 6.283);
-        }
-        ctx.fill();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-
-  /* Rain (Original look, sign-in page): soft pink-tinted streaks, canvas only draws while visible */
-  (() => {
-    const c = document.getElementById("rainCanvas"), ctx = c.getContext("2d");
-    let W = 0, H = 0, drops = [];
-    const make = initial => ({ x: Math.random() * W, y: initial ? Math.random() * H : -30, len: 12 + Math.random() * 14, v: 9 + Math.random() * 7 });
-    function size() {
-      const dpr = Math.min(devicePixelRatio || 1, 2);
-      W = innerWidth; H = innerHeight;
-      c.width = W * dpr; c.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drops = Array.from({ length: Math.round(Math.min(90, W / 14)) }, () => make(true));
-    }
-    addEventListener("resize", size); size();
-    (function tick() {
-      if (c.offsetWidth) {
-        ctx.clearRect(0, 0, W, H);
-        ctx.strokeStyle = "rgba(240,205,225,.75)"; ctx.lineWidth = 1; ctx.lineCap = "round";
-        ctx.beginPath();
-        for (const d of drops) {
-          ctx.moveTo(d.x, d.y); ctx.lineTo(d.x - d.len * .12, d.y + d.len);
-          d.y += d.v; d.x -= d.v * .12;
-          if (d.y > H + 30) Object.assign(d, make(false), { x: Math.random() * (W + 80) });
-        }
-        ctx.stroke();
-      }
-      requestAnimationFrame(tick);
-    })();
-  })();
-})();
-</script>
-</body>
-</html>
-<style>
-/* Compact pass: tighten content cards while leaving the wallpaper/background visible. */
-.app { padding-top: 54px; padding-bottom: 24px; }
-.hero { min-height: 28vh; padding: 14px 4px 20px; }
-.section-head { margin-bottom: 14px; padding-bottom: 14px; }
-.grid { gap: 12px; }
-.grid > .card { padding: 16px; border-radius: 15px; }
-.card-title { margin-bottom: 5px; }
-.card p { line-height: 1.5; margin-bottom: 7px; }
-#kimchiMsg { min-height: 125px; padding: 12px; margin-top: 9px; }
-#sendMsg { min-height: 40px; margin-top: 10px; }
-.resultbox,.notes { margin-top: 9px; }
-.hug-extra { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(220,190,215,.16); }
-.hug-extra .card-title { font-size: 1.2rem; }
-.hug-extra .action { min-height: 38px; }
-.hug-upload { margin-top: 8px; }
-.music-embed { min-height: 152px; }
-@media (max-width:760px) { .grid { gap: 10px; } .grid > .card { padding: 14px; } .hero { min-height: 24vh; } }
-</style>
