@@ -1325,27 +1325,71 @@ const randomFacts = [
   "Hummingbirds are the only birds that can fly backward for sustained periods.","A snail can have thousands of tiny teeth on its radula.","Saturn's average density is lower than water's.","The shortest war in recorded history lasted less than an hour, according to common historical accounts.",
   "A blue whale's tongue can weigh as much as an elephant.","Some bamboo species can grow several dozen centimetres in a single day.","Penguins have knees; their legs are mostly hidden beneath their feathers.","The fingerprints of every person are formed before birth.",
   "An ostrich's eye is larger than its brain.","A day on Mars is only a little longer than a day on Earth.","The mantis shrimp can detect types of light humans cannot see.","A group of ravens is sometimes called an unkindness.",
-  "The largest known living structure by area is a network of seagrass in Australia.","Some plants can respond to touch by folding or moving their leaves.","The human nose can distinguish a vast number of different odors.","A newborn kangaroo is roughly the size of a grape."
+  "The largest known living structure by area is a network of seagrass in Australia.","Some plants can respond to touch by folding or moving their leaves.","The human nose can distinguish a vast number of different odors.","A newborn kangaroo is roughly the size of a grape.",
+  "Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid of Giza.",
+  "Oxford University was teaching students before the Aztec city of Tenochtitlan was founded.",
+  "K2, the second-highest mountain on Earth at 8,611 metres, sits on the border of Pakistan and China.",
+  "The Khunjerab Pass on the Karakoram Highway, at about 4,700 metres, is one of the highest paved border crossings in the world.",
+  "Mohenjo-daro, in modern Pakistan, was an Indus Valley city built around 4,500 years ago with an impressive drainage system.",
+  "Octopus blood is blue because it uses copper-based hemocyanin instead of iron-based hemoglobin.",
+  "Polar bears have black skin under their white-looking fur.",
+  "Venus spins in the opposite direction to most planets, so the Sun rises in the west there.",
+  "Sound cannot travel through the vacuum of space because there is no air to carry it.",
+  "Dolphins call each other using signature whistles that work a bit like names.",
+  "Elephants can recognize themselves in a mirror, which only a few animals can do.",
+  "Sea otters have some of the densest fur of any animal, with up to around a million hairs per square inch.",
+  "Cats have a third eyelid called the nictitating membrane.",
+  "Axolotls can regrow lost limbs, and even parts of their heart and brain.",
+  "Tardigrades, or water bears, have survived exposure to the vacuum of space in experiments.",
+  "Sunlight takes about 8 minutes and 20 seconds to reach Earth.",
+  "The Dead Sea shore is the lowest point on land, more than 400 metres below sea level.",
+  "The Mariana Trench is deeper than Mount Everest is tall.",
+  "Sunsets on Mars look blue.",
+  "Giraffes have seven neck bones, the same number as humans, but each one is enormously long.",
+  "Bats are the only mammals capable of true, sustained flight.",
+  "The platypus is a mammal that lays eggs.",
+  "Lake Baikal in Russia holds roughly a fifth of the world’s unfrozen fresh surface water.",
+  "A rabbit’s teeth never stop growing.",
+  "Crocodiles cannot stick their tongues out.",
+  "Birds are living descendants of a group of dinosaurs.",
+  "Coffee beans are actually the seeds of a small red fruit called a coffee cherry.",
+  "The word quarantine comes from the Italian for forty days, the time ships were once kept waiting before docking in Venice.",
+  "The word checkmate comes from a Persian phrase meaning that the king is helpless.",
+  "The oldest known musical instruments are bone flutes that are around 40,000 years old.",
+  "The Atlantic Ocean is slowly getting wider by a couple of centimetres every year.",
+  "A pineapple plant takes roughly two years to produce a single fruit.",
+  "Fingernails grow faster than toenails.",
+  "Humans share roughly 98 to 99 percent of their DNA with chimpanzees.",
+  "About 400 million years ago, a day on Earth lasted only around 22 hours.",
+  "Owls cannot move their eyes in their sockets, so they turn their heads instead.",
+  "A sloth can hold its breath for up to 40 minutes by slowing its heart rate.",
+  "A teaspoon of neutron star material would weigh billions of tonnes.",
+  "Lightning strikes somewhere on Earth roughly a hundred times every second.",
+  "A group of owls is called a parliament.",
+  "Honeybees communicate the location of flowers by dancing."
 ];
-let factDeck = [], lastFactText = "";
+const RANDOM_FACT_KEY = "layaRandomFactsSeen_v2";
+let lastFactText = "";
 function nextRandomFact() {
-  if (!factDeck.length) {
-    factDeck = [...randomFacts];
-    for (let i = factDeck.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [factDeck[i], factDeck[j]] = [factDeck[j], factDeck[i]];
-    }
-    if (factDeck.length > 1 && factDeck[factDeck.length - 1] === lastFactText) {
-      [factDeck[0], factDeck[factDeck.length - 1]] = [factDeck[factDeck.length - 1], factDeck[0]];
-    }
+  let seen = [];
+  try { seen = JSON.parse(localStorage.getItem(RANDOM_FACT_KEY) || "[]").filter(t => randomFacts.includes(t)); } catch (_) {}
+  let pool = randomFacts.filter(t => !seen.includes(t));
+  let restarted = false;
+  if (!pool.length) {                      // every fact has been read: start a new round
+    seen = [];
+    restarted = true;
+    pool = randomFacts.filter(t => t !== lastFactText);
   }
-  const next = factDeck.pop();
-  lastFactText = next;
-  return next;
+  const text = pool[Math.floor(Math.random() * pool.length)];
+  seen.push(text);
+  lastFactText = text;
+  try { localStorage.setItem(RANDOM_FACT_KEY, JSON.stringify(seen)); } catch (_) {}
+  return { text, number: seen.length, total: randomFacts.length, restarted };
 }
 function loadFact() {
-  $("factText").textContent = nextRandomFact();
-  $("factStatus").textContent = "A new fact ✦";
+  const f = nextRandomFact();
+  $("factText").textContent = f.text;
+  $("factStatus").textContent = "Fact " + f.number + " of " + f.total + (f.restarted ? " · you've read them all, starting a new round ✦" : " ✦");
 }
 $("factBtn").onclick = loadFact;
 loadFact();
