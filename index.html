@@ -355,6 +355,11 @@ textarea { min-height: 140px; resize: vertical; }
 .gothic-place-name { font-family: "Cormorant Garamond",serif; font-size: clamp(1.65rem,4vw,2.35rem); line-height: 1.1; color: #f0dce5; }
 .gothic-place-meta { margin-top: 7px; color: var(--pink); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
 .gothic-place-description { margin-top: 12px; line-height: 1.65; color: var(--muted); }
+.gothic-place-preview { display:block; width:100%; max-height:360px; aspect-ratio:16/9; object-fit:cover; border-radius:12px; margin:0 0 14px; background:rgba(255,255,255,.04); border:1px solid var(--line); }
+.gothic-search-row { display:flex; gap:8px; margin-top:12px; }
+.gothic-search-row input { min-width:0; flex:1; }
+.gothic-search-row .smallbtn { flex-shrink:0; }
+@media(max-width:430px) { .gothic-search-row { flex-direction:column; } .gothic-search-row .smallbtn { width:100%; } }
 .gothic-place-link { display: inline-block; margin-top: 13px; color: #f0c4d5; text-decoration: underline; text-underline-offset: 3px; }
 .gothic-place-actions { display: flex; flex-wrap: wrap; gap: 9px; }
 .gothic-place-actions .action { flex: 1 1 220px; }
@@ -749,6 +754,29 @@ input { padding: 10px 12px; border-radius: 12px; }
   .wallpaper-only { min-height: calc(100svh - 52px); }
 }
 
+
+/* Gothic history reading corner */
+.gothic-history-card { padding: clamp(14px,3vw,22px); }
+.gothic-history-topline { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.gothic-history-era { color:var(--muted); font-size:.74rem; }
+.gothic-history-title { font-family:"Cormorant Garamond",serif; font-weight:500; font-size:clamp(1.8rem,5vw,2.65rem); line-height:1.1; margin-top:12px; color:#f0dce5; }
+.gothic-history-body { color:var(--muted); line-height:1.8; margin-top:12px; max-width:78ch; white-space:pre-line; }
+.gothic-history-source a,.gothic-history-source { color:#f0c4d5; }
+.gothic-history-source { margin-top:13px; }
+.gothic-history-source a { text-underline-offset:3px; }
+.gothic-history-controls { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:16px; }
+.gothic-history-controls .action { width:auto; flex:1 1 180px; margin:0; }
+.gothic-history-fact { margin-top:18px; padding:14px; border:1px solid rgba(217,141,165,.2); border-radius:14px; background:rgba(255,255,255,.025); }
+.gothic-history-fact span { color:var(--pink); font-size:.68rem; letter-spacing:.16em; }
+.gothic-history-fact p { font-family:"Cormorant Garamond",serif; font-size:1.22rem; line-height:1.5; margin:7px 0 10px; }
+.gothic-history-chapters { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin-top:10px; }
+.gothic-history-chapter { text-align:left; width:100%; border:1px solid var(--line); background:linear-gradient(145deg,rgba(20,12,25,.68),rgba(8,7,11,.58)); border-radius:14px; padding:13px; color:var(--text); cursor:pointer; transition:border-color .2s,transform .2s; }
+.gothic-history-chapter:hover,.gothic-history-chapter.active { border-color:rgba(217,141,165,.55); }
+.gothic-history-chapter:hover { transform:translateY(-1px); }
+.gothic-history-chapter strong { display:block; font-family:"Cormorant Garamond",serif; font-size:1.2rem; font-weight:600; }
+.gothic-history-chapter span { display:block; color:var(--muted); font-size:.78rem; line-height:1.5; margin-top:5px; }
+@media(max-width:520px) { .gothic-history-chapters { grid-template-columns:1fr; } .gothic-history-controls .smallbtn { flex:1 1 130px; } }
+
 </style>
 </head>
 
@@ -866,6 +894,7 @@ input { padding: 10px 12px; border-radius: 12px; }
     <button class="navbtn" data-go="wallpapers">Wallpaper</button>
     <button class="navbtn" data-go="fact">Random fact</button>
     <button class="navbtn" data-go="gothicPlaces">Gothic places</button>
+    <button class="navbtn" data-go="gothicHistory">Gothic history</button>
     <button class="navbtn" data-go="talk">Talk</button>
     <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
   </div>
@@ -1047,17 +1076,44 @@ input { padding: 10px 12px; border-radius: 12px; }
     <div class="card">
       <div class="gothic-place-meta" id="gothicPlaceCount">Your next dark little discovery</div>
       <div class="gothic-place-card" aria-live="polite">
+        <img class="gothic-place-preview hidden" id="gothicPlaceImage" alt="Photograph of the discovered place" loading="lazy">
         <h3 class="gothic-place-name" id="gothicPlaceName">Ready to wander?</h3>
         <div class="gothic-place-meta" id="gothicPlaceLocation">✦ somewhere atmospheric</div>
         <p class="gothic-place-description" id="gothicPlaceDescription">Tap below to discover a gothic place.</p>
         <a class="gothic-place-link" id="gothicPlaceLink" href="https://en.wikipedia.org/wiki/Gothic_architecture" target="_blank" rel="noopener noreferrer">Read more ↗</a>
       </div>
+      <div class="gothic-search-row">
+        <input id="gothicPlaceSearch" type="search" placeholder="Search by place, country, or type…" aria-label="Search Gothic places">
+        <button class="smallbtn" id="searchGothicPlaces" type="button">Search places</button>
+      </div>
       <div class="gothic-place-actions">
         <button class="action" id="nextGothicPlace" type="button">Discover a random place ✦</button>
+        <button class="smallbtn" id="loadMoreGothicPlaces" type="button">Load more places ↗</button>
         <button class="smallbtn" id="resetGothicPlaces" type="button">Start the list again</button>
       </div>
-      <div class="status" id="gothicPlaceStatus" role="status" aria-live="polite">No API key needed — the place collection is built in.</div>
+      <div class="status" id="gothicPlaceStatus" role="status" aria-live="polite">Loading worldwide places and real photo previews…</div>
     </div>
+  </section>
+
+  <section class="section" id="gothicHistory">
+    <div class="section-head">
+      <div><div class="section-kicker">08 · echoes through time</div><h2>A little Gothic history.</h2></div>
+      <p>Read about the movement, its architecture, its literature, and the darker stories that inspired generations. Pick a chapter or uncover a random fact.</p>
+    </div>
+    <div class="card gothic-history-card">
+      <div class="gothic-history-topline"><span class="gothic-place-meta" id="gothicHistoryProgress">A small library of shadows</span><span class="gothic-history-era">c. 12th century → today</span></div>
+      <h3 class="gothic-history-title" id="gothicHistoryTitle">Where Gothic began</h3>
+      <p class="gothic-history-body" id="gothicHistoryBody">Gothic began as an architectural style in medieval Europe before the word grew to describe art, fiction, fashion, music, and an entire atmosphere.</p>
+      <div class="gothic-history-source"><a id="gothicHistorySource" href="https://en.wikipedia.org/wiki/Gothic_architecture" target="_blank" rel="noopener noreferrer">Read a deeper history ↗</a></div>
+      <div class="gothic-history-controls">
+        <button class="smallbtn" id="gothicHistoryPrev" type="button">← Previous chapter</button>
+        <button class="action" id="gothicHistoryRandom" type="button">Surprise me with a fact ✦</button>
+        <button class="smallbtn" id="gothicHistoryNext" type="button">Next chapter →</button>
+      </div>
+      <div class="gothic-history-fact" aria-live="polite"><span>✦ RANDOM FACT</span><p id="gothicHistoryFact">The pointed arch is one of the best-known features of Gothic architecture.</p><button class="smallbtn" id="gothicHistoryAnotherFact" type="button">Another fact ↻</button></div>
+    </div>
+    <div class="gothic-history-chapters" id="gothicHistoryChapters" aria-label="Gothic history chapters"></div>
+    <p class="fine">History notes are short introductions. Follow each source link for more detail, dates, and scholarly context.</p>
   </section>
 
   <section class="section" id="talk">
@@ -2110,7 +2166,7 @@ $("factBtn").onclick = loadFact;
 loadFact();
 
 
-/* Gothic places: curated local collection; each entry is shown once before reset. */
+/* Gothic places: curated starters plus expandable worldwide Wikipedia discoveries. */
 (() => {
   const places = [
     {name:"Bran Castle", location:"Bran, Romania", description:"A dramatic hilltop castle with towers, winding staircases, and a silhouette tied to centuries of vampire folklore.", url:"https://en.wikipedia.org/wiki/Bran_Castle"},
@@ -2127,9 +2183,9 @@ loadFact();
     {name:"Miramare Castle", location:"Trieste, Italy", description:"A pale castle overlooking the Adriatic Sea, surrounded by dark evergreen trees and romantic coastal gardens.", url:"https://en.wikipedia.org/wiki/Miramare_Castle"},
     {name:"Burg Eltz", location:"Wierschem, Germany", description:"A medieval castle tucked into a forested valley, with clustered towers that look lifted from a gothic storybook.", url:"https://en.wikipedia.org/wiki/Eltz_Castle"},
     {name:"St. Dunstan in the East", location:"London, England", description:"The roofless remains of a church transformed into a garden, where plants climb ancient stone walls and empty windows.", url:"https://en.wikipedia.org/wiki/St_Dunstan-in-the-East"},
-    {name:"Château de Chambord", location:"Loir-et-Cher, France", description:"A grand Renaissance château with a forest setting, intricate rooflines, and countless chimneys and towers.", url:"https://en.wikipedia.org/wiki/Ch%C3%A2teau_de_Chambord"},
+    {name:"Château de Chambord", location:"Loir-et-Cher, France", description:"A grand château with a forest setting, intricate rooflines, and countless chimneys and towers.", url:"https://en.wikipedia.org/wiki/Ch%C3%A2teau_de_Chambord"},
     {name:"Basilica Cistern", location:"Istanbul, Türkiye", description:"An underground chamber of ancient columns reflected in shallow water, lit with a mysterious, cinematic glow.", url:"https://en.wikipedia.org/wiki/Basilica_Cistern"},
-    {name:"Kronborg Castle", location:"Helsingør, Denmark", description:"A formidable Renaissance fortress beside the sea, famously associated with Shakespeare’s Hamlet.", url:"https://en.wikipedia.org/wiki/Kronborg"},
+    {name:"Kronborg Castle", location:"Helsingør, Denmark", description:"A formidable fortress beside the sea, famously associated with Shakespeare’s Hamlet.", url:"https://en.wikipedia.org/wiki/Kronborg"},
     {name:"The Dark Hedges", location:"County Antrim, Northern Ireland", description:"A tunnel-like avenue of intertwined beech trees that creates a wonderfully uncanny silhouette over the road.", url:"https://en.wikipedia.org/wiki/Dark_Hedges"},
     {name:"La Recoleta Cemetery", location:"Buenos Aires, Argentina", description:"A city of ornate mausoleums and narrow passages, full of sculpted stonework and elaborate architectural details.", url:"https://en.wikipedia.org/wiki/La_Recoleta_Cemetery"},
     {name:"The Royal Pavilion", location:"Brighton, England", description:"An extravagant palace with domes and minarets, a fantastical silhouette that feels both romantic and surreal.", url:"https://en.wikipedia.org/wiki/Royal_Pavilion"},
@@ -2139,55 +2195,161 @@ loadFact();
     {name:"Bodiam Castle", location:"East Sussex, England", description:"A picturesque medieval castle surrounded by a moat, with round towers and a striking, storybook outline.", url:"https://en.wikipedia.org/wiki/Bodiam_Castle"},
     {name:"Kruja Castle", location:"Krujë, Albania", description:"A historic hilltop stronghold with stone paths and sweeping views across the surrounding landscape.", url:"https://en.wikipedia.org/wiki/Kruj%C3%AB_Castle"}
   ];
-  const key = "layaGothicPlacesSeen_v1";
+  const key = "layaGothicPlacesSeenTitles_v2";
   const name = $("gothicPlaceName"), location = $("gothicPlaceLocation"), description = $("gothicPlaceDescription"), link = $("gothicPlaceLink");
-  const count = $("gothicPlaceCount"), status = $("gothicPlaceStatus"), next = $("nextGothicPlace");
+  const count = $("gothicPlaceCount"), status = $("gothicPlaceStatus"), next = $("nextGothicPlace"), image = $("gothicPlaceImage");
+  const searchInput = $("gothicPlaceSearch"), searchButton = $("searchGothicPlaces"), loadButton = $("loadMoreGothicPlaces");
   if (!name || !next) return;
-  function readSeen() {
-    try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value.filter(Number.isInteger) : []; }
-    catch (_) { return []; }
+  const seedCount = places.length;
+  const known = new Set(places.map(p => p.name.toLowerCase()));
+  const searchTerms = ["Gothic cathedral", "Gothic church", "Gothic architecture historic building", "medieval castle Europe", "historic abbey ruins", "historic cemetery mausoleum", "catacombs ossuary", "Gothic revival architecture", "monastery ruins historic", "medieval fortress castle", "Gothic architecture Asia", "Gothic architecture Americas"];
+  let termIndex = 0, offsets = Object.create(null), busy = false, exhausted = false, currentSearch = "";
+  function readSeen() { try { const v=JSON.parse(localStorage.getItem(key)||"[]"); return Array.isArray(v)?v.filter(x=>typeof x==="string"):[]; } catch (_) { return []; } }
+  function writeSeen(v) { try { localStorage.setItem(key,JSON.stringify(v)); } catch (_) {} }
+  function normalizeTitle(t) { return String(t||"").replace(/_/g," ").trim(); }
+  function locationFromSnippet(snippet) { const clean=String(snippet||"").replace(/<[^>]*>/g,"").replace(/&quot;/g,'"').replace(/&#039;/g,"'").replace(/&amp;/g,"&"); const m=clean.match(/(?:located|situated|found|based) in ([^.;,]{3,70})/i); return m?m[1]:"Worldwide · historic site"; }
+  async function apiSearch(query, offset=0) {
+    const url="https://en.wikipedia.org/w/api.php?action=query&list=search&srnamespace=0&srlimit=50&sroffset="+offset+"&srsearch="+encodeURIComponent(query)+"&format=json&origin=*";
+    const response=await fetch(url,{headers:{Accept:"application/json"}}); if(!response.ok) throw new Error("Wikipedia search is unavailable right now."); return response.json();
   }
-  function writeSeen(value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} }
-  function showNext() {
-    let seen = readSeen().filter(i => i >= 0 && i < places.length);
-    const remaining = places.map((_, i) => i).filter(i => !seen.includes(i));
-    if (!remaining.length) {
-      name.textContent = "You found every shadowy corner.";
-      location.textContent = "✦ journey complete";
-      description.textContent = "You have discovered all " + places.length + " places in this collection. Start the list again whenever you want another wander.";
-      link.hidden = true;
-      count.textContent = places.length + " / " + places.length + " places explored";
-      status.textContent = "Every place has been shown once. No repeats until you restart the list.";
-      next.disabled = true;
-      next.textContent = "All places discovered";
+  async function loadBatch(query, offset=0, manual=false) {
+    if(busy) return 0; busy=true; if(loadButton)loadButton.disabled=true; if(searchButton)searchButton.disabled=true;
+    status.textContent="Finding more places and photo sources…";
+    try {
+      const data=await apiSearch(query,offset), rows=data?.query?.search||[]; let added=0;
+      for(const row of rows) {
+        const title=normalizeTitle(row.title), id=title.toLowerCase();
+        if(!title||known.has(id)||/^(list of|outline of|category:|index of)/i.test(title)) continue;
+        const snippet=String(row.snippet||"").replace(/<[^>]*>/g,"").replace(/&quot;/g,'"').replace(/&#039;/g,"'").replace(/&amp;/g,"&");
+        places.push({name:title,location:locationFromSnippet(snippet),description:snippet||"Explore the history, architecture, and atmosphere of this place.",url:"https://en.wikipedia.org/wiki/"+encodeURIComponent(title.replace(/ /g,"_")),wikiTitle:title});
+        known.add(id); added++;
+      }
+      if(manual) {
+        currentSearch=query; offsets[query]=offset+rows.length;
+        if(added) {
+          const matches=places.slice(-added);
+          const place=matches[Math.floor(Math.random()*matches.length)];
+          const seen=readSeen(); if(!seen.includes(place.name.toLowerCase())) { seen.push(place.name.toLowerCase()); writeSeen(seen); }
+          name.textContent=place.name; location.textContent=place.location; description.textContent=place.description; link.href=place.url; link.hidden=false; link.textContent="Read about this place ↗";
+          updateCounter(seen); status.textContent="Found matches for “"+query+"”. Use Load more places to keep browsing these results."; next.disabled=false; next.textContent="Discover another place ✦"; showPhoto(place);
+        } else status.textContent="No new matches in this batch. Try another spelling, country, or category.";
+      } else if(added===0 && rows.length===0) { termIndex++; }
+      return added;
+    } catch(err) { status.textContent="Could not load online places. Your saved collection still works — check your connection and try again."; return 0; }
+    finally { busy=false; if(loadButton)loadButton.disabled=false; if(searchButton)searchButton.disabled=false; }
+  }
+  async function loadMore() {
+    if(busy)return;
+    if(currentSearch) {
+      const q=currentSearch, off=offsets[q]||0, before=places.length;
+      const added=await loadBatch(q,off,false);
+      offsets[q]=off+50;
+      status.textContent=added>0?"Added "+added+" more matches for “"+q+"”.":"No new matches in that batch. Try a different search.";
       return;
     }
-    const index = remaining[Math.floor(Math.random() * remaining.length)];
-    seen.push(index); writeSeen(seen);
-    const place = places[index];
-    name.textContent = place.name;
-    location.textContent = place.location;
-    description.textContent = place.description;
-    link.href = place.url; link.hidden = false; link.textContent = "Read about this place ↗";
-    count.textContent = seen.length + " / " + places.length + " places explored";
-    status.textContent = (places.length - seen.length) + " new places left before the list resets.";
-    next.disabled = false; next.textContent = "Discover another place ✦";
+    let tries=0, added=0;
+    while(tries<searchTerms.length && added===0) {
+      const q=searchTerms[termIndex%searchTerms.length], off=offsets[q]||0;
+      added=await loadBatch(q,off,false);
+      // The MediaWiki search API supports offsets; advance within each topic until results run out.
+      offsets[q]=off+50;
+      termIndex=(termIndex+1)%searchTerms.length; tries++;
+    }
+    if(added) status.textContent="Added "+added+" more worldwide discoveries. " + places.length + " unique places are available in this session.";
+    else status.textContent="No fresh matches in those topics right now. Try searching for a country or another kind of historic place.";
   }
-  next.addEventListener("click", showNext);
-  $("resetGothicPlaces").addEventListener("click", () => {
-    writeSeen([]); next.disabled = false; next.textContent = "Discover a random place ✦";
-    status.textContent = "The list has been reset. Your next discovery is waiting.";
-    showNext();
+  async function showPhoto(place) {
+    image.classList.add("hidden"); image.removeAttribute("src"); image.alt="Photograph of "+place.name;
+    const title=place.wikiTitle||place.name;
+    try {
+      const url="https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(title.replace(/ /g,"_"));
+      const response=await fetch(url,{headers:{Accept:"application/json"}}); if(!response.ok) throw new Error("No summary");
+      const data=await response.json();
+      if(data.thumbnail?.source && name.textContent===place.name) { image.src=data.thumbnail.source; image.classList.remove("hidden"); }
+      if(data.extract && data.extract.length>description.textContent.length && name.textContent===place.name) description.textContent=data.extract;
+      if(data.coordinates && data.title && name.textContent===place.name && place.location==="Worldwide · historic site") place.location.textContent="";
+    } catch (_) {
+      // Keep the card usable if the photo endpoint is unavailable; the Wikipedia article link remains available.
+    }
+  }
+  function updateCounter(seen) { count.textContent=seen.length+" explored · "+places.length+" unique places loaded"; }
+  function showNext(allowSeen=false) {
+    const seen=readSeen();
+    let candidates=places.map((p,i)=>i).filter(i=>allowSeen || !seen.includes(places[i].name.toLowerCase()));
+    if(!candidates.length) {
+      if(!exhausted) { loadMore().then(()=>{ const after=readSeen(); const avail=places.some(p=>!after.includes(p.name.toLowerCase())); if(avail)showNext(); }); status.textContent="You've explored the places loaded so far — finding more worldwide discoveries…"; return; }
+      name.textContent="You've explored every loaded place."; location.textContent="✦ journey complete"; description.textContent="Load more places to expand your collection, or reset your discoveries to wander again."; link.hidden=true; image.classList.add("hidden"); next.disabled=true; count.textContent=seen.length+" places explored"; status.textContent="Your loaded collection has been explored. Load more places to keep going."; return;
+    }
+    const index=candidates[Math.floor(Math.random()*candidates.length)], place=places[index], lower=place.name.toLowerCase();
+    if(!allowSeen) { seen.push(lower); writeSeen(seen); }
+    name.textContent=place.name; location.textContent=place.location; description.textContent=place.description; link.href=place.url; link.hidden=false; link.textContent="Read about this place ↗";
+    updateCounter(seen); status.textContent=(places.length-seen.length)+" loaded places not explored yet. Load more for additional countries and categories.";
+    next.disabled=false; next.textContent="Discover another place ✦"; showPhoto(place);
+  }
+  next.addEventListener("click",()=>showNext());
+  loadButton?.addEventListener("click",loadMore);
+  searchButton?.addEventListener("click",async()=>{
+    const q=(searchInput?.value||"").trim(); if(!q){status.textContent="Type a place, country, or category first.";searchInput?.focus();return;}
+    currentSearch=q; offsets[q]=0; await loadBatch(q,0,true);
   });
-  const seen = readSeen();
-  if (seen.length >= places.length) {
-    name.textContent = "You found every shadowy corner.";
-    location.textContent = "✦ journey complete";
-    description.textContent = "You have discovered all " + places.length + " places in this collection. Start the list again whenever you want another wander.";
-    link.hidden = true; count.textContent = places.length + " / " + places.length + " places explored";
-    status.textContent = "Every place has been shown once. No repeats until you restart the list.";
-    next.disabled = true; next.textContent = "All places discovered";
+  searchInput?.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();searchButton?.click();}});
+  $("resetGothicPlaces").addEventListener("click",()=>{writeSeen([]); next.disabled=false; next.textContent="Discover a random place ✦"; status.textContent="Your discovery history is reset."; showNext();});
+  // Warm the pool in the background so the collection grows beyond its original 25 places.
+  const seenAtStart=readSeen();
+  if(seenAtStart.length) { /* Preserve the user's previously explored places by title. */ }
+  showNext();
+  loadMore();
+})();
+
+
+/* Gothic history: short reading chapters plus a rotating fact collection. */
+(() => {
+  const chapters = [
+    {title:"Where Gothic began", era:"12th century · France", body:"Gothic architecture emerged in the Île-de-France region of what is now northern France during the 12th century. Builders developed new ways to send the weight of tall stone buildings outward, helping churches rise higher and admit more light. The style spread across Europe and changed over time, so a Gothic building in England can look quite different from one in Italy.", url:"https://en.wikipedia.org/wiki/Gothic_architecture", summary:"The origins and defining features of Gothic architecture."},
+    {title:"The pointed arch", era:"Architecture · structure", body:"A pointed arch is one of Gothic architecture’s most recognizable features. Compared with a semicircular arch, its shape can help builders vary the height and span of an opening. Pointed arches appear alongside ribbed vaults and other techniques that made complex, lofty interiors possible.", url:"https://en.wikipedia.org/wiki/Pointed_arch", summary:"How a simple shape became an iconic architectural detail."},
+    {title:"Flying buttresses", era:"Architecture · engineering", body:"Flying buttresses are external supports that carry some of a tall building’s outward thrust to sturdy piers. They allowed architects to open up more wall space for windows while supporting high vaults. Their skeletal lines became part of the dramatic exterior appearance of many Gothic cathedrals.", url:"https://en.wikipedia.org/wiki/Flying_buttress", summary:"The engineering behind soaring cathedral walls."},
+    {title:"Stained glass and light", era:"Medieval art · symbolism", body:"Gothic churches often used large stained-glass windows to fill interiors with colored light. Windows could depict biblical narratives, saints, symbolic figures, and sometimes the people or guilds who funded them. Many were also works of craftsmanship in their own right, assembled from colored glass held together by lead strips.", url:"https://en.wikipedia.org/wiki/Stained_glass", summary:"Stories, craft, and color in medieval windows."},
+    {title:"Gargoyles and grotesques", era:"Stonework · folklore", body:"Strictly speaking, a gargoyle is a carved waterspout that directs rain away from a building. Carved figures that do not carry water are more accurately called grotesques or chimeras. Their strange faces and creatures can be playful, frightening, symbolic, or simply imaginative pieces of architectural sculpture.", url:"https://en.wikipedia.org/wiki/Gargoyle", summary:"What the strange stone creatures on buildings actually are."},
+    {title:"The Gothic Revival", era:"18th–19th centuries", body:"Centuries after medieval Gothic architecture first flourished, architects and writers renewed interest in it. The Gothic Revival became especially influential in the 18th and 19th centuries, inspiring churches, universities, civic buildings, homes, and romantic visions of the medieval past. It was a revival style, not an uninterrupted continuation of medieval building practice.", url:"https://en.wikipedia.org/wiki/Gothic_Revival_architecture", summary:"How medieval forms returned to modern cities."},
+    {title:"Gothic fiction", era:"18th century onward · literature", body:"Gothic fiction grew in the late 18th century and often placed its characters in isolated castles, ruined abbeys, old mansions, or threatening landscapes. Writers used suspense, secrets, supernatural possibilities, and the past returning to trouble the present. The genre has changed greatly, but its fascination with atmosphere and hidden histories remains recognizable.", url:"https://en.wikipedia.org/wiki/Gothic_fiction", summary:"Ruins, secrets, suspense, and the birth of Gothic novels."},
+    {title:"A famous early Gothic novel", era:"1764 · Horace Walpole", body:"Horace Walpole’s The Castle of Otranto, first published in 1764, is widely regarded as a foundational work of Gothic fiction. It combines a medieval-style setting with supernatural events, family secrets, and a menacing castle. Later writers adapted and challenged the conventions it helped popularize.", url:"https://en.wikipedia.org/wiki/The_Castle_of_Otranto", summary:"The novel that helped establish Gothic fiction as a genre."},
+    {title:"Romanticism and ruins", era:"Art · imagination", body:"Ruins became powerful subjects for artists and writers, especially during the Romantic period. Weathered stone could suggest the passage of time, the fragility of power, the force of nature, or a lost world. The appeal is not only fear: ruins can also feel beautiful, reflective, and strangely peaceful.", url:"https://en.wikipedia.org/wiki/Romanticism", summary:"Why ruined buildings can feel beautiful and haunting."},
+    {title:"Gothic is not only one look", era:"Across regions and centuries", body:"Gothic design changed as it travelled. English Gothic is often discussed through phases such as Early English, Decorated, and Perpendicular; French cathedrals developed their own regional forms; and Italy often combined Gothic structures with local materials and traditions. A place may feel Gothic in mood without being an example of medieval Gothic architecture.", url:"https://en.wikipedia.org/wiki/English_Gothic_architecture", summary:"Regional styles and the difference between architecture and atmosphere."},
+    {title:"From Gothic style to subculture", era:"Late 20th century · music and fashion", body:"The modern Goth subculture developed around post-punk music in the late 1970s and early 1980s. Dark fashion, dramatic makeup, literature, film, and art became part of a varied scene. Although it borrows imagery associated with Gothic fiction and Romanticism, modern Goth culture is not the same thing as medieval Gothic architecture.", url:"https://en.wikipedia.org/wiki/Goth_subculture", summary:"How a modern music scene developed its own dark aesthetic."},
+    {title:"Cemeteries as cultural records", era:"History · memorial art", body:"Historic cemeteries can reveal changing beliefs about death, family, status, craftsmanship, and public health. Their monuments range from modest markers to elaborate mausoleums and sculptures. They are meaningful heritage sites, so visitors should follow local rules, respect mourners, and avoid disturbing graves or memorials.", url:"https://en.wikipedia.org/wiki/Cemetery", summary:"What monuments and burial grounds can tell us about the past."}
+  ];
+  const facts = [
+    "Gothic architecture first developed in 12th-century France; it was not originally a name for a dark fashion style.",
+    "A gargoyle is technically a carved waterspout. A similar sculpture that does not drain water is usually called a grotesque.",
+    "The pointed arch is a hallmark of Gothic design, but it also appeared in other architectural traditions.",
+    "Flying buttresses help transfer the outward forces of tall vaulted buildings to external supports.",
+    "Many medieval stained-glass windows told stories through images, making them meaningful even to visitors who could not read.",
+    "The Castle of Otranto appeared in 1764 and is often described as a foundational Gothic novel.",
+    "Gothic Revival architecture became especially popular in the 18th and 19th centuries, long after medieval Gothic’s first flourishing.",
+    "Not every castle is Gothic, and not every building with a spooky atmosphere is Gothic architecture.",
+    "Gothic fiction often uses old buildings as more than scenery: they can hold family secrets, memories, and threats.",
+    "The modern Goth subculture grew from post-punk music around the late 1970s and early 1980s.",
+    "The word ‘Gothic’ has had different meanings in art, architecture, literature, and popular culture across time.",
+    "Ruins became especially evocative subjects for Romantic-era artists and writers, who used them to explore time and memory.",
+    "The rose window is a large circular window often divided by intricate stone tracery, especially associated with Gothic churches.",
+    "Medieval Gothic buildings were constructed over generations, so a single cathedral can contain several architectural periods.",
+    "A cemetery’s monuments can document local history, social customs, and changes in sculpture and design."
+  ];
+  const title=$("gothicHistoryTitle"), body=$("gothicHistoryBody"), era=$("gothicHistoryProgress"), source=$("gothicHistorySource"), fact=$("gothicHistoryFact"), cards=$("gothicHistoryChapters");
+  if(!title || !cards) return;
+  let current=0, lastFact=-1;
+  function render(index){
+    current=(index+chapters.length)%chapters.length;
+    const c=chapters[current]; title.textContent=c.title; body.textContent=c.body; era.textContent=c.era+" · chapter "+(current+1)+" of "+chapters.length; source.href=c.url; source.textContent="Read more about "+c.title+" ↗";
+    cards.querySelectorAll(".gothic-history-chapter").forEach((el,i)=>{el.classList.toggle("active",i===current);el.setAttribute("aria-current",i===current?"true":"false");});
   }
+  function randomFact(){ let n=Math.floor(Math.random()*facts.length); if(facts.length>1 && n===lastFact)n=(n+1)%facts.length; lastFact=n; fact.textContent=facts[n]; }
+  chapters.forEach((c,i)=>{const b=document.createElement("button");b.type="button";b.className="gothic-history-chapter";b.innerHTML="<strong></strong><span></span>";b.querySelector("strong").textContent=c.title;b.querySelector("span").textContent=c.summary;b.addEventListener("click",()=>render(i));cards.appendChild(b);});
+  $("gothicHistoryPrev")?.addEventListener("click",()=>render(current-1));
+  $("gothicHistoryNext")?.addEventListener("click",()=>render(current+1));
+  $("gothicHistoryRandom")?.addEventListener("click",randomFact);
+  $("gothicHistoryAnotherFact")?.addEventListener("click",randomFact);
+  render(0); randomFact();
 })();
 
 /* AI chat */
