@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title> ♡</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,7 @@ body {
 }
 button,input,textarea { font: inherit; }
 button { color: inherit; }
-.wall { position: fixed; inset: 0; z-index: -5; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease,filter 2s ease; filter: saturate(.82) brightness(.88); }
+.wall { position: fixed; inset: 0; z-index: -5; background-size: cover; background-position: var(--wall-pos,center); opacity: 0; transition: opacity 1.5s ease,filter 2s ease; filter: saturate(.82) brightness(.88); }
 .wall.visible { opacity: var(--wall-opacity); }
 .shade { position: fixed; inset: 0; z-index: -4; background: linear-gradient(180deg,rgba(5,4,7,.18),rgba(5,4,7,.42) 70%,rgba(6,5,8,.66)); }
 .starfield { position: fixed; inset: 0; z-index: -3; pointer-events: none; opacity: .22; background-image: radial-gradient(circle,rgba(255,255,255,.65) 1px,transparent 1px); background-size: 67px 67px; mask-image: linear-gradient(to bottom,black,transparent 80%); }
@@ -64,7 +64,7 @@ h2 { font-family: "Cormorant Garamond",serif; font-size: clamp(1.65rem,4vw,2.25r
 
 .grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; align-items: stretch; }
 .grid > .card { min-width: 0; padding: 16px; border-radius: 15px; }
-.grid > .card:nth-child(3) { grid-column: 1 / -1; }
+#us .grid > .card:nth-child(3), #us .grid > #hugCard { grid-column: 1 / -1; }
 .card { background: linear-gradient(145deg,rgba(24,16,29,.82),rgba(8,7,12,.76)); border: 1px solid rgba(220,190,215,.2); border-radius: 15px; padding: 12px; box-shadow: 0 18px 48px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.045); backdrop-filter: blur(15px); }
 .card:hover { border-color: rgba(220,190,215,.38); }
 .card-title { font-family: "Cormorant Garamond",serif; font-size: 1.48rem; font-weight: 600; margin-bottom: 5px; }
@@ -117,6 +117,7 @@ textarea { min-height: 92px; resize: vertical; }
 .controls { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 15px; }
 .smallbtn { border: 1px solid var(--line); background: rgba(255,255,255,.045); padding: 9px 12px; border-radius: 999px; cursor: pointer; }
 .smallbtn.active { background: rgba(101,29,53,.6); border-color: rgba(217,141,165,.5); }
+.smallbtn:disabled { opacity: .4; cursor: not-allowed; }
 .status { font-size: .82rem; color: var(--muted); margin-top: 10px; }
 .toggle-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
 .switch { width: 48px; height: 27px; border-radius: 99px; background: #342b38; border: 1px solid var(--line); padding: 3px; cursor: pointer; }
@@ -178,7 +179,7 @@ textarea { min-height: 92px; resize: vertical; }
 .ripple { position: fixed; width: 14px; height: 14px; border: 1px solid #d98da5; border-radius: 50%; pointer-events: none; z-index: 9998; animation: ripple .65s ease-out forwards; }
 @keyframes ripple { to { transform: scale(6); opacity: 0; } }
 @keyframes plushHeart { 0% { opacity: 0; transform: translateY(8px) scale(.7); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-28px) scale(1.15); } }
-.toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%,20px); opacity: 0; z-index: 200; padding: 11px 16px; border-radius: 999px; background: #171019; border: 1px solid var(--line); box-shadow: 0 12px 35px #0008; transition: .25s; pointer-events: none; }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%,20px); opacity: 0; z-index: 600; padding: 11px 16px; border-radius: 999px; background: #171019; border: 1px solid var(--line); box-shadow: 0 12px 35px #0008; transition: .25s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translate(-50%,0); }
 .hidden { display: none !important; }
 
@@ -266,28 +267,82 @@ body.auth-locked { overflow: hidden; }
 .pass-wrap { position: relative; display: block; margin-top: 6px; }
 .pass-wrap input { margin-top: 0; padding-right: 72px; }
 body .login-form .pass-wrap .pass-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); margin: 0; padding: 5px 10px; width: auto; border-radius: 9px; font-size: .72rem; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); color: #f3dce9; cursor: pointer; }
+/* Show/Hide button: always clearly visible, in every theme */
+body .login-form .pass-wrap .pass-toggle { background: #45243f; border: 1px solid #d98da5; color: #fff0f6; font-weight: 600; opacity: 1; box-shadow: 0 0 0 3px rgba(9,7,12,.9); }
+body .login-form .pass-wrap .pass-toggle:hover { background: #651d35; }
+body.login-snow .login-form .pass-wrap .pass-toggle { background: #1f4a7a; border-color: #9cc6ec; color: #f0f8ff; box-shadow: 0 0 0 3px rgba(6,10,18,.9); }
+body.login-snow .login-form .pass-wrap .pass-toggle:hover { background: #2a5f9a; }
+.login-form input:-webkit-autofill,.login-form input:-webkit-autofill:focus { -webkit-text-fill-color: #f4eaf0; caret-color: #f4eaf0; box-shadow: 0 0 0 1000px #130d19 inset; }
+body.login-snow .login-form input:-webkit-autofill,body.login-snow .login-form input:-webkit-autofill:focus { box-shadow: 0 0 0 1000px #0b1523 inset; }
 
-/* Gothic history */
+/* Gothic fact card */
 .gothic-history-card { padding: clamp(14px,3vw,22px); }
-.gothic-history-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-.gothic-history-era { color: var(--muted); font-size: .74rem; }
-.gothic-history-title { font-family: "Cormorant Garamond",serif; font-weight: 500; font-size: clamp(1.8rem,5vw,2.65rem); line-height: 1.1; margin-top: 12px; color: #f0dce5; }
-.gothic-history-body { color: var(--muted); line-height: 1.8; margin-top: 12px; max-width: 78ch; white-space: pre-line; }
-.gothic-history-source a,.gothic-history-source { color: #f0c4d5; }
-.gothic-history-source { margin-top: 13px; }
-.gothic-history-source a { text-underline-offset: 3px; }
-.gothic-history-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
-.gothic-history-controls .action { width: auto; flex: 1 1 180px; margin: 0; }
 .gothic-history-fact { margin-top: 18px; padding: 14px; border: 1px solid rgba(217,141,165,.2); border-radius: 14px; background: rgba(255,255,255,.025); }
 .gothic-history-fact span { color: var(--pink); font-size: .68rem; letter-spacing: .16em; }
 .gothic-history-fact p { font-family: "Cormorant Garamond",serif; font-size: 1.22rem; line-height: 1.5; margin: 7px 0 10px; }
-.gothic-history-chapters { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin-top: 10px; }
-.gothic-history-chapter { text-align: left; width: 100%; border: 1px solid var(--line); background: linear-gradient(145deg,rgba(20,12,25,.68),rgba(8,7,11,.58)); border-radius: 14px; padding: 13px; color: var(--text); cursor: pointer; transition: border-color .2s,transform .2s; }
-.gothic-history-chapter:hover,.gothic-history-chapter.active { border-color: rgba(217,141,165,.55); }
-.gothic-history-chapter:hover { transform: translateY(-1px); }
-.gothic-history-chapter strong { display: block; font-family: "Cormorant Garamond",serif; font-size: 1.2rem; font-weight: 600; }
-.gothic-history-chapter span { display: block; color: var(--muted); font-size: .78rem; line-height: 1.5; margin-top: 5px; }
-@media(max-width:520px) { .gothic-history-chapters { grid-template-columns: 1fr; } .gothic-history-controls .smallbtn { flex: 1 1 130px; } }
+
+/* Candles */
+.candle-card { text-align: center; }
+.candle-card.lit-any { border-color: rgba(255,170,90,.38); box-shadow: 0 18px 60px rgba(255,140,60,.12), inset 0 1px rgba(255,255,255,.045); }
+.candle-row { display: flex; justify-content: center; align-items: flex-end; gap: clamp(14px,5vw,38px); padding: 26px 0 10px; }
+.candle { background: none; border: 0; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+.flame { width: 16px; height: 30px; border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%; background: radial-gradient(ellipse at 50% 75%,#fff6d6 0,#ffc86b 38%,#ff8a3d 70%,transparent 100%); opacity: 0; transform: scale(.3); transform-origin: 50% 100%; transition: opacity .4s, transform .4s; }
+.candle.lit .flame { opacity: 1; transform: scale(1); animation: flicker 1.6s ease-in-out infinite; }
+.wick { width: 2px; height: 7px; background: #2a1d22; }
+.wax { width: 30px; border-radius: 5px 5px 3px 3px; background: linear-gradient(90deg,#cdb9bd,#f6ebe8 45%,#cdb9bd); transition: box-shadow .4s; }
+.candle.lit .wax { box-shadow: 0 -12px 42px rgba(255,170,90,.4); }
+@keyframes flicker { 0%,100% { transform: scale(1) rotate(-1deg); } 30% { transform: scale(1.06,.94) rotate(1.5deg); } 60% { transform: scale(.95,1.05) rotate(-1.5deg); } }
+
+/* Bookshelf */
+.read-stats { font-family: "Cormorant Garamond",serif; font-size: 1.25rem; color: #f0dce5; margin: 6px 0 4px; }
+.shelf { margin-top: 14px; padding: 6px 8px 0; border-radius: 14px; background: rgba(0,0,0,.22); border: 1px solid var(--line); }
+.shelf-row { display: flex; align-items: flex-end; justify-content: center; gap: 4px; padding: 16px 8px 0; overflow-x: auto; scrollbar-width: none; }
+.shelf-row::-webkit-scrollbar { display: none; }
+.plank { height: 14px; margin-bottom: 12px; border-radius: 3px; background: linear-gradient(#4a2c2f,#26141a); box-shadow: 0 9px 14px rgba(0,0,0,.45); }
+.spine { position: relative; flex: 0 0 auto; width: 44px; display: flex; align-items: center; justify-content: center; padding: 22px 0; border: 1px solid rgba(0,0,0,.55); border-radius: 3px 3px 1px 1px; color: #f3e2c9; cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed; font-family: "Cormorant Garamond",serif; font-weight: 600; font-size: .95rem; letter-spacing: .03em; box-shadow: inset 3px 0 rgba(255,255,255,.14), inset -3px 0 rgba(0,0,0,.35); transition: transform .25s; }
+.spine::before, .spine::after { content: ""; position: absolute; left: 0; right: 0; height: 3px; background: rgba(214,174,92,.75); }
+.spine::before { top: 10px; }
+.spine::after { bottom: 10px; }
+.spine:hover, .spine:focus-visible, .spine.picked { transform: translateY(-14px); }
+.spine .mark { position: absolute; top: -7px; right: 7px; width: 9px; height: 22px; background: #d98da5; clip-path: polygon(0 0,100% 0,100% 100%,50% 76%,0 100%); }
+.spine.finished .mark { background: #6fcf97; }
+.shelf-pager { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.finished-log details { margin-top: 12px; color: var(--muted); }
+.finished-log summary { cursor: pointer; color: var(--pink); }
+.finished-log p { margin: 6px 0 0; font-size: .85rem; }
+
+/* Reader */
+.reader { position: fixed; inset: 0; z-index: 500; display: flex; flex-direction: column; padding: 12px; background: radial-gradient(ellipse at 50% 40%,rgba(48,20,52,.97),rgba(6,4,9,.99) 75%); }
+.reader[hidden] { display: none; }
+.reader-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 4px 10px; }
+.reader-title { font-family: "Cormorant Garamond",serif; font-size: 1.2rem; color: #f0dce5; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reader-tools { display: flex; gap: 6px; flex-shrink: 0; }
+.reader-stage { flex: 1; min-height: 0; display: flex; align-items: center; gap: 8px; }
+.reader-nav { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: rgba(255,255,255,.06); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.reader-nav:hover { border-color: rgba(217,141,165,.6); }
+.book-open { position: relative; flex: 1; min-width: 0; max-width: 1000px; height: 100%; max-height: 760px; margin: 0 auto; padding: clamp(16px,3vw,36px); background: #efe3d2; color: #2b2024; border-radius: 6px; box-shadow: 0 20px 70px rgba(0,0,0,.6), inset 0 0 60px rgba(120,80,50,.18); }
+.book-open.spread::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 46px; transform: translateX(-50%); background: linear-gradient(90deg,transparent,rgba(60,35,25,.22),transparent); pointer-events: none; }
+.book-viewport { height: 100%; overflow: hidden; }
+.book-text { height: 100%; column-fill: auto; transition: transform .45s cubic-bezier(.4,.1,.2,1); font-family: "Cormorant Garamond",Georgia,serif; font-size: 1.15rem; line-height: 1.65; text-align: justify; hyphens: auto; }
+.book-text p { margin: 0 0 .75em; text-indent: 1.4em; }
+.book-text p.chap { text-indent: 0; text-align: center; font-weight: 700; letter-spacing: .06em; margin: 1.2em 0 1em; }
+.book-text p.note { text-indent: 0; text-align: center; }
+.book-text a { color: #7a2a45; }
+.reader-foot { padding: 10px 6px 4px; max-width: 700px; width: 100%; margin: 0 auto; }
+.reader-foot input[type=range] { padding: 0; accent-color: #d98da5; }
+@media(max-width:640px) { .reader { padding: 8px; } .reader-nav { width: 34px; height: 34px; } .reader-stage { gap: 4px; } }
+
+/* Organization: active nav, collapsible picker, back-to-top, books header */
+.navbtn.active { background: rgba(101,29,53,.55); border-color: rgba(217,141,165,.55); color: #fff; }
+.picker { margin-top: 14px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.025); }
+.picker > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; font-family: "Cormorant Garamond",serif; font-size: 1.2rem; font-weight: 600; }
+.picker > summary::-webkit-details-marker { display: none; }
+.picker > summary::after { content: "+"; color: var(--pink); font-size: 1.3rem; }
+.picker[open] > summary::after { content: "–"; }
+.picker-body { padding: 0 14px 14px; }
+.back-top { position: fixed; right: 16px; bottom: 18px; z-index: 150; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: rgba(14,10,18,.82); backdrop-filter: blur(10px); cursor: pointer; font-size: 1.1rem; }
+.back-top[hidden] { display: none; }
+.books-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
 
 /* Login looks / effects */
 .theme-row { display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 16px; font-size: .74rem; color: var(--muted); }
@@ -339,6 +394,36 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
   .pair { grid-template-columns: 1fr; }
   h1 { font-size: 2.75rem; }
   .hero p { font-size: .9rem; }
+}
+/* Phone polish */
+.topbar { padding-top: calc(8px + env(safe-area-inset-top)); }
+.app { padding-top: calc(54px + env(safe-area-inset-top)); }
+.toast { bottom: calc(20px + env(safe-area-inset-bottom)); }
+.back-top { bottom: calc(18px + env(safe-area-inset-bottom)); }
+.reader { height: 100dvh; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+@media(max-width:760px) {
+  :root { --wall-opacity: .55; }
+  .card { backdrop-filter: blur(6px); }
+  .navbtn { padding: 9px 12px; }
+  .smallbtn { min-height: 40px; }
+  .action { min-height: 44px; }
+}
+@media(max-width:640px) {
+  .reader { padding: 8px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
+  .reader-nav { display: none; }
+  .reader-bar { flex-wrap: wrap; }
+  .reader-title { flex-basis: 100%; }
+  .reader-tools { width: 100%; justify-content: space-between; }
+  .book-open { padding: 14px 16px; }
+}
+@media(max-width:430px) {
+  .spine { width: 38px; font-size: .85rem; }
+  .shelf-row { gap: 3px; padding-left: 4px; padding-right: 4px; }
+  .candle-row { gap: 12px; }
+}
+@media(max-height:700px) {
+  .login-gate { place-items: start center; overflow-y: auto; }
+  .login-card { margin: auto; }
 }
 @media(prefers-reduced-motion:reduce) {
   * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
@@ -441,6 +526,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<button class="back-top" id="backTop" type="button" aria-label="Back to top" hidden>↑</button>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -453,7 +539,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     <button class="navbtn" data-go="wallpapers">Wallpaper</button>
     <button class="navbtn" data-go="fact">Random fact</button>
     <button class="navbtn" data-go="gothicPlaces">Gothic places</button>
-    <button class="navbtn" data-go="gothicHistory">Gothic history</button>
+    <button class="navbtn" data-go="candleBooks">Candle &amp; books</button>
     <button class="navbtn" data-go="talk">Talk</button>
     <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
   </div>
@@ -507,8 +593,9 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
         <p>One tap = one hug delivered.</p>
         <button class="action" id="hugBtn" style="font-size:2rem">🤗</button>
         <div class="resultbox" id="hugResult">No hugs sent yet.</div>
-        <hr class="hug-hr">
-        <div class="card-title">Send Kimchi a GIF or sticker</div>
+        <details class="picker">
+          <summary>Send Kimchi a GIF or sticker</summary>
+          <div class="picker-body">
         <p>Find something cute and send it straight to Kimchi.</p>
         <div class="controls media-source-tabs" role="tablist" aria-label="GIF provider">
           <button class="smallbtn active" type="button" data-media-source="giphy" role="tab" aria-selected="true">GIPHY</button>
@@ -549,8 +636,9 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
           <button class="action" id="klipyLoadMore" type="button" hidden>Load more</button>
           <div class="status" id="klipyStatus">Nothing is shown yet. Search, or press “Show trending”, “Show GIFs” or “Show stickers”.</div>
           <button class="action" id="sendKlipyBtn" type="button" disabled>Send to Kimchi</button>
-          <p class="fine">Powered by KLIPY. Your test key is saved only in this browser. Avoid putting a production secret in a public website.</p>
         </div>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -671,25 +759,58 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     </div>
   </section>
 
-  <section class="section" id="gothicHistory">
+  <section class="section" id="candleBooks">
     <div class="section-head">
-      <div><div class="section-kicker">07 · echoes through time</div><h2>A little Gothic history.</h2></div>
-      <p>Read about the movement, its architecture, its literature, and the darker stories that inspired generations. Pick a chapter or uncover a random fact.</p>
+      <div><div class="section-kicker">07 · candlelight</div><h2>Light a candle, open a book.</h2></div>
+      <p>Light a few candles, pick a gothic classic to read for free, and learn one strange little fact before you go.</p>
     </div>
-    <div class="card gothic-history-card">
-      <div class="gothic-history-topline"><span class="gothic-place-meta" id="gothicHistoryProgress">A small library of shadows</span><span class="gothic-history-era">c. 12th century → today</span></div>
-      <h3 class="gothic-history-title" id="gothicHistoryTitle">Where Gothic began</h3>
-      <p class="gothic-history-body" id="gothicHistoryBody"></p>
-      <div class="gothic-history-source"><a id="gothicHistorySource" href="https://en.wikipedia.org/wiki/Gothic_architecture" target="_blank" rel="noopener noreferrer">Read a deeper history ↗</a></div>
-      <div class="gothic-history-controls">
-        <button class="smallbtn" id="gothicHistoryPrev" type="button">← Previous chapter</button>
-        <button class="action" id="gothicHistoryRandom" type="button">Surprise me with a fact ✦</button>
-        <button class="smallbtn" id="gothicHistoryNext" type="button">Next chapter →</button>
+
+    <div class="card candle-card" id="candleCard">
+      <div class="card-title">Light a candle</div>
+      <p>Tap a candle to light it. Tap again to blow it out.</p>
+      <div class="candle-row" id="candleRow"></div>
+      <div class="status" id="candleStatus" style="text-align:center">No candles lit yet.</div>
+      <div class="controls" style="justify-content:center">
+        <button class="smallbtn" id="lightAll" type="button">Light them all 🕯️</button>
+        <button class="smallbtn" id="blowAll" type="button">Blow them out</button>
       </div>
-      <div class="gothic-history-fact" aria-live="polite"><span>✦ RANDOM FACT</span><p id="gothicHistoryFact"></p><button class="smallbtn" id="gothicHistoryAnotherFact" type="button">Another fact ↻</button></div>
     </div>
-    <div class="gothic-history-chapters" id="gothicHistoryChapters" aria-label="Gothic history chapters"></div>
-    <p class="fine">History notes are short introductions. Follow each source link for more detail, dates, and scholarly context.</p>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">Gothic reading room</div>
+      <p>Pull a book off the shelf to open it here. Your place is saved automatically.</p>
+      <div class="books-top">
+        <div class="read-stats" id="readStats"></div>
+        <button class="action" id="continueBook" type="button" hidden style="width:auto;margin:0"></button>
+      </div>
+      <div class="gothic-search-row">
+        <input id="bookSearch" type="search" placeholder="Search title or author…" aria-label="Search books">
+      </div>
+      <div class="controls">
+        <button class="smallbtn active" type="button" data-bfilter="all">All</button>
+        <button class="smallbtn" type="button" data-bfilter="reading">Reading</button>
+        <button class="smallbtn" type="button" data-bfilter="finished">Finished</button>
+        <button class="smallbtn" type="button" data-bfilter="unread">Not started</button>
+      </div>
+      <div class="controls" id="catFilters" hidden></div>
+      <div class="shelf" id="shelf" aria-label="Bookshelf"></div>
+      <div class="shelf-pager">
+        <button class="smallbtn" id="shelfPrev" type="button">‹ Prev shelf</button>
+        <span class="status" id="shelfPageInfo" style="margin:0"></span>
+        <button class="smallbtn" id="shelfNext" type="button">Next shelf ›</button>
+      </div>
+      <div class="status" id="shelfLabel" style="text-align:center">Hover a book to see its title.</div>
+      <button class="action" id="randomBook" type="button">Pick a book for me ✦</button>
+      <div class="finished-log" id="finishedLog"></div>
+    </div>
+
+    <div class="card gothic-history-card" style="margin-top:12px">
+      <div class="gothic-history-fact" style="margin-top:0" aria-live="polite">
+        <span id="gothicFactLabel">✦ RANDOM FACT</span>
+        <p id="gothicHistoryFact"></p>
+        <button class="smallbtn" id="gothicHistoryAnotherFact" type="button">Another fact ↻</button>
+      </div>
+    </div>
   </section>
 
   <section class="section" id="talk">
@@ -709,6 +830,31 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <div class="footer">made with a little midnight purple, a little burgundy, and a lot of love ✦</div>
 </main>
+
+<!-- Book reader -->
+<div class="reader" id="reader" hidden role="dialog" aria-modal="true" aria-label="Book reader">
+  <div class="reader-bar">
+    <div class="reader-title" id="readerTitle"></div>
+    <div class="reader-tools">
+      <button class="smallbtn" id="markRead" type="button">Mark as read</button>
+      <button class="smallbtn" id="fontDown" type="button" aria-label="Smaller text">A−</button>
+      <button class="smallbtn" id="fontUp" type="button" aria-label="Larger text">A+</button>
+      <button class="smallbtn" id="readerClose" type="button">Close ✕</button>
+    </div>
+  </div>
+  <div class="reader-stage">
+    <button class="reader-nav" id="pagePrev" type="button" aria-label="Previous page">‹</button>
+    <div class="book-open" id="bookOpen">
+      <div class="book-viewport" id="bookViewport"><div class="book-text" id="bookText"></div></div>
+    </div>
+    <button class="reader-nav" id="pageNext" type="button" aria-label="Next page">›</button>
+  </div>
+  <div class="reader-foot">
+    <input type="range" id="pageSlider" min="0" max="0" value="0" aria-label="Jump to page">
+    <div class="status" id="pageInfo" style="text-align:center"></div>
+    <div class="status" style="text-align:center;font-size:.7rem">Text from Project Gutenberg (public domain)</div>
+  </div>
+</div>
 
 <script src="notes.js"></script>
 
@@ -978,6 +1124,26 @@ document.querySelectorAll("[data-go]").forEach(button => {
   button.onclick = () => $(button.dataset.go).scrollIntoView({ behavior: "smooth" });
 });
 
+/* Highlight the current section in the top bar */
+(() => {
+  const btns = [...document.querySelectorAll(".navbtn[data-go]")];
+  const map = new Map(btns.map(b => [b.dataset.go, b]));
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const b = map.get(e.target.id);
+      if (!b) return;
+      btns.forEach(x => x.classList.toggle("active", x === b));
+      b.scrollIntoView({ block: "nearest", inline: "center" });
+    });
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  map.forEach((_, id) => { const s = document.getElementById(id); if (s) io.observe(s); });
+
+  const top = $("backTop");
+  addEventListener("scroll", () => { top.hidden = scrollY < 700; }, { passive: true });
+  top.addEventListener("click", () => scrollTo({ top: 0, behavior: "smooth" }));
+})();
+
 /* Manual sign out */
 $("signOutBtn").addEventListener("click", () => {
   storeToken("");
@@ -1024,6 +1190,7 @@ function showStill(index) {
   const layer = wallLayer ? $("wallA") : $("wallB");
   wallLayer = 1 - wallLayer;
   layer.style.backgroundImage = 'url("' + wallpaper.still + '")';
+  document.documentElement.style.setProperty("--wall-pos", wallpaper.focus || "center");
   layer.classList.add("visible");
   const otherLayer = wallLayer ? $("wallA") : $("wallB");
   otherLayer.classList.remove("visible");
@@ -1034,7 +1201,7 @@ function showStill(index) {
     wallVideo = document.createElement("video");
     wallVideo.src = wallpaper.video;
     wallVideo.autoplay = true; wallVideo.muted = true; wallVideo.loop = true; wallVideo.playsInline = true;
-    Object.assign(wallVideo.style, { position: "fixed", inset: "0", width: "100%", height: "100%", objectFit: "cover", zIndex: "-5", opacity: "0", filter: "saturate(.82) brightness(.88)", transition: "opacity 1.2s ease" });
+    Object.assign(wallVideo.style, { position: "fixed", inset: "0", width: "100%", height: "100%", objectFit: "cover", objectPosition: "var(--wall-pos, center)", zIndex: "-5", opacity: "0", filter: "saturate(.82) brightness(.88)", transition: "opacity 1.2s ease" });
     document.body.insertBefore(wallVideo, document.body.firstChild);
     wallVideo.oncanplay = () => { wallVideo.style.opacity = "var(--wall-opacity)"; layer.classList.remove("visible"); };
     wallVideo.play().catch(() => {});
@@ -1394,7 +1561,7 @@ function loadFact() {
 $("factBtn").onclick = loadFact;
 loadFact();
 
-/* ============ Gothic knowledge data (shared by Places + History) ============ */
+/* ============ Gothic knowledge data (shared by Places + the fact card) ============ */
 const GOTHIC_CHAPTERS = [
   {title:"Where Gothic began", era:"12th century · France", body:"Gothic architecture emerged in the Île-de-France region of what is now northern France during the 12th century. Builders developed new ways to send the weight of tall stone buildings outward, helping churches rise higher and admit more light. The style spread across Europe and changed over time, so a Gothic building in England can look quite different from one in Italy.", url:"https://en.wikipedia.org/wiki/Gothic_architecture", summary:"The origins and defining features of Gothic architecture."},
   {title:"The pointed arch", era:"Architecture · structure", body:"A pointed arch is one of Gothic architecture’s most recognizable features. Compared with a semicircular arch, its shape can help builders vary the height and span of an opening. Pointed arches appear alongside ribbed vaults and other techniques that made complex, lofty interiors possible.", url:"https://en.wikipedia.org/wiki/Pointed_arch", summary:"How a simple shape became an iconic architectural detail."},
@@ -1707,8 +1874,8 @@ function nextGothicFact() {
     const p2 = document.createElement("p"); p2.textContent = "Did you know? " + fact;
     const row = document.createElement("div"); row.className = "gk-actions";
     const a = document.createElement("a"); a.href = chapter.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.className = "smallbtn"; a.style.textDecoration = "none"; a.textContent = "Read more ↗";
-    const b = document.createElement("button"); b.type = "button"; b.className = "smallbtn"; b.textContent = "Open Gothic history ↓";
-    b.addEventListener("click", () => $("gothicHistory").scrollIntoView({ behavior: "smooth" }));
+    const b = document.createElement("button"); b.type = "button"; b.className = "smallbtn"; b.textContent = "Light a candle & read ↓";
+    b.addEventListener("click", () => $("candleBooks").scrollIntoView({ behavior: "smooth" }));
     const c = document.createElement("button"); c.type = "button"; c.className = "smallbtn"; c.textContent = "Another fact ↻";
     c.addEventListener("click", () => showKnowledge(final));
     row.append(a, b, c);
@@ -1786,42 +1953,327 @@ function nextGothicFact() {
   loadMore();   // warm the pool in the background
 })();
 
-/* ============ Gothic history chapters ============ */
+/* ============ Candles, bookshelf, reader, and the random fact ============ */
 (() => {
-  const title = $("gothicHistoryTitle"), body = $("gothicHistoryBody"), era = $("gothicHistoryProgress"), source = $("gothicHistorySource"), fact = $("gothicHistoryFact"), cards = $("gothicHistoryChapters");
-  if (!title || !cards) return;
-  let current = 0;
-  function render(index) {
-    current = (index + GOTHIC_CHAPTERS.length) % GOTHIC_CHAPTERS.length;
-    const c = GOTHIC_CHAPTERS[current];
-    title.textContent = c.title; body.textContent = c.body;
-    era.textContent = c.era + " · chapter " + (current + 1) + " of " + GOTHIC_CHAPTERS.length;
-    source.href = c.url; source.textContent = "Read more about " + c.title + " ↗";
-    cards.querySelectorAll(".gothic-history-chapter").forEach((node, i) => {
-      node.classList.toggle("active", i === current);
-      node.setAttribute("aria-current", i === current ? "true" : "false");
+  /* Candles */
+  const row = $("candleRow"), status = $("candleStatus"), card = $("candleCard");
+  let notified = false;
+  function updateCandles() {
+    const n = row.querySelectorAll(".candle.lit").length;
+    card.classList.toggle("lit-any", n > 0);
+    status.textContent = n ? n + (n === 1 ? " candle" : " candles") + " lit ✦" : "No candles lit yet.";
+  }
+  function setCandle(btn, on) {
+    btn.classList.toggle("lit", on);
+    btn.setAttribute("aria-pressed", String(on));
+  }
+  [70, 92, 58, 84, 66].forEach((h, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "candle";
+    b.setAttribute("aria-label", "Candle " + (i + 1));
+    b.setAttribute("aria-pressed", "false");
+    b.innerHTML = '<span class="flame"></span><span class="wick"></span><span class="wax" style="height:' + h + 'px"></span>';
+    b.addEventListener("click", () => {
+      const on = !b.classList.contains("lit");
+      setCandle(b, on);
+      if (on && !notified) { notified = true; notify("candle"); }   // optional: delete this line if you don't want Kimchi pinged
+      updateCandles();
+    });
+    row.appendChild(b);
+  });
+  $("lightAll").addEventListener("click", () => { row.querySelectorAll(".candle").forEach(b => setCandle(b, true)); updateCandles(); });
+  $("blowAll").addEventListener("click", () => { row.querySelectorAll(".candle").forEach(b => setCandle(b, false)); updateCandles(); });
+
+  /* Bookshelf, reader, and reading tracker */
+  let books = [
+    {id:84,   title:"Frankenstein",                          by:"Mary Shelley"},
+    {id:345,  title:"Dracula",                               by:"Bram Stoker"},
+    {id:10007,title:"Carmilla",                              by:"Sheridan Le Fanu"},
+    {id:696,  title:"The Castle of Otranto",                 by:"Horace Walpole"},
+    {id:768,  title:"Wuthering Heights",                     by:"Emily Brontë"},
+    {id:1260, title:"Jane Eyre",                             by:"Charlotte Brontë"},
+    {id:932,  title:"The Fall of the House of Usher",        by:"Edgar Allan Poe"},
+    {id:43,   title:"Strange Case of Dr Jekyll and Mr Hyde", by:"R. L. Stevenson"},
+    {id:174,  title:"The Picture of Dorian Gray",            by:"Oscar Wilde"},
+    {id:175,  title:"The Phantom of the Opera",              by:"Gaston Leroux"},
+    {id:2610, title:"The Hunchback of Notre-Dame",           by:"Victor Hugo"},
+    {id:121,  title:"Northanger Abbey",                      by:"Jane Austen"}
+  ];
+  const PALETTE = ["#4b1d2d","#2b1a3d","#1f3a34","#3d2a17","#2a2f4a","#5a2230","#202020","#3a3a1f","#4a1f4a","#5a1a1a","#1f2f45","#4a3a2a"];
+  const colorOf = b => PALETTE[b.id % PALETTE.length];
+  const heightOf = b => 160 + (b.id * 37) % 55;
+  const shortOf = b => { const t = String(b.title).split(/[;:]/)[0].trim(); return t.length > 26 ? t.slice(0, 25) + "…" : t; };
+
+  /* Reading state, saved in this browser */
+  const STATE_KEY = "layaBookState_v1", LAST_KEY = "layaBookLast";
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem(STATE_KEY) || "{}") || {}; } catch (_) {}
+  const getS = b => state[b.id] || { pos: 0, started: false, finished: false, finishedAt: "" };
+  function setS(b, patch) {
+    state[b.id] = Object.assign(getS(b), patch);
+    try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (_) {}
+  }
+  const statusOf = b => { const s = getS(b); return s.finished ? "finished" : (s.started || s.pos > 0.001) ? "reading" : "unread"; };
+
+  const shelf = $("shelf"), shelfLabel = $("shelfLabel");
+  const PER_PAGE = 12;
+  let filter = "all", query = "", shelfPage = 0, cat = "all";
+
+  function visibleBooks() {
+    const q = query.trim().toLowerCase();
+    return books.filter(b => (!q || (b.title + " " + b.by).toLowerCase().includes(q)) && (filter === "all" || statusOf(b) === filter) && (cat === "all" || b.cat === cat));
+  }
+
+  function makeSpine(b) {
+    const st = statusOf(b), s = document.createElement("button");
+    s.type = "button"; s.className = "spine" + (st === "unread" ? "" : " " + st); s.dataset.id = b.id;
+    s.style.height = heightOf(b) + "px";
+    const c = colorOf(b);
+    s.style.background = "linear-gradient(90deg," + c + ",rgba(255,255,255,.08) 45%," + c + ")";
+    s.textContent = shortOf(b);
+    if (st !== "unread") { const m = document.createElement("i"); m.className = "mark"; s.appendChild(m); }
+    const pct = Math.round(getS(b).pos * 100);
+    const detail = b.title + " — " + b.by + (st === "finished" ? " · finished ✓" : st === "reading" ? " · " + pct + "% read" : "");
+    s.setAttribute("aria-label", "Open " + detail);
+    const show = () => { shelfLabel.textContent = detail; };
+    s.addEventListener("mouseenter", show); s.addEventListener("focus", show);
+    s.addEventListener("click", () => openBook(b, s));
+    return s;
+  }
+
+  function renderStats() {
+    const fin = books.filter(b => statusOf(b) === "finished").length;
+    const rd = books.filter(b => statusOf(b) === "reading").length;
+    $("readStats").textContent = fin + " of " + books.length + " finished · " + rd + " in progress";
+
+    let lastId = 0; try { lastId = Number(localStorage.getItem(LAST_KEY)) || 0; } catch (_) {}
+    const lb = books.find(b => b.id === lastId), btn = $("continueBook");
+    if (lb && statusOf(lb) !== "finished") { btn.hidden = false; btn.textContent = "Continue: " + shortOf(lb); btn.onclick = () => openBook(lb, btn); }
+    else btn.hidden = true;
+
+    const log = $("finishedLog"), wasOpen = !!(log.querySelector("details") && log.querySelector("details").open);
+    log.replaceChildren();
+    const done = books.filter(b => getS(b).finished).sort((a, b) => (getS(b).finishedAt || "").localeCompare(getS(a).finishedAt || ""));
+    if (done.length) {
+      const d = document.createElement("details"), sm = document.createElement("summary");
+      sm.textContent = "Reading log (" + done.length + ")"; d.appendChild(sm); d.open = wasOpen;
+      done.forEach(b => {
+        const p = document.createElement("p");
+        p.textContent = "✓ " + b.title + " — " + b.by + (getS(b).finishedAt ? " · " + getS(b).finishedAt : "");
+        d.appendChild(p);
+      });
+      log.appendChild(d);
+    }
+  }
+
+  function buildCats() {
+    const box = $("catFilters"); box.replaceChildren();
+    const cats = [...new Set(books.map(b => b.cat).filter(Boolean))];
+    if (!cats.length) { box.hidden = true; return; }
+    box.hidden = false;
+    ["all", ...cats].forEach(c => {
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "smallbtn" + (c === cat ? " active" : "");
+      btn.textContent = c === "all" ? "Every category" : c;
+      btn.addEventListener("click", () => {
+        cat = c; shelfPage = 0;
+        box.querySelectorAll(".smallbtn").forEach(x => x.classList.toggle("active", x === btn));
+        renderShelf();
+      });
+      box.appendChild(btn);
     });
   }
+
+  function renderShelf() {
+    const list = visibleBooks(), pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+    shelfPage = Math.min(shelfPage, pages - 1);
+    const slice = list.slice(shelfPage * PER_PAGE, shelfPage * PER_PAGE + PER_PAGE);
+    shelf.replaceChildren();
+    if (!slice.length) {
+      const p = document.createElement("p"); p.className = "status"; p.style.cssText = "text-align:center;padding:24px 0";
+      p.textContent = "Nothing on this shelf yet."; shelf.appendChild(p);
+    }
+    for (let r = 0; r < 2; r++) {
+      const part = slice.slice(r * 6, r * 6 + 6);
+      if (!part.length) continue;
+      const rowEl = document.createElement("div"); rowEl.className = "shelf-row";
+      part.forEach(b => rowEl.appendChild(makeSpine(b)));
+      shelf.append(rowEl, Object.assign(document.createElement("div"), { className: "plank" }));
+    }
+    $("shelfPageInfo").textContent = "Shelf " + (shelfPage + 1) + " of " + pages + " · " + list.length + (list.length === 1 ? " book" : " books");
+    $("shelfPrev").disabled = shelfPage === 0;
+    $("shelfNext").disabled = shelfPage >= pages - 1;
+    renderStats();
+  }
+
+  $("shelfPrev").addEventListener("click", () => { shelfPage--; renderShelf(); });
+  $("shelfNext").addEventListener("click", () => { shelfPage++; renderShelf(); });
+  $("bookSearch").addEventListener("input", e => { query = e.target.value; shelfPage = 0; renderShelf(); });
+  document.querySelectorAll("[data-bfilter]").forEach(btn => btn.addEventListener("click", () => {
+    filter = btn.dataset.bfilter; shelfPage = 0;
+    document.querySelectorAll("[data-bfilter]").forEach(x => x.classList.toggle("active", x === btn));
+    renderShelf();
+  }));
+  $("randomBook").addEventListener("click", () => {
+    const pool = books.filter(b => statusOf(b) === "unread"), list = pool.length ? pool : books;
+    const b = list[Math.floor(Math.random() * list.length)];
+    filter = "all"; query = ""; cat = "all"; buildCats(); $("bookSearch").value = "";
+    document.querySelectorAll("[data-bfilter]").forEach(x => x.classList.toggle("active", x.dataset.bfilter === "all"));
+    shelfPage = Math.floor(books.indexOf(b) / PER_PAGE);
+    renderShelf();
+    const s = shelf.querySelector('[data-id="' + b.id + '"]');
+    if (s) s.classList.add("picked");
+    shelfLabel.textContent = "Tonight's pick: " + b.title + " — " + b.by + " ✦";
+    setTimeout(() => openBook(b, s), 700);
+  });
+
+  /* Reader */
+  const reader = $("reader"), vp = $("bookViewport"), txt = $("bookText"), pageBox = $("bookOpen");
+  const slider = $("pageSlider"), info = $("pageInfo");
+  const GAP = 40;
+  let cur = null, idx = 0, spreads = 1, two = false, fontRem = 1.15, lastFocus = null, loaded = false;
+
+  function updateMarkBtn() {
+    const btn = $("markRead"), f = !!(cur && getS(cur).finished);
+    btn.textContent = f ? "Read ✓ (undo)" : "Mark as read";
+    btn.classList.toggle("active", f);
+  }
+  function markFinished(b, auto) {
+    setS(b, { finished: true, finishedAt: new Date().toISOString().slice(0, 10) });
+    updateMarkBtn();
+    if (auto) toast("Finished “" + b.title + "” ✦");
+    notify("bookFinished", { title: b.title });   // optional: delete this line if you don't want Kimchi pinged
+  }
+  $("markRead").addEventListener("click", () => {
+    if (!cur || !loaded) return;
+    if (getS(cur).finished) { setS(cur, { finished: false, finishedAt: "" }); updateMarkBtn(); }
+    else markFinished(cur, false);
+  });
+
+  function goTo(i, instant) {
+    idx = Math.max(0, Math.min(spreads - 1, i));
+    if (instant) txt.style.transition = "none";
+    txt.style.transform = "translateX(" + (-idx * (vp.clientWidth + GAP)) + "px)";
+    if (instant) { void txt.offsetWidth; txt.style.transition = ""; }
+    slider.max = String(spreads - 1); slider.value = String(idx);
+    info.textContent = (two ? "Spread " : "Page ") + (idx + 1) + " of " + spreads;
+    if (cur && loaded) {
+      setS(cur, { pos: spreads > 1 ? idx / (spreads - 1) : 0, started: true });
+      if (!instant && spreads > 2 && idx === spreads - 1 && !getS(cur).finished) markFinished(cur, true);
+    }
+  }
+
+  function layout(frac) {
+    if (!cur) return;
+    const vw = vp.clientWidth;
+    two = vw >= 640;
+    pageBox.classList.toggle("spread", two);
+    const colW = two ? Math.floor((vw - GAP) / 2) : vw;
+    txt.style.width = vw + "px";
+    txt.style.columnWidth = colW + "px";
+    txt.style.columnGap = GAP + "px";
+    txt.style.fontSize = fontRem + "rem";
+    spreads = Math.max(1, Math.ceil((txt.scrollWidth + GAP) / (vw + GAP) - 0.02));
+    if (frac === undefined) frac = spreads > 1 ? idx / (spreads - 1) : 0;
+    goTo(Math.round(frac * (spreads - 1)), true);
+  }
+
+  function message(text, linkHref) {
+    txt.replaceChildren();
+    const p = document.createElement("p"); p.className = "note"; p.textContent = text; txt.appendChild(p);
+    if (linkHref) {
+      const q = document.createElement("p"); q.className = "note";
+      const a = document.createElement("a"); a.href = linkHref; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "Read it on Project Gutenberg ↗";
+      q.appendChild(a); txt.appendChild(q);
+    }
+  }
+
+  async function openBook(b, fromEl) {
+    cur = b; lastFocus = fromEl || null; idx = 0; loaded = false;
+    reader.hidden = false; document.body.style.overflow = "hidden";
+    $("readerTitle").textContent = b.title + " — " + b.by;
+    txt.style.transform = "none"; message("Opening…"); updateMarkBtn();
+    $("readerClose").focus();
+    try { localStorage.setItem(LAST_KEY, String(b.id)); } catch (_) {}
+    try {
+      const res = await fetch("assets/books/" + b.id + ".txt");
+      if (!res.ok) throw new Error("missing");
+      const raw = await res.text();
+      if (cur !== b) return;
+      const frag = document.createDocumentFragment();
+      raw.replace(/\r/g, "").split(/\n\s*\n/).forEach(chunk => {
+        const t = chunk.replace(/\s*\n\s*/g, " ").trim();
+        if (!t) return;
+        const p = document.createElement("p");
+        p.textContent = t;
+        if ((/^(chapter|letter|volume|part|book|stave|preface)\b/i.test(t) && t.length < 80) || (t.length < 60 && t === t.toUpperCase() && /[A-Z]/.test(t))) p.className = "chap";
+        frag.appendChild(p);
+      });
+      txt.replaceChildren(frag);
+      loaded = true;
+      const s = getS(b), saved = s.finished ? 0 : s.pos;
+      requestAnimationFrame(() => layout(saved));
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => cur === b && layout());
+    } catch (_) {
+      message("This book hasn't been added to the site yet.", "https://www.gutenberg.org/ebooks/" + b.id);
+      spreads = 1; goTo(0, true);
+    }
+  }
+
+  function closeBook() {
+    reader.hidden = true; document.body.style.overflow = ""; cur = null; loaded = false;
+    renderShelf();
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  }
+
+  $("pageNext").addEventListener("click", () => goTo(idx + 1));
+  $("pagePrev").addEventListener("click", () => goTo(idx - 1));
+  slider.addEventListener("input", () => goTo(Number(slider.value)));
+  $("readerClose").addEventListener("click", closeBook);
+  $("fontUp").addEventListener("click", () => { fontRem = Math.min(1.7, +(fontRem + .1).toFixed(2)); layout(); });
+  $("fontDown").addEventListener("click", () => { fontRem = Math.max(.9, +(fontRem - .1).toFixed(2)); layout(); });
+  document.addEventListener("keydown", e => {
+    if (reader.hidden) return;
+    if (e.key === "ArrowRight") goTo(idx + 1);
+    else if (e.key === "ArrowLeft") goTo(idx - 1);
+    else if (e.key === "Escape") closeBook();
+  });
+  let tx = null;
+  pageBox.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  pageBox.addEventListener("touchend", e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 50) goTo(idx + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+  pageBox.addEventListener("click", e => {
+    if (innerWidth > 640 || e.target.closest("a")) return;
+    const r = pageBox.getBoundingClientRect(), x = (e.clientX - r.left) / r.width;
+    if (x < 0.3) goTo(idx - 1); else if (x > 0.7) goTo(idx + 1);
+  });
+  addEventListener("resize", () => { if (!reader.hidden) layout(); });
+
+  /* Show the starter shelf now, then swap in the full list if books.json exists */
+  renderShelf();
+  fetch("assets/books/books.json")
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(list => {
+      if (Array.isArray(list) && list.length) {
+        books = list.filter(b => b && Number.isInteger(b.id) && b.title).map(b => ({ id: b.id, title: String(b.title), by: String(b.by || ""), cat: String(b.cat || "") }));
+        buildCats();
+        renderShelf();
+      }
+    })
+    .catch(() => {});
+
+  /* Random Gothic fact */
+  const fact = $("gothicHistoryFact"), factLabel = $("gothicFactLabel");
   function randomFact() {
     const f = nextGothicFact();
     fact.textContent = f.text;
-    const label = document.querySelector(".gothic-history-fact span");
-    if (label) label.textContent = "✦ FACT " + f.number + " OF " + f.total + (f.restarted ? " · you've read them all, starting a new round" : "");
+    factLabel.textContent = "✦ FACT " + f.number + " OF " + f.total + (f.restarted ? " · you've read them all, starting a new round" : "");
   }
-  GOTHIC_CHAPTERS.forEach((c, i) => {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "gothic-history-chapter";
-    b.innerHTML = "<strong></strong><span></span>";
-    b.querySelector("strong").textContent = c.title;
-    b.querySelector("span").textContent = c.summary;
-    b.addEventListener("click", () => render(i));
-    cards.appendChild(b);
-  });
-  $("gothicHistoryPrev")?.addEventListener("click", () => render(current - 1));
-  $("gothicHistoryNext")?.addEventListener("click", () => render(current + 1));
-  $("gothicHistoryRandom")?.addEventListener("click", randomFact);
-  $("gothicHistoryAnotherFact")?.addEventListener("click", randomFact);
-  render(0); randomFact();
+  $("gothicHistoryAnotherFact").addEventListener("click", randomFact);
+  randomFact();
 })();
 
 /* AI chat */
@@ -2032,10 +2484,22 @@ function renderSearchHistory(storageKey, containerId, inputId, searchFn) {
   container.replaceChildren();
   container.hidden = hist.length === 0;
   hist.forEach(term => {
+    const chip = document.createElement("span");
+    chip.style.cssText = "display:inline-flex;align-items:center";
     const button = document.createElement("button");
     button.type = "button"; button.className = "smallbtn"; button.textContent = term;
+    button.style.borderRadius = "999px 0 0 999px";
     button.addEventListener("click", () => { $(inputId).value = term; searchFn(); });
-    container.appendChild(button);
+    const remove = document.createElement("button");
+    remove.type = "button"; remove.className = "smallbtn"; remove.textContent = "×";
+    remove.setAttribute("aria-label", "Remove " + term + " from recent searches");
+    remove.style.cssText = "border-radius:0 999px 999px 0;border-left:0;padding:9px 11px";
+    remove.addEventListener("click", () => {
+      try { localStorage.setItem(storageKey, JSON.stringify(getSearchHistory(storageKey).filter(x => x !== term))); } catch (_) {}
+      renderSearchHistory(storageKey, containerId, inputId, searchFn);
+    });
+    chip.append(button, remove);
+    container.appendChild(chip);
   });
 }
 renderSearchHistory(SEARCH_HISTORY_GIPHY, "giphyRecentSearches", "giphySearch", searchGiphy);
