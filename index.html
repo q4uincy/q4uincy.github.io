@@ -355,7 +355,7 @@ textarea { min-height: 140px; resize: vertical; }
 .gothic-place-name { font-family: "Cormorant Garamond",serif; font-size: clamp(1.65rem,4vw,2.35rem); line-height: 1.1; color: #f0dce5; }
 .gothic-place-meta { margin-top: 7px; color: var(--pink); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; }
 .gothic-place-description { margin-top: 12px; line-height: 1.65; color: var(--muted); }
-.gothic-place-preview { display:block; width:100%; max-height:360px; aspect-ratio:16/9; object-fit:cover; border-radius:12px; margin:0 0 14px; background:rgba(255,255,255,.04); border:1px solid var(--line); }
+.gothic-place-preview { display:block; width:100%; height:clamp(260px, 38vw, 520px); max-height:520px; aspect-ratio:16/9; object-fit:cover; object-position:center; image-rendering:auto; border-radius:12px; margin:0 0 14px; background:rgba(255,255,255,.04); border:1px solid var(--line); }
 .gothic-search-row { display:flex; gap:8px; margin-top:12px; }
 .gothic-search-row input { min-width:0; flex:1; }
 .gothic-search-row .smallbtn { flex-shrink:0; }
@@ -489,7 +489,21 @@ textarea { min-height: 140px; resize: vertical; }
 #giphyResults .selected { outline: 2px solid var(--pink); outline-offset: 2px; }
 #giphyResults button { border: 0; background: transparent; padding: 0; width: 100%; height: 100%; cursor: pointer; }
 #giphyResults button img { display: block; width: 100%; height: 100%; object-fit: cover; }
+#giphyResults { align-items: stretch; }
+#giphyResults > div { min-width: 0; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 10px; background: var(--panel, #19131d); }
+#giphyResults .selected { outline: 2px solid var(--pink); outline-offset: -2px; }
+#giphyLoadMore { display: block; width: 100%; margin-top: 10px; }
+#giphyLoadMore:disabled { opacity: .5; cursor: wait; }
 #sendGiphyBtn:disabled { opacity: .45; cursor: not-allowed; }
+.media-source-tabs { margin-top:12px; }
+#klipyResults img { cursor:pointer; }
+#klipyResults .selected { outline:2px solid var(--pink); outline-offset:-2px; }
+#klipyResults > div { min-width:0; aspect-ratio:1/1; overflow:hidden; border-radius:10px; background:var(--panel,#19131d); }
+#klipyResults button { border:0; background:transparent; padding:0; width:100%; height:100%; cursor:pointer; }
+#klipyResults button img { display:block; width:100%; height:100%; object-fit:cover; }
+#klipyLoadMore:disabled { opacity:.5; cursor:wait; }
+#sendKlipyBtn:disabled { opacity:.45; cursor:not-allowed; }
+
 \n@media(max-width:760px) {
   .app { padding-top: 58px; width: min(100% - 16px,680px); }
   .hero { min-height: 43vh; padding-top: 25px; }
@@ -951,7 +965,11 @@ input { padding: 10px 12px; border-radius: 12px; }
         <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
         <div class="card-title">Send Kimchi a GIF or sticker</div>
         <p>Find something cute and send it straight to Kimchi.</p>
-        <div style="margin-top:12px">
+        <div class="controls media-source-tabs" role="tablist" aria-label="GIF provider">
+          <button class="smallbtn active" type="button" data-media-source="giphy" role="tab" aria-selected="true">GIPHY</button>
+          <button class="smallbtn" type="button" data-media-source="klipy" role="tab" aria-selected="false">KLIPY</button>
+        </div>
+        <div id="giphyPanel" style="margin-top:12px">
           <label for="giphySearch" class="status" style="display:block;margin-bottom:6px">Search GIFs or stickers</label>
           <div class="chat-form">
             <input id="giphySearch" type="search" maxlength="100" placeholder="Search cute GIFs or stickers">
@@ -961,9 +979,48 @@ input { padding: 10px 12px; border-radius: 12px; }
             <button class="smallbtn active" type="button" data-giphy-kind="gifs">GIFs</button>
             <button class="smallbtn" type="button" data-giphy-kind="stickers">Stickers</button>
           </div>
+          <div class="controls" id="giphyQuickSearches" aria-label="Popular GIF searches">
+            <button class="smallbtn" type="button" data-giphy-query="anime kiss">Anime kiss</button>
+            <button class="smallbtn" type="button" data-giphy-query="anime hug">Anime hug</button>
+            <button class="smallbtn" type="button" data-giphy-query="cuddle">Cuddle</button>
+            <button class="smallbtn" type="button" data-giphy-query="blush anime">Blush</button>
+          </div>
           <div id="giphyResults" class="thumbs" aria-live="polite"></div>
-          <div class="status" id="giphyStatus">Search for something cute, then choose one to send.</div>
+          <button class="action" id="giphyLoadMore" type="button" hidden>Load more GIFs</button>
+          <div class="status" id="giphyStatus">Trending GIFs are loading. Search or choose one to send.</div>
           <button class="action" id="sendGiphyBtn" type="button" disabled>Send to Kimchi</button>
+        </div>
+        <div id="klipyPanel" style="margin-top:12px" hidden>
+          <label for="klipySearch" class="status" style="display:block;margin-bottom:6px">Search KLIPY</label>
+          <div class="chat-form">
+            <input id="klipySearch" type="search" maxlength="100" placeholder="Search KLIPY" autocomplete="off">
+            <button class="action" id="klipySearchBtn" type="button">Search</button>
+          </div>
+          <div class="controls" aria-label="KLIPY media type">
+            <button class="smallbtn active" type="button" data-klipy-kind="gifs">GIFs</button>
+            <button class="smallbtn" type="button" data-klipy-kind="stickers">Stickers</button>
+          </div>
+          <div class="controls" aria-label="Popular KLIPY searches">
+            <button class="smallbtn" type="button" data-klipy-query="anime hug">Anime hug</button>
+            <button class="smallbtn" type="button" data-klipy-query="cute love">Cute love</button>
+            <button class="smallbtn" type="button" data-klipy-query="cat">Cats</button>
+            <button class="smallbtn" type="button" data-klipy-query="blush">Blush</button>
+          </div>
+          <div id="klipyResults" class="thumbs" aria-live="polite"></div>
+          <button class="action" id="klipyLoadMore" type="button" hidden>Load more</button>
+          <div class="status" id="klipyStatus">Add your KLIPY test key to load trending GIFs.</div>
+          <button class="action" id="sendKlipyBtn" type="button" disabled>Send to Kimchi</button>
+          <p class="fine">Powered by KLIPY. Your test key is saved only in this browser. Avoid putting a production secret in a public website.</p>
+          <details style="margin-top:10px">
+            <summary class="status" style="cursor:pointer">KLIPY test key settings</summary>
+            <label for="klipyKey" class="status" style="display:block;margin:8px 0 6px">API app key</label>
+            <input id="klipyKey" type="password" autocomplete="off" placeholder="Paste your KLIPY test key here">
+            <div class="controls">
+              <button class="smallbtn" id="klipyShowKey" type="button">Show key</button>
+              <button class="smallbtn" id="klipySaveKey" type="button">Save key</button>
+              <button class="smallbtn" id="klipyClearKey" type="button">Clear</button>
+            </div>
+          </details>
         </div>
         <div style="margin-top:14px">
           <label for="kissImageUpload" class="status" style="display:block;margin-bottom:6px">Or upload an image</label>
@@ -2262,12 +2319,17 @@ loadFact();
     image.classList.add("hidden"); image.removeAttribute("src"); image.alt="Photograph of "+place.name;
     const title=place.wikiTitle||place.name;
     try {
-      const url="https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(title.replace(/ /g,"_"));
-      const response=await fetch(url,{headers:{Accept:"application/json"}}); if(!response.ok) throw new Error("No summary");
-      const data=await response.json();
-      if(data.thumbnail?.source && name.textContent===place.name) { image.src=data.thumbnail.source; image.classList.remove("hidden"); }
+      // Ask MediaWiki for a much larger thumbnail instead of REST summary's often tiny preview.
+      const api="https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages|extract&piprop=thumbnail&pithumbsize=1800&exintro=1&explaintext=1&titles="+encodeURIComponent(title);
+      const response=await fetch(api,{headers:{Accept:"application/json"}}); if(!response.ok) throw new Error("No page image");
+      const payload=await response.json();
+      const data=Object.values(payload?.query?.pages||{})[0]||{};
+      if(data.thumbnail?.source && name.textContent===place.name) {
+        image.onload=()=>{ if(name.textContent===place.name) image.classList.remove("hidden"); };
+        image.onerror=()=>{ image.classList.add("hidden"); };
+        image.src=data.thumbnail.source;
+      }
       if(data.extract && data.extract.length>description.textContent.length && name.textContent===place.name) description.textContent=data.extract;
-      if(data.coordinates && data.title && name.textContent===place.name && place.location==="Worldwide · historic site") place.location.textContent="";
     } catch (_) {
       // Keep the card usable if the photo endpoint is unavailable; the Wikipedia article link remains available.
     }
@@ -2472,43 +2534,63 @@ $("pics").onchange = async () => {
 const GIPHY_API_KEY = "j0Mx5XH6nEDBz1jfBVAjkcAOYnbIrH3X";
 let giphyKind = "gifs";
 let selectedGiphy = null;
+let giphyOffset = 0;
+let giphyLastQuery = "";
+let giphyLoading = false;
+let giphySeenIds = new Set();
+const GIPHY_PAGE_SIZE = 25;
+
+function resetGiphyResults() {
+  selectedGiphy = null;
+  $("sendGiphyBtn").disabled = true;
+  $("giphyResults").replaceChildren();
+  $("giphyLoadMore").hidden = true;
+  giphyOffset = 0;
+  giphySeenIds = new Set();
+}
 
 document.querySelectorAll("[data-giphy-kind]").forEach(button => {
   button.addEventListener("click", () => {
     giphyKind = button.dataset.giphyKind;
     document.querySelectorAll("[data-giphy-kind]").forEach(item => item.classList.toggle("active", item === button));
-    selectedGiphy = null;
-    $("sendGiphyBtn").disabled = true;
-    $("giphyResults").replaceChildren();
-    $("giphyStatus").textContent = "Search for a " + (giphyKind === "stickers" ? "sticker" : "GIF") + ".";
+    resetGiphyResults();
+    $("giphyStatus").textContent = giphyKind === "stickers" ? "Search for a sticker." : "Trending GIFs are loading…";
+    $("giphyLoadMore").textContent = giphyKind === "stickers" ? "Load more stickers" : "Load more GIFs";
+    loadGiphyPage(true);
   });
 });
 
-async function searchGiphy() {
-  const query = $("giphySearch").value.trim() || "cute love";
+async function loadGiphyPage(reset = false) {
+  if (giphyLoading) return;
+  const query = $("giphySearch").value.trim();
+  if (reset || query !== giphyLastQuery) {
+    resetGiphyResults();
+    giphyLastQuery = query;
+  }
   const results = $("giphyResults");
   const status = $("giphyStatus");
-  selectedGiphy = null;
-  $("sendGiphyBtn").disabled = true;
-  results.replaceChildren();
-  status.textContent = "Searching...";
+  const more = $("giphyLoadMore");
+  giphyLoading = true;
+  more.disabled = true;
+  more.hidden = false;
+  more.textContent = giphyOffset === 0 ? "Loading…" : "Loading more…";
+  status.textContent = giphyOffset === 0 ? "Finding " + (query ? "results for “" + query + "”" : "trending GIFs") + "…" : "Loading more results…";
   try {
     const endpoint = giphyKind === "stickers" ? "stickers" : "gifs";
-    const url = "https://api.giphy.com/v1/" + endpoint + "/search?api_key=" +
-      encodeURIComponent(GIPHY_API_KEY) + "&q=" + encodeURIComponent(query) +
-      "&limit=12&rating=g&lang=en";
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("GIPHY search failed");
+    const path = query ? "/search" : "/trending";
+    const params = new URLSearchParams({ api_key: GIPHY_API_KEY, limit: String(GIPHY_PAGE_SIZE), offset: String(giphyOffset), rating: "g", lang: "en" });
+    if (query) params.set("q", query);
+    const response = await fetch("https://api.giphy.com/v1/" + endpoint + path + "?" + params.toString());
+    if (!response.ok) throw new Error("GIPHY request failed: " + response.status);
     const data = await response.json();
     const items = data.data || [];
-    if (!items.length) {
-      status.textContent = "No results found. Try another search.";
-      return;
-    }
+    let added = 0;
     items.forEach(item => {
+      if (item.id && giphySeenIds.has(item.id)) return;
+      if (item.id) giphySeenIds.add(item.id);
       const media = item.images || {};
-      const imageUrl = media.fixed_width_small?.url || media.preview_gif?.url || media.original?.url;
-      const sendUrl = media.original?.url || media.fixed_width?.url || imageUrl;
+      const imageUrl = media.fixed_width_small?.url || media.fixed_width?.url || media.preview_gif?.url || media.original?.url;
+      const sendUrl = media.original?.url || media.downsized_large?.url || media.fixed_width?.url || imageUrl;
       if (!imageUrl || !sendUrl) return;
       const wrap = document.createElement("div");
       const choose = document.createElement("button");
@@ -2518,9 +2600,10 @@ async function searchGiphy() {
       img.src = imageUrl;
       img.alt = item.title || "GIPHY result";
       img.loading = "lazy";
+      img.decoding = "async";
       choose.appendChild(img);
       choose.addEventListener("click", () => {
-        results.querySelectorAll("div").forEach(el => el.classList.remove("selected"));
+        results.querySelectorAll(".selected").forEach(el => el.classList.remove("selected"));
         wrap.classList.add("selected");
         selectedGiphy = { url: sendUrl, title: item.title || (giphyKind === "stickers" ? "sticker" : "GIF"), kind: giphyKind };
         $("sendGiphyBtn").disabled = false;
@@ -2528,15 +2611,45 @@ async function searchGiphy() {
       });
       wrap.appendChild(choose);
       results.appendChild(wrap);
+      added++;
     });
-    status.textContent = "Choose one to send to Kimchi.";
+    giphyOffset += items.length;
+    if (!items.length || items.length < GIPHY_PAGE_SIZE) {
+      more.hidden = true;
+    } else {
+      more.hidden = false;
+      more.textContent = giphyKind === "stickers" ? "Load more stickers" : "Load more GIFs";
+    }
+    if (!results.children.length) {
+      status.textContent = "No results found. Try a shorter or different search.";
+      more.hidden = true;
+    } else {
+      status.textContent = (query ? "Results for “" + query + "”" : "Trending now") + " · " + results.children.length + " shown. Choose one to send.";
+    }
   } catch (error) {
-    status.textContent = "GIPHY couldn't load. Check your connection and try again.";
+    status.textContent = "GIPHY couldn't load results. Check your connection or API access, then try again.";
+    more.hidden = giphyOffset === 0;
+    more.textContent = "Try loading again";
+  } finally {
+    giphyLoading = false;
+    more.disabled = false;
   }
+}
+
+function searchGiphy() {
+  giphyLastQuery = "";
+  loadGiphyPage(true);
 }
 $("giphySearchBtn").addEventListener("click", searchGiphy);
 $("giphySearch").addEventListener("keydown", event => {
   if (event.key === "Enter") { event.preventDefault(); searchGiphy(); }
+});
+$("giphyLoadMore").addEventListener("click", () => loadGiphyPage(false));
+document.querySelectorAll("[data-giphy-query]").forEach(button => {
+  button.addEventListener("click", () => {
+    $("giphySearch").value = button.dataset.giphyQuery;
+    searchGiphy();
+  });
 });
 $("sendGiphyBtn").addEventListener("click", async () => {
   if (!selectedGiphy) return;
@@ -2559,6 +2672,179 @@ $("sendGiphyBtn").addEventListener("click", async () => {
     button.disabled = false;
   }
 });
+
+/* KLIPY is kept in its own panel/provider to preserve the existing GIPHY picker. */
+const KLIPY_KEY_STORAGE = "layaKlipyTestKey";
+let klipyKind = "gifs";
+let klipyPage = 1;
+let klipyQuery = "";
+let klipyLoading = false;
+let selectedKlipy = null;
+let klipySeen = new Set();
+
+try { $("klipyKey").value = localStorage.getItem(KLIPY_KEY_STORAGE) || ""; } catch (_) {}
+
+document.querySelectorAll("[data-media-source]").forEach(button => {
+  button.addEventListener("click", () => {
+    const source = button.dataset.mediaSource;
+    document.querySelectorAll("[data-media-source]").forEach(tab => {
+      const active = tab === button;
+      tab.classList.toggle("active", active);
+      tab.setAttribute("aria-selected", String(active));
+    });
+    $("giphyPanel").hidden = source !== "giphy";
+    $("klipyPanel").hidden = source !== "klipy";
+    if (source === "klipy" && !$("klipyResults").children.length) loadKlipyPage(true);
+  });
+});
+
+document.querySelectorAll("[data-klipy-kind]").forEach(button => button.addEventListener("click", () => {
+  klipyKind = button.dataset.klipyKind;
+  document.querySelectorAll("[data-klipy-kind]").forEach(b => b.classList.toggle("active", b === button));
+  loadKlipyPage(true);
+}));
+$("klipyShowKey").addEventListener("click", () => {
+  $("klipyKey").type = $("klipyKey").type === "password" ? "text" : "password";
+  $("klipyShowKey").textContent = $("klipyKey").type === "password" ? "Show key" : "Hide key";
+});
+$("klipySaveKey").addEventListener("click", () => {
+  const key = $("klipyKey").value.trim();
+  try {
+    if (key) localStorage.setItem(KLIPY_KEY_STORAGE, key);
+    else localStorage.removeItem(KLIPY_KEY_STORAGE);
+    $("klipyStatus").textContent = key ? "KLIPY key saved in this browser. Loading trending…" : "Paste your KLIPY test key first.";
+    if (key) loadKlipyPage(true);
+  } catch (_) {
+    $("klipyStatus").textContent = "Could not save the key in this browser. Keep the key entered and try Search.";
+  }
+});
+$("klipyClearKey").addEventListener("click", () => {
+  $("klipyKey").value = "";
+  try { localStorage.removeItem(KLIPY_KEY_STORAGE); } catch (_) {}
+  $("klipyResults").replaceChildren();
+  $("sendKlipyBtn").disabled = true;
+  selectedKlipy = null;
+  $("klipyStatus").textContent = "KLIPY key cleared.";
+});
+document.querySelectorAll("[data-klipy-query]").forEach(button => button.addEventListener("click", () => {
+  $("klipySearch").value = button.dataset.klipyQuery;
+  loadKlipyPage(true);
+}));
+$("klipySearchBtn").addEventListener("click", () => loadKlipyPage(true));
+$("klipySearch").addEventListener("keydown", event => {
+  if (event.key === "Enter") { event.preventDefault(); loadKlipyPage(true); }
+});
+$("klipyLoadMore").addEventListener("click", () => loadKlipyPage(false));
+
+async function loadKlipyPage(reset = false) {
+  if (klipyLoading) return;
+  const key = $("klipyKey").value.trim();
+  const query = $("klipySearch").value.trim();
+  if (!key) {
+    $("klipyStatus").textContent = "Open “KLIPY test key settings” and paste your KLIPY test key. It stays in this browser.";
+    return;
+  }
+  if (reset || query !== klipyQuery) {
+    klipyPage = 1;
+    klipySeen = new Set();
+    selectedKlipy = null;
+    $("sendKlipyBtn").disabled = true;
+    $("klipyResults").replaceChildren();
+    klipyQuery = query;
+  }
+  klipyLoading = true;
+  const status = $("klipyStatus");
+  const more = $("klipyLoadMore");
+  more.hidden = false;
+  more.disabled = true;
+  more.textContent = "Loading…";
+  status.textContent = query ? "Searching KLIPY for “" + query + "”…" : "Loading trending " + klipyKind + "…";
+  try {
+    const params = new URLSearchParams({
+      page: String(klipyPage), per_page: "24", customer_id: "laya-kimchi",
+      locale: "us", content_filter: "high", format_filter: "gif,webp,mp4"
+    });
+    if (query) params.set("q", query);
+    const response = await fetch("https://api.klipy.com/api/v1/" + encodeURIComponent(key) + "/" + klipyKind + "/" + (query ? "search" : "trending") + "?" + params.toString());
+    if (!response.ok) throw new Error("KLIPY returned " + response.status);
+    const payload = await response.json();
+    if (payload.result === false) throw new Error("KLIPY rejected the request");
+    const data = payload.data?.data || payload.data?.items || payload.data || [];
+    const items = Array.isArray(data) ? data : [];
+    const results = $("klipyResults");
+    items.forEach(item => {
+      if (!item || item.type === "ad") return;
+      const id = String(item.id || item.slug || item.preview_url || "");
+      if (id && klipySeen.has(id)) return;
+      if (id) klipySeen.add(id);
+      const file = item.file || {};
+      const media = file.hd || file.md || file.sm || file;
+      const imageUrl = media.gif?.url || media.webp?.url || media.mp4?.url || item.preview_url || item.url || item.media_url;
+      const sendUrl = file.hd?.gif?.url || file.md?.gif?.url || file.hd?.webp?.url || item.preview_url || imageUrl;
+      if (!imageUrl || !sendUrl || !/^https:\/\//i.test(imageUrl) || !/^https:\/\//i.test(sendUrl)) return;
+      const wrap = document.createElement("div");
+      const choose = document.createElement("button");
+      choose.type = "button";
+      choose.setAttribute("aria-label", "Select KLIPY " + (klipyKind === "stickers" ? "sticker" : "GIF"));
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = item.title || "KLIPY " + (klipyKind === "stickers" ? "sticker" : "GIF");
+      img.loading = "lazy";
+      img.decoding = "async";
+      choose.appendChild(img);
+      choose.addEventListener("click", () => {
+        results.querySelectorAll(".selected").forEach(el => el.classList.remove("selected"));
+        wrap.classList.add("selected");
+        selectedKlipy = { url: sendUrl, slug: item.slug || "", title: item.title || klipyKind, kind: klipyKind, query };
+        $("sendKlipyBtn").disabled = false;
+        status.textContent = "Selected from KLIPY. Send it to Kimchi when you're ready.";
+      });
+      wrap.appendChild(choose);
+      results.appendChild(wrap);
+    });
+    klipyPage++;
+    more.hidden = items.length < 24;
+    more.textContent = "Load more " + klipyKind;
+    status.textContent = results.children.length
+      ? (query ? "KLIPY results for “" + query + "”" : "Trending on KLIPY") + " · " + results.children.length + " shown."
+      : "No results found. Try another search or check your test key.";
+  } catch (error) {
+    status.textContent = "KLIPY couldn't load. Check the test key, internet connection, or API access. (" + error.message + ")";
+    more.hidden = true;
+  } finally {
+    klipyLoading = false;
+    more.disabled = false;
+  }
+}
+$("sendKlipyBtn").addEventListener("click", async () => {
+  if (!selectedKlipy) return;
+  const button = $("sendKlipyBtn");
+  button.disabled = true;
+  $("klipyStatus").textContent = "Sending to Kimchi…";
+  try {
+    const response = await api("/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: "A KLIPY " + (selectedKlipy.kind === "stickers" ? "sticker" : "GIF") + " for Kimchi: " + selectedKlipy.url })
+    });
+    if (!response.ok) throw new Error("Could not send media");
+    notify("media", { url: selectedKlipy.url, kind: selectedKlipy.kind });
+    $("klipyStatus").textContent = "Sent to Kimchi. ♡";
+    if (selectedKlipy.slug) {
+      const key = $("klipyKey").value.trim();
+      fetch("https://api.klipy.com/api/v1/" + encodeURIComponent(key) + "/" + selectedKlipy.kind + "/share/" + encodeURIComponent(selectedKlipy.slug), {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id: "laya-kimchi", q: selectedKlipy.query || "" })
+      }).catch(() => {});
+    }
+  } catch (_) {
+    $("klipyStatus").textContent = "Couldn't send it right now. Please try again.";
+    button.disabled = false;
+  }
+});
+
+/* Populate trending GIFs when the page opens; stickers remain on-demand. */
+loadGiphyPage(true);
 
 $("pickKissImage").addEventListener("click", () => $("kissImageUpload").click());
 $("kissImageUpload").addEventListener("change", async () => {
