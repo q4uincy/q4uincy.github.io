@@ -10,9 +10,7 @@
 
 <style>
 :root {
-  --ink: #09070b; --ink2: #120b16;
-  --card: rgba(14,10,18,.72); --card2: rgba(27,14,31,.72);
-  --burg: #651d35; --burg2: #8b2947; --purple: #27133b; --purple2: #43205e;
+  --burg: #651d35; --burg2: #8b2947;
   --text: #f4eaf0; --muted: #c5b7c1; --pink: #d98da5;
   --line: rgba(236,205,220,.18); --glow: rgba(139,41,71,.42);
   --song-rgb: 120,45,75; --wall-opacity: .42;
@@ -42,7 +40,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible { outline: 2px s
 .topbar-inner { width: min(1240px,100%); margin: auto; display: flex; align-items: center; justify-content: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .topbar-inner::-webkit-scrollbar { display: none; }
 .brand { font-family: "Cormorant Garamond",serif; letter-spacing: .12em; font-size: 1.08rem; white-space: nowrap; margin-right: 8px; color: #f0dce5; }
-.navbtn,.theme-toggle { font-family: "Manrope",system-ui,sans-serif; font-size: .76rem; letter-spacing: .02em; color: #d9cbd3; border: 1px solid rgba(236,205,220,.13); background: rgba(255,255,255,.035); padding: 8px 12px; border-radius: 12px; white-space: nowrap; cursor: pointer; transition: transform .18s,border-color .18s,background .18s; }
+.navbtn { font-family: "Manrope",system-ui,sans-serif; font-size: .76rem; letter-spacing: .02em; color: #d9cbd3; border: 1px solid rgba(236,205,220,.13); background: rgba(255,255,255,.035); padding: 8px 12px; border-radius: 12px; white-space: nowrap; cursor: pointer; transition: transform .18s,border-color .18s,background .18s; }
 .navbtn.sign-out { color: #f0bacb; border-color: rgba(217,141,165,.38); background: rgba(101,29,53,.20); }
 .navbtn.sign-out:hover { border-color: rgba(217,141,165,.75); background: rgba(101,29,53,.42); }
 
@@ -194,7 +192,6 @@ textarea { min-height: 92px; resize: vertical; }
 #giphyLoadMore,#klipyLoadMore { display: block; width: 100%; margin-top: 10px; }
 #giphyLoadMore:disabled,#klipyLoadMore:disabled { opacity: .5; cursor: wait; }
 #sendGiphyBtn:disabled,#sendKlipyBtn:disabled { opacity: .45; cursor: not-allowed; }
-.hug-hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
 
 /* Wallpaper section */
 .wallpaper-only { min-height: calc(100svh - 52px); display: flex; align-items: flex-end; justify-content: center; position: relative; scroll-margin-top: 52px; margin: 0 -10px 34px; padding: 20px; }
@@ -266,7 +263,7 @@ body.auth-locked { overflow: hidden; }
 /* Show password */
 .pass-wrap { position: relative; display: block; margin-top: 6px; }
 .pass-wrap input { margin-top: 0; padding-right: 72px; }
-body .login-form .pass-wrap .pass-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); margin: 0; padding: 5px 10px; width: auto; border-radius: 9px; font-size: .72rem; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); color: #f3dce9; cursor: pointer; }
+body .login-form .pass-wrap .pass-toggle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); margin: 0; padding: 5px 10px; width: auto; border-radius: 9px; font-size: .72rem; cursor: pointer; }
 /* Show/Hide button: always clearly visible, in every theme */
 body .login-form .pass-wrap .pass-toggle { background: #45243f; border: 1px solid #d98da5; color: #fff0f6; font-weight: 600; opacity: 1; box-shadow: 0 0 0 3px rgba(9,7,12,.9); }
 body .login-form .pass-wrap .pass-toggle:hover { background: #651d35; }
@@ -385,7 +382,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
   .section-head:after { font-size: .72rem; letter-spacing: .08em; }
   .topbar { padding: 7px 8px; }
   .topbar-inner { gap: 5px; justify-content: flex-start; }
-  .navbtn,.theme-toggle { padding: 7px 10px; font-size: .72rem; }
+  .navbtn { padding: 7px 10px; font-size: .72rem; }
   .brand { font-size: .82rem; margin-right: 3px; }
   .wallpaper-only { min-height: calc(100svh - 52px); }
   #kimchiMsg { min-height: 125px; }
@@ -881,15 +878,12 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 (() => {
   const veil = document.getElementById("welcomeVeil");
   const enter = document.getElementById("welcomeEnter");
-  function showWelcome() { veil.classList.remove("dismissed"); }
   function dismissWelcome() {
     veil.classList.add("dismissed");
     try { sessionStorage.setItem("layaWelcomeSeen", "1"); } catch (error) {}
   }
   try { if (sessionStorage.getItem("layaWelcomeSeen") === "1") veil.classList.add("dismissed"); } catch (error) {}
   enter.addEventListener("click", dismissWelcome);
-  window.showLayaWelcome = showWelcome;
-  window.dismissLayaWelcome = dismissWelcome;
 
   const open = document.getElementById("adminOpen");
   const panel = document.getElementById("adminPanel");
@@ -1557,29 +1551,29 @@ function nextRandomFact() {
 function loadFact() {
   const f = nextRandomFact();
   $("factText").textContent = f.text;
-  $("factStatus").textContent = "Fact " + f.number + " of " + f.total + (f.restarted ? " · you've read them all, starting a new round ✦" : " ✦");
+  $("factStatus").textContent = "Tap again for another, they never run out ✦";
 }
 $("factBtn").onclick = loadFact;
 loadFact();
 
 /* ============ Gothic knowledge data (shared by Places + the fact card) ============ */
 const GOTHIC_CHAPTERS = [
-  {title:"Where Gothic began", era:"12th century · France", body:"Gothic architecture emerged in the Île-de-France region of what is now northern France during the 12th century. Builders developed new ways to send the weight of tall stone buildings outward, helping churches rise higher and admit more light. The style spread across Europe and changed over time, so a Gothic building in England can look quite different from one in Italy.", url:"https://en.wikipedia.org/wiki/Gothic_architecture", summary:"The origins and defining features of Gothic architecture."},
-  {title:"The pointed arch", era:"Architecture · structure", body:"A pointed arch is one of Gothic architecture’s most recognizable features. Compared with a semicircular arch, its shape can help builders vary the height and span of an opening. Pointed arches appear alongside ribbed vaults and other techniques that made complex, lofty interiors possible.", url:"https://en.wikipedia.org/wiki/Pointed_arch", summary:"How a simple shape became an iconic architectural detail."},
-  {title:"Flying buttresses", era:"Architecture · engineering", body:"Flying buttresses are external supports that carry some of a tall building’s outward thrust to sturdy piers. They allowed architects to open up more wall space for windows while supporting high vaults. Their skeletal lines became part of the dramatic exterior appearance of many Gothic cathedrals.", url:"https://en.wikipedia.org/wiki/Flying_buttress", summary:"The engineering behind soaring cathedral walls."},
-  {title:"Stained glass and light", era:"Medieval art · symbolism", body:"Gothic churches often used large stained-glass windows to fill interiors with colored light. Windows could depict biblical narratives, saints, symbolic figures, and sometimes the people or guilds who funded them. Many were also works of craftsmanship in their own right, assembled from colored glass held together by lead strips.", url:"https://en.wikipedia.org/wiki/Stained_glass", summary:"Stories, craft, and color in medieval windows."},
-  {title:"Gargoyles and grotesques", era:"Stonework · folklore", body:"Strictly speaking, a gargoyle is a carved waterspout that directs rain away from a building. Carved figures that do not carry water are more accurately called grotesques or chimeras. Their strange faces and creatures can be playful, frightening, symbolic, or simply imaginative pieces of architectural sculpture.", url:"https://en.wikipedia.org/wiki/Gargoyle", summary:"What the strange stone creatures on buildings actually are."},
-  {title:"Rose windows and tracery", era:"Architecture · decoration", body:"A rose window is a large circular window, often divided by thin stone ribs called tracery. Tracery turned walls of glass into patterns of circles, trefoils, and flowing lines. Over time the designs grew more intricate, and the great rose windows of cathedrals became some of the most admired images of the Gothic age.", url:"https://en.wikipedia.org/wiki/Rose_window", summary:"The stone patterns that frame the glass."},
-  {title:"Ribbed vaults", era:"Architecture · ceilings", body:"A ribbed vault uses a framework of stone ribs to support the ceiling surface between them. This made vaults lighter and more flexible to design than the heavy barrel vaults of earlier Romanesque buildings. Ribs also became decorative, spreading into star and fan patterns in later Gothic interiors.", url:"https://en.wikipedia.org/wiki/Rib_vault", summary:"The skeleton hidden in the ceiling."},
-  {title:"Cathedrals built over lifetimes", era:"Medieval construction", body:"Many Gothic cathedrals took generations to complete. Masons, carpenters, glaziers, and sculptors worked in organized crafts, and plans sometimes changed as tastes and funds changed. This is why a single cathedral can combine several architectural phases, and why some were left unfinished for centuries.", url:"https://en.wikipedia.org/wiki/Cathedral", summary:"Why one building can show many centuries."},
-  {title:"The Gothic Revival", era:"18th–19th centuries", body:"Centuries after medieval Gothic architecture first flourished, architects and writers renewed interest in it. The Gothic Revival became especially influential in the 18th and 19th centuries, inspiring churches, universities, civic buildings, homes, and romantic visions of the medieval past. It was a revival style, not an uninterrupted continuation of medieval building practice.", url:"https://en.wikipedia.org/wiki/Gothic_Revival_architecture", summary:"How medieval forms returned to modern cities."},
-  {title:"Gothic fiction", era:"18th century onward · literature", body:"Gothic fiction grew in the late 18th century and often placed its characters in isolated castles, ruined abbeys, old mansions, or threatening landscapes. Writers used suspense, secrets, supernatural possibilities, and the past returning to trouble the present. The genre has changed greatly, but its fascination with atmosphere and hidden histories remains recognizable.", url:"https://en.wikipedia.org/wiki/Gothic_fiction", summary:"Ruins, secrets, suspense, and the birth of Gothic novels."},
-  {title:"A famous early Gothic novel", era:"1764 · Horace Walpole", body:"Horace Walpole’s The Castle of Otranto, first published in 1764, is widely regarded as a foundational work of Gothic fiction. It combines a medieval-style setting with supernatural events, family secrets, and a menacing castle. Later writers adapted and challenged the conventions it helped popularize.", url:"https://en.wikipedia.org/wiki/The_Castle_of_Otranto", summary:"The novel that helped establish Gothic fiction as a genre."},
-  {title:"Frankenstein and Dracula", era:"1818 · 1897", body:"Mary Shelley’s Frankenstein (1818) and Bram Stoker’s Dracula (1897) are two of the best-known works to grow out of the Gothic tradition. One explores science, ambition, and responsibility; the other explores fear, folklore, and the unknown. Both have been retold in countless films, plays, and stories.", url:"https://en.wikipedia.org/wiki/Gothic_fiction", summary:"Two novels that shaped the modern imagination."},
-  {title:"Romanticism and ruins", era:"Art · imagination", body:"Ruins became powerful subjects for artists and writers, especially during the Romantic period. Weathered stone could suggest the passage of time, the fragility of power, the force of nature, or a lost world. The appeal is not only fear: ruins can also feel beautiful, reflective, and strangely peaceful.", url:"https://en.wikipedia.org/wiki/Romanticism", summary:"Why ruined buildings can feel beautiful and haunting."},
-  {title:"Gothic is not only one look", era:"Across regions and centuries", body:"Gothic design changed as it travelled. English Gothic is often discussed through phases such as Early English, Decorated, and Perpendicular; French cathedrals developed their own regional forms; and Italy often combined Gothic structures with local materials and traditions. A place may feel Gothic in mood without being an example of medieval Gothic architecture.", url:"https://en.wikipedia.org/wiki/English_Gothic_architecture", summary:"Regional styles and the difference between architecture and atmosphere."},
-  {title:"From Gothic style to subculture", era:"Late 20th century · music and fashion", body:"The modern Goth subculture developed around post-punk music in the late 1970s and early 1980s. Dark fashion, dramatic makeup, literature, film, and art became part of a varied scene. Although it borrows imagery associated with Gothic fiction and Romanticism, modern Goth culture is not the same thing as medieval Gothic architecture.", url:"https://en.wikipedia.org/wiki/Goth_subculture", summary:"How a modern music scene developed its own dark aesthetic."},
-  {title:"Cemeteries as cultural records", era:"History · memorial art", body:"Historic cemeteries can reveal changing beliefs about death, family, status, craftsmanship, and public health. Their monuments range from modest markers to elaborate mausoleums and sculptures. They are meaningful heritage sites, so visitors should follow local rules, respect mourners, and avoid disturbing graves or memorials.", url:"https://en.wikipedia.org/wiki/Cemetery", summary:"What monuments and burial grounds can tell us about the past."}
+  {title:"Where Gothic began", body:"Gothic architecture emerged in the Île-de-France region of what is now northern France during the 12th century. Builders developed new ways to send the weight of tall stone buildings outward, helping churches rise higher and admit more light. The style spread across Europe and changed over time, so a Gothic building in England can look quite different from one in Italy.", url:"https://en.wikipedia.org/wiki/Gothic_architecture"},
+  {title:"The pointed arch", body:"A pointed arch is one of Gothic architecture’s most recognizable features. Compared with a semicircular arch, its shape can help builders vary the height and span of an opening. Pointed arches appear alongside ribbed vaults and other techniques that made complex, lofty interiors possible.", url:"https://en.wikipedia.org/wiki/Pointed_arch"},
+  {title:"Flying buttresses", body:"Flying buttresses are external supports that carry some of a tall building’s outward thrust to sturdy piers. They allowed architects to open up more wall space for windows while supporting high vaults. Their skeletal lines became part of the dramatic exterior appearance of many Gothic cathedrals.", url:"https://en.wikipedia.org/wiki/Flying_buttress"},
+  {title:"Stained glass and light", body:"Gothic churches often used large stained-glass windows to fill interiors with colored light. Windows could depict biblical narratives, saints, symbolic figures, and sometimes the people or guilds who funded them. Many were also works of craftsmanship in their own right, assembled from colored glass held together by lead strips.", url:"https://en.wikipedia.org/wiki/Stained_glass"},
+  {title:"Gargoyles and grotesques", body:"Strictly speaking, a gargoyle is a carved waterspout that directs rain away from a building. Carved figures that do not carry water are more accurately called grotesques or chimeras. Their strange faces and creatures can be playful, frightening, symbolic, or simply imaginative pieces of architectural sculpture.", url:"https://en.wikipedia.org/wiki/Gargoyle"},
+  {title:"Rose windows and tracery", body:"A rose window is a large circular window, often divided by thin stone ribs called tracery. Tracery turned walls of glass into patterns of circles, trefoils, and flowing lines. Over time the designs grew more intricate, and the great rose windows of cathedrals became some of the most admired images of the Gothic age.", url:"https://en.wikipedia.org/wiki/Rose_window"},
+  {title:"Ribbed vaults", body:"A ribbed vault uses a framework of stone ribs to support the ceiling surface between them. This made vaults lighter and more flexible to design than the heavy barrel vaults of earlier Romanesque buildings. Ribs also became decorative, spreading into star and fan patterns in later Gothic interiors.", url:"https://en.wikipedia.org/wiki/Rib_vault"},
+  {title:"Cathedrals built over lifetimes", body:"Many Gothic cathedrals took generations to complete. Masons, carpenters, glaziers, and sculptors worked in organized crafts, and plans sometimes changed as tastes and funds changed. This is why a single cathedral can combine several architectural phases, and why some were left unfinished for centuries.", url:"https://en.wikipedia.org/wiki/Cathedral"},
+  {title:"The Gothic Revival", body:"Centuries after medieval Gothic architecture first flourished, architects and writers renewed interest in it. The Gothic Revival became especially influential in the 18th and 19th centuries, inspiring churches, universities, civic buildings, homes, and romantic visions of the medieval past. It was a revival style, not an uninterrupted continuation of medieval building practice.", url:"https://en.wikipedia.org/wiki/Gothic_Revival_architecture"},
+  {title:"Gothic fiction", body:"Gothic fiction grew in the late 18th century and often placed its characters in isolated castles, ruined abbeys, old mansions, or threatening landscapes. Writers used suspense, secrets, supernatural possibilities, and the past returning to trouble the present. The genre has changed greatly, but its fascination with atmosphere and hidden histories remains recognizable.", url:"https://en.wikipedia.org/wiki/Gothic_fiction"},
+  {title:"A famous early Gothic novel", body:"Horace Walpole’s The Castle of Otranto, first published in 1764, is widely regarded as a foundational work of Gothic fiction. It combines a medieval-style setting with supernatural events, family secrets, and a menacing castle. Later writers adapted and challenged the conventions it helped popularize.", url:"https://en.wikipedia.org/wiki/The_Castle_of_Otranto"},
+  {title:"Frankenstein and Dracula", body:"Mary Shelley’s Frankenstein (1818) and Bram Stoker’s Dracula (1897) are two of the best-known works to grow out of the Gothic tradition. One explores science, ambition, and responsibility; the other explores fear, folklore, and the unknown. Both have been retold in countless films, plays, and stories.", url:"https://en.wikipedia.org/wiki/Gothic_fiction"},
+  {title:"Romanticism and ruins", body:"Ruins became powerful subjects for artists and writers, especially during the Romantic period. Weathered stone could suggest the passage of time, the fragility of power, the force of nature, or a lost world. The appeal is not only fear: ruins can also feel beautiful, reflective, and strangely peaceful.", url:"https://en.wikipedia.org/wiki/Romanticism"},
+  {title:"Gothic is not only one look", body:"Gothic design changed as it travelled. English Gothic is often discussed through phases such as Early English, Decorated, and Perpendicular; French cathedrals developed their own regional forms; and Italy often combined Gothic structures with local materials and traditions. A place may feel Gothic in mood without being an example of medieval Gothic architecture.", url:"https://en.wikipedia.org/wiki/English_Gothic_architecture"},
+  {title:"From Gothic style to subculture", body:"The modern Goth subculture developed around post-punk music in the late 1970s and early 1980s. Dark fashion, dramatic makeup, literature, film, and art became part of a varied scene. Although it borrows imagery associated with Gothic fiction and Romanticism, modern Goth culture is not the same thing as medieval Gothic architecture.", url:"https://en.wikipedia.org/wiki/Goth_subculture"},
+  {title:"Cemeteries as cultural records", body:"Historic cemeteries can reveal changing beliefs about death, family, status, craftsmanship, and public health. Their monuments range from modest markers to elaborate mausoleums and sculptures. They are meaningful heritage sites, so visitors should follow local rules, respect mourners, and avoid disturbing graves or memorials.", url:"https://en.wikipedia.org/wiki/Cemetery"}
 ];
 const GOTHIC_FACTS = [
   "The word ‘Gothic’ began as an insult. Renaissance writers in Italy used it for medieval buildings they thought were crude, as if only the barbarian Goths could have made them.",
@@ -1740,7 +1734,7 @@ function nextGothicFact() {
   const known = new Set(places.map(p => p.name.toLowerCase()));
   const offsets = Object.create(null);
   const dead = new Set();
-  let busy = false, loadingMore = false, exhausted = false, currentSearch = "", shownCount = 0, offline = false;
+  let busy = false, loadingMore = false, exhausted = false, shownCount = 0, offline = false;
 
   const decode = s => String(s || "").replace(/<[^>]*>/g,"").replace(/&quot;/g,'"').replace(/&#039;/g,"'").replace(/&amp;/g,"&");
   const readSeen = () => { try { const v = JSON.parse(localStorage.getItem(SEEN_KEY) || "[]"); return Array.isArray(v) ? v.filter(x => typeof x === "string") : []; } catch (_) { return []; } };
@@ -1923,7 +1917,6 @@ function nextGothicFact() {
       if (!pool.length) {
         el.status.textContent = "Finding more worldwide discoveries…";
         el.next.disabled = true;
-        exhausted = exhausted && !offline ? true : exhausted;
         if (offline) exhausted = false;
         await loadMore();
         el.next.disabled = false;
@@ -2271,7 +2264,7 @@ function nextGothicFact() {
   function randomFact() {
     const f = nextGothicFact();
     fact.textContent = f.text;
-    factLabel.textContent = "✦ FACT " + f.number + " OF " + f.total + (f.restarted ? " · you've read them all, starting a new round" : "");
+    factLabel.textContent = "✦ GOTHIC FACT";
   }
   $("gothicHistoryAnotherFact").addEventListener("click", randomFact);
   randomFact();
