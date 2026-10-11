@@ -1130,7 +1130,7 @@ body.auth-locked .pd-alert{display:none}
             <div class="pd-label">Mood</div><div class="pd-chips" id="pdMood"></div>
             <div class="pd-label">Notes <span id="pdSaved"></span></div>
             <textarea id="pdNotes" maxlength="1000" placeholder="Anything else about today…"></textarea>
-            <button class="action" id="pdSaveShare" type="button">Save amp; </button>
+            <button class="action" id="pdSaveShare" type="button">Save &amp; </button>
             <p class="fine">Data is saved on the website.</p>
           </div>
         </div>
@@ -1245,7 +1245,8 @@ const $ = id => document.getElementById(id);
 
 const AUTH_KEY = "layaSiteToken";
 const LAST_ACTIVITY_KEY = "layaSiteLastActivity";
-const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000;           // signed in without "Keep me signed in"
+const REMEMBER_IDLE_TIMEOUT_MS = 30 * 60 * 1000; // signed in with "Keep me signed in"
 
 let memoryToken = "";
 let idleTimer = null;
@@ -1258,6 +1259,8 @@ function getToken() {
 
 const REMEMBER_KEY = "layaRemember";
 function remembered() { try { return localStorage.getItem(REMEMBER_KEY) === "1"; } catch (error) { return false; } }
+function idleLimit() { return remembered() ? REMEMBER_IDLE_TIMEOUT_MS : IDLE_TIMEOUT_MS; }
+function idleMinutes() { return Math.round(idleLimit() / 60000); }
 
 function storeToken(value, remember) {
   memoryToken = value || "";
@@ -1265,12 +1268,12 @@ function storeToken(value, remember) {
     if (value) {
       sessionStorage.setItem(AUTH_KEY, value);
       sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
-      if (remember) { localStorage.setItem(AUTH_KEY, value); localStorage.setItem(REMEMBER_KEY, "1"); }
+      if (remember) { localStorage.setItem(AUTH_KEY, value); localStorage.setItem(REMEMBER_KEY, "1"); localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now())); }
       else if (remember === false) { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(REMEMBER_KEY); localStorage.removeItem("layaPeriod"); }
     } else {
       sessionStorage.removeItem(AUTH_KEY);
       sessionStorage.removeItem("layaPeriod");
-      sessionStorage.removeItem(LAST_ACTIVITY_KEY);
+      sessionStorage.removeItem(LAST_ACTIVITY_KEY); localStorage.removeItem(LAST_ACTIVITY_KEY);
       localStorage.removeItem(AUTH_KEY); localStorage.removeItem(REMEMBER_KEY); localStorage.removeItem("layaPeriod"); localStorage.removeItem("layaWelcomeSeen");
     }
   } catch (error) {}
@@ -1300,7 +1303,15 @@ function hideLogin() {
 }
 
 function readLastActivity() {
-  try { return Number(sessionStorage.getItem(LAST_ACTIVITY_KEY) || 0); } catch (error) { return 0; }
+  try {
+    const a = Number(sessionStorage.getItem(LAST_ACTIVITY_KEY) || 0);
+    const b = remembered() ? Number(localStorage.getItem(LAST_ACTIVITY_KEY) || 0) : 0;
+    return Math.max(a, b);
+  } catch (error) { return 0; }
+}
+function writeLastActivity(t) {
+  try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(t)); } catch (error) {}
+  try { if (remembered()) localStorage.setItem(LAST_ACTIVITY_KEY, String(t)); } catch (error) {}
 }
 
 function recordActivity() {
@@ -1308,37 +1319,38 @@ function recordActivity() {
   const now = Date.now();
   if (now - lastActivityWrite < 1000) return;
   lastActivityWrite = now;
-  try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(now)); } catch (error) {}
+  writeLastActivity(now);
   scheduleIdleLogout();
 }
 
 function lockForInactivity() {
+  const mins = idleMinutes();   // read before storeToken clears the remember flag
   storeToken("");
   try { sessionStorage.removeItem("layaWelcomeSeen"); } catch (error) {}
-  showLogin("You’ve been signed out after 15 minutes of inactivity. Please sign in again.");
+  showLogin("You’ve been signed out after " + mins + " minutes of inactivity. Please sign in again.");
 }
 
 function scheduleIdleLogout() {
   clearTimeout(idleTimer);
-  if (!getToken() || remembered()) return;
+  if (!getToken()) return;
   let last = readLastActivity();
   if (!last) {
     last = Date.now();
-    try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(last)); } catch (error) {}
+    writeLastActivity(last);
   }
-  const remaining = IDLE_TIMEOUT_MS - (Date.now() - last);
+  const remaining = idleLimit() - (Date.now() - last);
   if (remaining <= 0) { lockForInactivity(); return; }
   idleTimer = setTimeout(() => {
     if (!getToken()) return;
     const latest = readLastActivity();
-    if (Date.now() - latest >= IDLE_TIMEOUT_MS) lockForInactivity(); else scheduleIdleLogout();
+    if (Date.now() - latest >= idleLimit()) lockForInactivity(); else scheduleIdleLogout();
   }, remaining);
 }
 
 function checkIdleOnReturn() {
-  if (!getToken() || remembered()) return;
+  if (!getToken()) return;
   const last = readLastActivity();
-  if (last && Date.now() - last >= IDLE_TIMEOUT_MS) lockForInactivity(); else scheduleIdleLogout();
+  if (last && Date.now() - last >= idleLimit()) lockForInactivity(); else scheduleIdleLogout();
 }
 
 ["pointerdown","keydown","touchstart","scroll","wheel","click"].forEach(type => {
@@ -1368,10 +1380,10 @@ async function api(path, opts = {}) {
 
   if (getToken()) {
     const last = readLastActivity();
-    if (last && !remembered() && Date.now() - last >= IDLE_TIMEOUT_MS) {
+    if (last && Date.now() - last >= idleLimit()) {
       lockForInactivity();
     } else {
-      if (!last) { try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now())); } catch (error) {} }
+      if (!last) writeLastActivity(Date.now());
       scheduleIdleLogout();
       hideLogin();
     }
