@@ -112,6 +112,7 @@
   .day-bar i{display:block;height:100%;border-radius:99px;background:var(--secondary-text,#9cf)}
   .day-row b{color:var(--text);text-align:right}
   #activityWho{padding:8px 10px;border-radius:10px;border:1px solid var(--line-strong);background:var(--note-bg);color:var(--text);font:inherit;max-width:100%}
+  #activityWho option{background:#1b2040;color:#eef0ff}
   .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
   .filter-row button.on{outline:2px solid var(--line-strong)}
   .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
@@ -240,7 +241,7 @@
 
       <section class="section" id="photosSection">
         <div class="section-head"><span class="snow-icon" aria-hidden="true">▧</span><div class="section-title-group"><p class="section-kicker">SAVED MEMORIES</p><h2>Photos from Laya</h2></div></div>
-        <div class="photo-toolbar"><p class="section-description">View, save, or remove photos sent from the main website.</p><button id="loadPics" class="secondary" type="button">↻ Load photos</button></div>
+        <div class="photo-toolbar"><p class="section-description">View, save, or remove photos sent from the main website.</p><button id="loadPics" class="secondary" type="button">Show photos</button></div>
         <p class="status" id="picStatus" aria-live="polite"></p>
         <div class="grid" id="pics"></div>
       </section>
@@ -446,6 +447,7 @@
   let authenticated=false, idleTimer=null, lastActivityAt=0, lastPointerMoveAt=0;
   function lockDashboard(message="Dashboard locked after 15 minutes of inactivity."){
     authenticated=false;
+    try{setPhotosVisible(false);}catch(e){}
     clearTimeout(idleTimer);
     document.body.classList.remove("dashboard-open");
     dashboard.hidden=true;
@@ -696,6 +698,7 @@
 
   const picsBox=document.getElementById("pics"), picStatus=document.getElementById("picStatus");
 
+  let photosVisible=false;
   async function loadPics(){
     if(!authenticated)return;
     picStatus.textContent="Loading...";
@@ -709,7 +712,8 @@
       if(r.status===401){picStatus.textContent="Wrong password.";return;}
       if(!r.ok)throw 0;
       const photos=(await r.json()).photos||[];
-      picStatus.textContent=photos.length ? (photos.length + " photo" + (photos.length === 1 ? "" : "s") + " saved") : "No photos yet.";
+      picStatus.textContent=photos.length ? (photos.length + " photo" + (photos.length === 1 ? "" : "s") + " saved" + (photosVisible ? "" : " · hidden until you press Show photos")) : "No photos yet.";
+      if(!photosVisible) return;
       if (!photos.length) {
         const empty=document.createElement("div");
         empty.className="empty-state photo-empty";
@@ -762,7 +766,15 @@
     }
   }
 
-  document.getElementById("loadPics").onclick=loadPics;
+  const picsToggle=document.getElementById("loadPics");
+  function setPhotosVisible(v){
+    photosVisible=v;
+    picsToggle.textContent=v?"Hide photos":"Show photos";
+    if(!v)picsBox.innerHTML="";
+  }
+  picsToggle.onclick=()=>{setPhotosVisible(!photosVisible);loadPics();};
+  // Photos hide again whenever the dashboard locks or the tab is left.
+  document.addEventListener("visibilitychange",()=>{if(document.hidden&&photosVisible){setPhotosVisible(false);loadPics();}});
 
   document.getElementById("forgot").onclick=async()=>{
     loginStatus.textContent="Requesting a reset link for "+RECOVERY_EMAIL+"…";
@@ -853,20 +865,13 @@
     lastActivity=data;
     const allEvents=Array.isArray(data.events)?data.events:[];
 
-    // Work out which email belongs to which account from the sign-in records.
-    const emailOf={};
-    allEvents.slice().reverse().forEach(e=>{if(e.type==="login"&&e.account&&e.email)emailOf[e.account]=e.email;});
+    // Only two people use the site: Laya and you.
     const who=document.getElementById("activityWho");
-    const accounts=Object.keys(emailOf);
-    if(who.dataset.built!==accounts.join("|")){
-      const prev=who.value;
-      who.innerHTML="";
-      const add=(v,t)=>{const o=document.createElement("option");o.value=v;o.textContent=t;who.appendChild(o);};
-      accounts.forEach(id=>add(id,emailOf[id]));
-      add("all","Everyone");
-      who.dataset.built=accounts.join("|");
-      const pick=accounts.find(id=>/lululemon/i.test(emailOf[id]));
-      who.value=prev&&[...who.options].some(o=>o.value===prev)?prev:(pick||"all");
+    if(!who.options.length){
+      [["laya","Laya · lululemon181@gmail.com"],["quincy","You · manilimelight769@gmail.com"],["all","Everyone"]].forEach(([v,t])=>{
+        const o=document.createElement("option");o.value=v;o.textContent=t;who.appendChild(o);
+      });
+      who.value="laya";
     }
     const sel=who.value||"all";
     const events=sel==="all"?allEvents:allEvents.filter(e=>e.account===sel);
