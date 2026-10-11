@@ -188,3 +188,82 @@
 
   general.warm(); gothic.warm();
 })();
+
+/* ===== Site activity tracking: visits and clicks, sent to the worker for the admin page ===== */
+(() => {
+  if (typeof window.api !== "function" || typeof window.getToken !== "function") return;
+
+  function send(type, label, extra) {
+    if (!getToken()) return; // only track while signed in
+    api("/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, label: String(label || "").slice(0, 160), extra: String(extra || "").slice(0, 160) }),
+    }).catch(() => {});
+  }
+
+  // One "visit" per page load, as soon as a sign-in token is available.
+  let visited = false;
+  const tryVisit = () => {
+    if (visited) return;
+    if (getToken()) { visited = true; send("visit", "page_load"); }
+  };
+  tryVisit();
+  const visitPoll = setInterval(() => { tryVisit(); if (visited) clearInterval(visitPoll); }, 400);
+  setTimeout(() => clearInterval(visitPoll), 20000);
+
+  // Click tracking: a readable label for nav buttons, actions, book spines, candles, plushies, etc.
+  // Buttons that only show a symbol ("‹", "A+") or no text get a plain-English name here,
+  // so the admin page never has to show a raw id like "#wallPrev".
+  const FRIENDLY_LABELS = {
+    wallPrev: "Wallpaper: previous", wallNext: "Wallpaper: next",
+    liveToggle: "Wallpaper: live", stillModeBtn: "Wallpaper: still",
+    pagePrev: "Reader: previous page", pageNext: "Reader: next page",
+    fontUp: "Reader: bigger text", fontDown: "Reader: smaller text",
+    readerClose: "Reader: close", readerStyle: "Reader: style (Aa) panel",
+    markRead: "Reader: mark as read",
+    shelfPrev: "Bookshelf: previous shelf", shelfNext: "Bookshelf: next shelf",
+    randomBook: "Bookshelf: pick a book for me", continueBook: "Bookshelf: continue reading",
+    lightAll: "Candles: light them all", blowAll: "Candles: blow them out",
+    anotherSong: "Music: another song", colorToggle: "Music: adaptive colors",
+    anotherCute: "Cozy: another cute note", catBtn: "Cozy: pet the cat", realCat: "Cozy: show a real cat",
+    pickPics: "Cozy: choose photos to send",
+    factBtn: "Random fact button",
+    nextGothicPlace: "Gothic places: discover a place", resetGothicPlaces: "Gothic places: start over",
+    searchGothicPlaces: "Gothic places: search",
+    gothicHistoryAnotherFact: "Gothic places: another fact",
+    giphyTrendingBtn: "GIPHY: show trending", giphySearchBtn: "GIPHY: search", giphyLoadMore: "GIPHY: load more",
+    klipyTrendingBtn: "KLIPY: show trending", klipySearchBtn: "KLIPY: search", klipyLoadMore: "KLIPY: load more",
+    sendGiphyBtn: "Send GIF to Kimchi", sendKlipyBtn: "Send sticker to Kimchi",
+    hugBtn: "Send a hug", sendMsg: "Send message to Kimchi",
+    yesBtn: "Missing him: yes", alotBtn: "Missing him: a lot",
+    backTop: "Back to top",
+  };
+
+  function labelFor(el) {
+    if (el.dataset && el.dataset.go) return "Nav: " + el.dataset.go;
+    if (el.id && FRIENDLY_LABELS[el.id]) return FRIENDLY_LABELS[el.id];
+    const aria = el.getAttribute && el.getAttribute("aria-label");
+    if (aria) return aria.slice(0, 120);
+    const text = (el.textContent || "").trim().replace(/\s+/g, " ");
+    // A one- or two-character label is usually just a symbol ("‹", "✦"), not useful on its own.
+    if (text && text.length > 2) return text.slice(0, 80);
+    if (el.id) return "Button: " + el.id;
+    if (el.className) return "Button: ." + String(el.className).split(" ")[0];
+    return "Unlabeled button";
+  }
+
+  let lastLabel = "", lastAt = 0;
+  document.addEventListener("click", e => {
+    const el = e.target.closest(
+      ".navbtn, .action, .smallbtn, .spine, .plush, .candle, [data-go], #hugBtn, #catBtn, #realCat, #sendMsg, #randomBook, #markRead"
+    );
+    if (!el) return;
+    if (el.closest(".candle") || el.id === "lightAll" || el.id === "blowAll") return; // candles are not tracked
+    const label = labelFor(el);
+    const now = Date.now();
+    if (label === lastLabel && now - lastAt < 1500) return; // skip accidental double counts
+    lastLabel = label; lastAt = now;
+    send("click", label);
+  }, { passive: true });
+})();
