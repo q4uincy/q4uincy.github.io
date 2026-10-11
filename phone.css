@@ -15,10 +15,10 @@ button, .smallbtn, .action, .navbtn, .spine { touch-action: manipulation; }
   input, textarea, select { font-size: 16px; }
 
   .app { width: calc(100% - 24px); }
-  .hero { min-height: 0; padding: 10px 2px 4px; }
+  .hero { min-height: 0; padding: 6px 2px 2px; }
   h1 { font-size: clamp(2.2rem, 11vw, 2.8rem); }
-  .section { margin: 18px 0; }
-  .section-head { padding: 8px 2px 20px; margin-bottom: 12px; }
+  .section { margin: 0 0 18px; }
+  .section-head { padding: 2px 2px 4px; margin-bottom: 8px; }
   h2 { font-size: 1.6rem; }
   .section-head p { font-size: .84rem; line-height: 1.6; }
   .card, .grid > .card { padding: 14px; border-radius: 14px; }
