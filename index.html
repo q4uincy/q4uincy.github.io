@@ -443,6 +443,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     <div class="login-symbol">☾ ✦ ♡</div>
     <h1 id="loginTitle" class="login-title">made by kimchi</h1>
     <p class="login-sub">Enter your email and password.</p>
+    <p class="login-sub" style="margin-top:-12px">This is Kimchi's site, so he can see your visits and chats here.</p>
     <form id="loginForm" class="login-form" autocomplete="on">
       <label for="loginEmail">Email
         <input id="loginEmail" name="email" type="email" autocomplete="username" required maxlength="254" placeholder="Your email address">
@@ -546,8 +547,8 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 <main class="app">
   <section class="hero" id="home">
     <div class="eyebrow">a little place made for you</div>
-    <h1>Hi <em>Laya.</em><br>Welcome.</h1>
-    <p>Pick whatever feels right.Everything is made for you.</p>
+    <h1>Hi <em>Laya.</em><br>stay a while.</h1>
+    <p>Pick whatever feels right. Something silly, something cozy, a song, a message for Kimchi, or simply a quiet corner to breathe.</p>
     <div class="orn">☾ ✦ ♡ ✦ ☽</div>
   </section>
 
@@ -644,7 +645,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
   <section class="section" id="music">
     <div class="section-head">
       <div><div class="section-kicker">02 · music</div><h2>Your twin's soundtrack.</h2></div>
-      <p>Currently playing if Spotify knows what he's listening to; otherwise a random song from  <em>kimchi's playlist</em>.</p>
+      <p>Currently playing if Spotify knows what he's listening to; otherwise a random song from <em>delusions</em>.</p>
     </div>
     <div class="card">
       <img id="songArt" class="music-art" alt="Album artwork">
@@ -662,7 +663,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="plush">
     <div class="section-head">
-      <div><div class="section-kicker">03 · plushie room</div><h2>Your tiny companions.</h2></div>
+      <div><div class="section-kicker">03 · plushie room</div><h2>Pet the residents.</h2></div>
       <p>They are very needy. Please give them attention.</p>
     </div>
     <div class="plush-grid" id="plushGrid"></div>
@@ -760,7 +761,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
   <section class="section" id="candleBooks">
     <div class="section-head">
       <div><div class="section-kicker">07 · candlelight</div><h2>Light a candle, open a book.</h2></div>
-      <p>Light some candels here.</p>
+      <p>Light a few candles, pick a gothic classic to read for free, and learn one strange little fact before you go.</p>
     </div>
 
     <div class="card candle-card" id="candleCard">
@@ -814,15 +815,15 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
   <section class="section" id="talk">
     <div class="section-head">
       <div><div class="section-kicker">08 · quiet corner</div><h2>I'm here.</h2></div>
-      <p>Talk to the AI if you want company. It is not Kimchi and it is not a therapist.</p>
+      <p>Ask the AI anything, or just talk. It remembers things you tell it. It is not Kimchi and it is not a therapist.</p>
     </div>
     <div class="card">
       <div class="chat-log" id="log"></div>
       <form class="chat-form" id="cform">
-        <input id="cin" autocomplete="off" placeholder="Tell me what's on your mind..." aria-label="Your message">
+        <input id="cin" autocomplete="off" placeholder="Ask me anything, or tell me what's on your mind..." aria-label="Your message">
         <button class="action" type="submit">Send</button>
       </form>
-      <div class="fine">If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust in person right now.</div>
+      <div class="fine">Kimchi can see your visits, what you talk about here, and what the AI remembers, since this is his site. If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust in person right now.</div>
     </div>
   </section>
 
@@ -2281,7 +2282,7 @@ function addMsg(who, text) {
   chatLog.scrollTop = chatLog.scrollHeight;
   return element;
 }
-addMsg("ai","Hey Laya. What's going on? You can tell me as much or as little as you want.");
+addMsg("ai","Hey Laya. Ask me anything, or just tell me what's on your mind. I'll remember the important stuff for next time.");
 $("cform").onsubmit = async event => {
   event.preventDefault();
   const input = $("cin");
