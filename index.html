@@ -156,9 +156,10 @@ textarea { min-height: 92px; resize: vertical; }
 .fine { font-size: .78rem; color: var(--muted); line-height: 1.5; margin-top: 11px; }
 .footer { text-align: center; color: #8e7f89; font-size: .78rem; padding: 10px 0 12px; }
 
-.cursor { position: fixed; z-index: 9999; width: 38px; height: 38px; pointer-events: none; opacity: 0; transform: translate(-50%,-50%) rotate(-5deg); transition: opacity .18s,transform .12s; filter: drop-shadow(0 5px 8px rgba(0,0,0,.38)); }
+.cursor { position: fixed; z-index: 9999; width: 38px; height: 38px; pointer-events: none; opacity: 0; transform: translate(6px,8px) rotate(-5deg); transition: opacity .18s,transform .12s; filter: drop-shadow(0 5px 8px rgba(0,0,0,.38)); }
 .cursor.on { opacity: 1; }
-.cursor.down { transform: translate(-50%,-50%) scale(.82) rotate(-5deg); }
+.cursor.down { transform: translate(6px,8px) scale(.82) rotate(-5deg); }
+.cursor.on.dim { opacity: .22; }
 .kuromi-head { position: absolute; left: 7px; top: 10px; width: 25px; height: 22px; background: #17121b; border: 1.5px solid #d58ba4; border-radius: 48% 48% 44% 44%; box-shadow: inset 0 -3px 0 rgba(255,255,255,.04); }
 .kuromi-ear { position: absolute; top: 1px; width: 12px; height: 18px; background: #17121b; border: 1.5px solid #d58ba4; border-radius: 55% 45% 35% 35%; z-index: -1; }
 .cursor .ear-left { left: 5px; transform: rotate(-17deg); }
@@ -1124,16 +1125,27 @@ document.querySelectorAll("[data-go]").forEach(button => {
 (() => {
   const btns = [...document.querySelectorAll(".navbtn[data-go]")];
   const map = new Map(btns.map(b => [b.dataset.go, b]));
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      const b = map.get(e.target.id);
-      if (!b) return;
-      btns.forEach(x => x.classList.toggle("active", x === b));
-      b.scrollIntoView({ block: "nearest", inline: "center" });
+  const secs = [...map.keys()].map(id => document.getElementById(id)).filter(Boolean);
+  let ticking = false;
+  function spy() {
+    ticking = false;
+    const line = innerHeight * 0.35;
+    let cur = null, best = -Infinity;
+    secs.forEach(sec => {
+      const r = sec.getBoundingClientRect();
+      if (!r.height) return;
+      if (r.top <= line && r.bottom > line * 0.5 && r.top > best) { best = r.top; cur = sec; }
     });
-  }, { rootMargin: "-45% 0px -50% 0px" });
-  map.forEach((_, id) => { const s = document.getElementById(id); if (s) io.observe(s); });
+    if (!cur && secs.length) cur = secs[0];
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = secs[secs.length - 1] || cur;
+    const b = cur && map.get(cur.id);
+    if (!b || b.classList.contains("active")) return;
+    btns.forEach(x => x.classList.toggle("active", x === b));
+    b.scrollIntoView({ block: "nearest", inline: "center" });
+  }
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, { passive: true });
+  addEventListener("resize", spy);
+  spy();
 
   const top = $("backTop");
   addEventListener("scroll", () => { top.hidden = scrollY < 700; }, { passive: true });
@@ -1157,6 +1169,9 @@ $("signOutBtn").addEventListener("click", () => {
     cursor.classList.add("on");
     cursor.style.left = event.clientX + "px";
     cursor.style.top = event.clientY + "px";
+    // fade the mascot over buttons, links and fields so their labels stay readable
+    const t = event.target && event.target.closest ? event.target.closest("a,button,input,textarea,select,summary,label,[data-go],.topbar") : null;
+    cursor.classList.toggle("dim", !!t);
   });
   document.addEventListener("pointerdown", event => {
     cursor.classList.add("down");
