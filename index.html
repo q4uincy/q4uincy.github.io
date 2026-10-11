@@ -994,7 +994,74 @@ body.auth-locked .pd-alert{display:none}
         <button class="smallbtn" type="button" data-bfilter="finished">Finished</button>
         <button class="smallbtn" type="button" data-bfilter="unread">Not started</button>
       </div>
-      
+      <div class="controls" id="catFilters" hidden></div>
+      <div class="shelf" id="shelf" aria-label="Bookshelf"></div>
+      <div class="shelf-pager">
+        <button class="smallbtn" id="shelfPrev" type="button">‹ Prev shelf</button>
+        <span class="status" id="shelfPageInfo" style="margin:0"></span>
+        <button class="smallbtn" id="shelfNext" type="button">Next shelf ›</button>
+      </div>
+      <div class="status" id="shelfLabel" style="text-align:center">Hover a book to see its title.</div>
+      <button class="action" id="randomBook" type="button">Pick a book for me ✦</button>
+      <div class="finished-log" id="finishedLog"></div>
+    </div>
+
+    <div class="card gothic-history-card" style="margin-top:12px">
+      <div class="gothic-history-fact" style="margin-top:0" aria-live="polite">
+        <span id="gothicFactLabel">✦ RANDOM FACT</span>
+        <p id="gothicHistoryFact"></p>
+        <button class="smallbtn" id="gothicHistoryAnotherFact" type="button">Another fact ↻</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section hidden" id="period">
+    <style>
+      .pd-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:start}
+      .pd-col{display:grid;gap:16px;min-width:0}
+      @media(max-width:860px){.pd-wrap{grid-template-columns:1fr}}
+      .pd-ring{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+      .pd-ring svg{width:148px;height:148px;flex:0 0 auto}
+      .pd-big{font-family:"Cormorant Garamond",serif;font-size:2.3rem;line-height:1;font-weight:500}
+      .pd-phase{color:var(--pink);margin:4px 0 8px;font-weight:600}
+      .pd-text{color:var(--muted);font-size:.9rem;margin:0 0 4px!important}
+      .pd-main.on{background:var(--pd-period)}
+      .pd-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+      .pd-cal .h{font-size:.72rem;color:var(--muted);text-align:center;padding:4px 0}
+      .pd-d{position:relative;aspect-ratio:1;min-height:38px;display:grid;place-items:center;border-radius:12px;border:1px solid transparent;background:transparent;font-size:.85rem;color:var(--text);cursor:pointer;padding:0}
+      .pd-d.p{background:var(--pd-period);color:#fff}
+      .pd-d.pp{background:color-mix(in srgb,var(--pink) 18%,transparent);border:1px dashed var(--pink)}
+      .pd-d.f{background:color-mix(in srgb,var(--pd-fert) 28%,transparent)}
+      .pd-d.o{background:var(--pd-fert);color:#fff}
+      .pd-d.t{border-color:var(--pink)}
+      .pd-d.sel{outline:2px solid #fff;outline-offset:1px}
+      .pd-d i{position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:#fff;opacity:.85}
+      .pd-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.76rem;color:var(--muted);margin-top:14px}
+      .pd-legend b{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:6px;vertical-align:-1px}
+      .pd-label{font-size:.8rem;color:var(--muted);margin:14px 0 6px}
+      .pd-chips{display:flex;flex-wrap:wrap;gap:6px}
+      .pd-chips .smallbtn{min-height:36px;padding:6px 12px}
+      .pd-state{color:var(--pink);font-size:.85rem;min-height:1.2em}
+      .pd-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+      .pd-stat div{background:var(--inset);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+      .pd-stat strong{display:block;font-family:"Cormorant Garamond",serif;font-size:1.7rem;font-weight:500}
+      .pd-stat span{font-size:.74rem;color:var(--muted)}
+      .pd-hist div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:8px 0;font-size:.85rem}
+      .pd-set{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      .pd-set label{font-size:.8rem;color:var(--muted)}
+      .pd-set input{margin-top:4px}
+      .pd-banner{position:fixed;z-index:120;top:calc(68px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 24px));padding:14px 16px;border-radius:16px;background:var(--raised);border:1px solid var(--pd-period);box-shadow:0 14px 40px rgba(0,0,0,.5)}
+      .pd-banner strong{display:block;margin-bottom:4px}
+      .pd-banner p{margin:0 0 10px;color:var(--muted);font-size:.88rem}
+      .pd-banner .row{display:flex;gap:8px;flex-wrap:wrap}
+      body.nav-side .pd-banner{top:16px;left:calc(50% + var(--side-w) / 2)}
+      @media(max-width:860px){body.nav-side .pd-banner{top:calc(68px + env(safe-area-inset-top));left:50%}}
+    </style>
+    <div class="section-head">
+      <div><h2>Cycle tracker</h2></div>
+      <p>Everything here is an estimate, not medical advice or birth control. Your notes stay on this device.</p>
+    </div>
+    <div class="card pd-share-note" style="margin-bottom:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><p class="pd-text" id="pdShareNote" style="margin:0!important"></p><button class="smallbtn" id="pdShareBtn2" type="button"></button></div>
     <div class="pd-wrap">
       <div class="pd-col">
         <div class="card">
@@ -1035,10 +1102,11 @@ body.auth-locked .pd-alert{display:none}
             <button class="smallbtn" id="pdImportBtn" type="button">Import backup</button>
             <button class="smallbtn" id="pdAlertsBtn" type="button">Period alerts: on</button>
             <button class="smallbtn" id="pdNotifBtn" type="button">Browser alerts: off</button>
+            <button class="smallbtn" id="pdShareBtn" type="button">Share how I feel with Kimchi: off</button>
             <button class="smallbtn" id="pdErase" type="button">Erase all</button>
           </div>
           <input type="file" id="pdImport" accept="application/json" hidden>
-          <p class="fine">Data lives in this browser only. Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
+          <p class="fine">Data lives in this browser only. The one exception is sharing: while it is on, the mood, pain, flow and symptoms you log are sent to Kimchi's admin page (never your notes). Kimchi is also told when you turn sharing on or off. Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
         </div>
       </div>
       <div class="pd-col">
@@ -3350,7 +3418,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   const MOOD = ["Happy","Calm","Energetic","Sensitive","Low","Anxious","Irritable"];
   const DATE_RE = /^\d{4}-\d\d-\d\d$/;
   const num = (v, lo, hi, d) => { v = Math.round(Number(v)); return v >= lo && v <= hi ? v : d; };
-  const blank = () => ({ days: [], logs: {}, prefs: { cl: 28, pl: 5, notify: false, alerts: true, share: false, shareAsked: true } });
+  const blank = () => ({ days: [], logs: {}, prefs: { cl: 28, pl: 5, notify: false, alerts: true, share: true, shareAsked: false } });
   function cleanState(r) {
     const days = (Array.isArray(r.days) ? r.days : []).filter(x => typeof x === "string" && DATE_RE.test(x));
     const logs = {};
@@ -3362,7 +3430,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
       if (o.flow || o.pain || o.sym.length || o.mood.length || o.notes.trim()) logs[k] = o;
     });
     const p = r.prefs || {};
-    return { days, logs, prefs: { cl: num(p.cl, 21, 45, 28), pl: num(p.pl, 2, 10, 5), notify: !!p.notify, alerts: p.alerts !== false, share: false, shareAsked: true } };
+    return { days, logs, prefs: { cl: num(p.cl, 21, 45, 28), pl: num(p.pl, 2, 10, 5), notify: !!p.notify, alerts: p.alerts !== false, share: p.shareAsked ? !!p.share : true, shareAsked: !!p.shareAsked } };
   }
   let S = blank();
   try { const r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r) S = cleanState(r); } catch (e) {}
@@ -3552,8 +3620,16 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   function renderNotifBtn() {
     const b = $("pdNotifBtn");
     $("pdAlertsBtn").textContent = "Period alerts: " + (S.prefs.alerts ? "on" : "off");
+    renderShareBtn();
     if (!("Notification" in window)) { b.hidden = true; return; }
     b.textContent = "Browser alerts: " + (S.prefs.notify && Notification.permission === "granted" ? "on" : "off");
+  }
+  function renderShareBtn() {
+    $("pdShareBtn").textContent = "Share how I feel with Kimchi: " + (S.prefs.share ? "on" : "off");
+    $("pdShareBtn2").textContent = S.prefs.share ? "Turn off" : "Turn on";
+    $("pdShareNote").textContent = S.prefs.share
+      ? "Your mood, pain, flow and symptoms update on Kimchi's admin page when you log them. Your notes stay private. Turning this off is fine; Kimchi will just see that it's off."
+      : "Sharing with Kimchi is off. Nothing from this tracker is sent.";
   }
   function renderAll() { C = calc(); renderHero(); renderCal(); renderDay(); renderInsights(); renderAlert(); renderNotifBtn(); }
 
@@ -3588,7 +3664,19 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   };
   $("pdAlertX").onclick = () => { store(DKEY, iso(C.t) + ":" + $("pdAlert").dataset.kind); $("pdAlert").hidden = true; };
   $("pdAlertOff").onclick = () => { S.prefs.alerts = false; save(); renderAll(); toast("Period alerts are off. Turn them back on in the tracker settings."); };
-
+  const toggleShare = () => {
+    S.prefs.shareAsked = true;
+    const tell = state => api("/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "period-share", label: state }) }).catch(() => {});
+    if (S.prefs.share) { S.prefs.share = false; save(); renderShareBtn(); tell("off"); toast("Sharing is off. Kimchi won't get new updates."); return; }
+    S.prefs.share = true; lastShared = ""; save(); renderShareBtn(); tell("on"); toast("Sharing is on. Kimchi's page will update when you log.");
+  };
+  $("pdShareBtn").onclick = toggleShare;
+  $("pdShareBtn2").onclick = toggleShare;
+  $("pdSaveShare").onclick = () => {
+    save();
+    if (S.prefs.share) { clearTimeout(shareTimer); sendShare(true); toast("Saved \u2661 Kimchi's page is updated"); }
+    else toast("Saved on this device");
+  };
   $("pdAlertsBtn").onclick = () => { S.prefs.alerts = !S.prefs.alerts; save(); renderAll(); toast(S.prefs.alerts ? "Period alerts are on" : "Period alerts are off"); };
   $("pdAlertGo").onclick = () => { $("pdAlert").hidden = true; window.goTo("period"); };
   $("pdNotifBtn").onclick = async () => {
