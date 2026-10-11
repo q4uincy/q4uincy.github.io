@@ -270,7 +270,7 @@
 
       <section class="section" id="moodSection">
         <div class="section-head"><span class="snow-icon" aria-hidden="true">♡</span><div class="section-title-group"><p class="section-kicker">LOOK AFTER HER</p><h2>How she's feeling</h2></div></div>
-        <div class="photo-toolbar"><p class="section-description">Mood, pain, flow and symptoms she logs in the Cycle tab. It updates when she logs a day or taps Save &amp; update. She can turn sharing off in her Cycle tab, and her private notes are never sent.</p><button id="loadMood" class="secondary" type="button">↻ Refresh</button></div>
+        <div class="photo-toolbar"><p class="section-description">Mood, pain, flow and symptoms she logs in the Cycle tab. Each entry appears when she taps “Save &amp; send to Kimchi” on a day in her Cycle tab. Her private notes are never sent.</p><button id="loadMood" class="secondary" type="button">↻ Refresh</button></div>
         <div id="moodList" class="timeline" aria-live="polite"></div>
       </section>
 
@@ -875,7 +875,7 @@
     });
     if(!rows.length){
       const empty=document.createElement("div");empty.className="empty-state";
-      empty.textContent="Nothing shared yet. It shows up here after she logs a day in her Cycle tab (unless she has turned sharing off).";
+      empty.textContent="Nothing sent yet. It shows up here after she taps “Save & send to Kimchi” on a day in her Cycle tab.";
       list.appendChild(empty);return;
     }
     rows.slice(0,60).forEach(r=>{
@@ -972,7 +972,7 @@
 
     // Hide candle taps (old and new) and, by default, every tap, so the list stays clean.
     const isCandle=e=>e.type==="click"&&/candle/i.test(String(e.label||""));
-    const shown=events.filter(e=>e.type!=="period-mood"&&!isCandle(e)&&(activityView==="all"||e.type!=="click"));
+    const shown=events.filter(e=>e.type!=="period-mood"&&e.type!=="period-share"&&!isCandle(e)&&(activityView==="all"||e.type!=="click"));
 
     activityList.innerHTML="";
     if(!shown.length){
