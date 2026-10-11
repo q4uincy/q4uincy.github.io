@@ -181,6 +181,7 @@ textarea { min-height: 92px; resize: vertical; }
 .toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%,20px); opacity: 0; z-index: 600; padding: 11px 16px; border-radius: 999px; background: #171019; border: 1px solid var(--line); box-shadow: 0 12px 35px #0008; transition: .25s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translate(-50%,0); }
 .hidden { display: none !important; }
+.view-off { display: none !important; }
 
 /* GIF / sticker pickers */
 .media-source-tabs { margin-top: 12px; }
@@ -440,13 +441,13 @@ body{font-size:15px;line-height:1.6;background:radial-gradient(1100px 560px at 1
 .starfield,.orn,.section-kicker{display:none}
 .shade{background:linear-gradient(180deg,rgba(8,5,11,.35),rgba(8,5,11,.74))}
 .app{width:min(980px,calc(100% - 40px));padding-top:calc(84px + env(safe-area-inset-top))}
-.hero{min-height:0;padding:44px 0 56px}
+.hero{min-height:0;padding:24px 0 28px}
 .eyebrow{text-transform:none;letter-spacing:.01em;font-size:.95rem;margin-bottom:14px}
 h1{font-size:clamp(2.8rem,7vw,5rem);font-weight:500;line-height:1.02}
 h1 em{color:inherit;font-style:italic}
-.hero p{font-size:1.02rem;max-width:520px;margin-top:20px;line-height:1.7}
-.section{margin:0 0 76px;scroll-margin-top:84px}
-.section-head{display:block;padding:0;margin-bottom:24px}
+.hero p{font-size:1rem;max-width:520px;margin-top:14px;line-height:1.6}
+.section{margin:0 0 40px;scroll-margin-top:84px}
+.section-head{display:block;padding:0;margin-bottom:16px}
 .section-head:after{display:none}
 .section-head p{max-width:520px;margin-top:8px;font-size:.95rem}
 h2{font-size:clamp(1.8rem,3.6vw,2.4rem);font-weight:500;line-height:1.15}
@@ -468,7 +469,7 @@ textarea:focus,input:focus{border-color:var(--pink);box-shadow:0 0 0 3px color-m
 .plush{background:var(--surface);border-radius:var(--r)}
 .shelf{background:var(--inset);border-radius:14px}
 .resultbox{color:var(--text)}
-.wallpaper-only{min-height:70svh;margin:0 0 76px;padding:0;scroll-margin-top:0}
+.wallpaper-only{min-height:70svh;margin:0 0 24px;padding:0 0 24px;scroll-margin-top:0}
 .wallpaper-only::before{display:none}
 .wallpaper-float{background:rgba(12,8,15,.72);border:1px solid var(--line);border-radius:999px;padding:6px 10px}
 
@@ -493,8 +494,8 @@ body.nav-side .brand{font-size:1.6rem;margin:0 10px 20px}
 body.nav-side .navbtn{text-align:left;border-radius:10px;padding:10px 12px;font-size:.9rem}
 body.nav-side .navbtn.layout-btn{margin:auto 0 4px;text-align:center}
 body.nav-side .navbtn.sign-out{text-align:center}
-body.nav-side .app{padding-top:40px}
-body.nav-side .wallpaper-only{min-height:80svh}
+body.nav-side .app{padding-top:28px;padding-bottom:32px}
+body.nav-side .wallpaper-only{min-height:calc(100svh - 60px)}
 
 @media(max-width:860px){
   body.nav-side{padding-left:0}
@@ -507,9 +508,53 @@ body.nav-side .wallpaper-only{min-height:80svh}
 @media(max-width:760px){
   .app{width:calc(100% - 28px)}
   .card,.grid>.card{padding:18px}
-  .section{margin-bottom:56px}
-  .hero{padding:28px 0 36px}
+  .section{margin-bottom:32px}
+  .hero{padding:16px 0 18px}
+  .wallpaper-only{min-height:calc(100svh - 110px)}
 }
+
+/* Menu tucked away on the right: opens on hover (desktop) or tap on the edge tab (phone) */
+.nav-edge{display:none;position:fixed;right:0;top:0;bottom:0;width:18px;z-index:180;cursor:pointer}
+.nav-edge::after{content:"";position:absolute;right:4px;top:50%;width:4px;height:60px;margin-top:-30px;border-radius:4px;background:color-mix(in srgb,var(--pink) 55%,transparent);transition:height .2s,background .2s}
+.nav-edge:hover::after{height:90px;margin-top:-45px;background:var(--pink)}
+body.nav-auto .nav-edge{display:block}
+body.nav-auto.nav-open .nav-edge{display:none}
+body.nav-side.nav-auto{padding-left:0}
+body.nav-side.nav-auto .topbar{left:auto;right:0;width:min(270px,84vw);z-index:200;background:rgba(12,8,15,.98);border-right:0;border-left:1px solid var(--line);transform:translateX(102%);transition:transform .25s ease}
+body.nav-side.nav-auto.nav-open .topbar{transform:none}
+body.nav-side.nav-auto .menu-btn{display:none}
+body.nav-side.nav-auto .app{padding-top:28px}
+body.nav-side.nav-auto .pd-banner{left:50%}
+@media(max-width:860px){
+  body.nav-side.nav-auto .app{padding-top:24px}
+  body.nav-side.nav-auto.nav-open .nav-scrim{display:block}
+}
+@media(pointer:coarse){
+  .nav-edge{width:30px}
+  .nav-edge::after{right:5px;width:5px;height:72px;margin-top:-36px}
+}
+
+/* Days together and quote cards */
+.together{display:inline-grid;gap:4px;margin-top:20px;padding:14px 18px;border:1px solid var(--line);border-radius:16px;background:var(--surface);max-width:100%}
+.together[hidden],.together-form[hidden]{display:none}
+.together-num{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.7rem;line-height:1;color:#fff;margin-right:10px}
+.together-label{color:var(--pink);font-size:.95rem}
+.together-sub{color:var(--muted);font-size:.84rem}
+.together-actions{margin-top:6px}
+.together-form{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap}
+.together-form input{padding:8px 10px;width:auto}
+.qcard-text{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:1.35rem;line-height:1.4;margin:6px 0 4px}
+.qcard-by{display:block;font-style:normal;font-size:.78rem;letter-spacing:.1em;color:var(--muted);margin-top:6px}
+.qheart{border:1px solid var(--line);background:transparent;color:var(--pink);border-radius:999px;padding:7px 14px;font-size:.84rem;cursor:pointer;margin-top:10px}
+.qheart[aria-pressed="true"]{background:color-mix(in srgb,var(--pink) 18%,transparent);border-color:var(--pink);color:#fff}
+.qlist{display:grid;gap:8px;margin-top:8px;max-height:340px;overflow-y:auto}
+.qitem{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:11px 12px;border-radius:14px;background:var(--inset);border:1px solid var(--line)}
+.qitem p{margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:1.1rem;line-height:1.35}
+.qitem small{display:block;color:var(--muted);margin-top:3px;font-style:normal}
+.qitem button{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:2px 6px}
+.qitem button:hover{color:var(--text)}
+.welcome-quote .quote-heart{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:999px;border:1px solid rgba(227,207,220,.4);background:transparent;color:#e3cfdc;font:inherit;font-size:.8rem;font-style:normal;letter-spacing:.06em;cursor:pointer}
+.welcome-quote .quote-heart[aria-pressed="true"]{background:rgba(229,163,186,.2);border-color:#e5a3ba}
 
 /* Site themes */
 html[data-theme="rose"]{--burg:#8a2b3d;--burg2:#a8384d;--pink:#f0a6b0;--surface:#1c1015;--raised:#26151b;--inset:#140b0f;--bg-glow:#3a1520;--bg-base:#0e0709;--pd-fert:#d9a05b}
@@ -533,7 +578,7 @@ body.auth-locked .pd-alert{display:none}
 </style>
 </head>
 
-<body>
+<body class="nav-side">
 <script>(function(){var t="original";try{t=localStorage.getItem("layaTheme")||"original"}catch(e){}if(t==="live")document.body.classList.add("login-live");if(t==="snow")document.body.classList.add("login-snow");try{if(localStorage.getItem("layaLiveFx")==="rain")document.body.classList.add("live-rain")}catch(e){}try{document.documentElement.dataset.theme=localStorage.getItem("layaSiteTheme")||"midnight"}catch(e){}try{if(localStorage.getItem("layaNavLayout")==="side")document.body.classList.add("nav-side")}catch(e){}})()</script>
 
 <!-- Login screen -->
@@ -645,13 +690,14 @@ body.auth-locked .pd-alert{display:none}
     <button class="navbtn" data-go="candleBooks">Candle &amp; books</button>
     <button class="navbtn hidden" id="periodNav" data-go="period">Cycle</button>
     <button class="navbtn" data-go="talk">Talk</button>
-    <button class="navbtn layout-btn" id="layoutBtn" type="button">Move menu to side</button>
+    <button class="navbtn layout-btn" id="navModeBtn" type="button">Hide menu on right</button>
     <button class="navbtn theme-pick" id="themeBtn" type="button">Theme</button>
     <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
   </div>
 </header>
 <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
 <div class="nav-scrim" id="navScrim"></div>
+<div class="nav-edge" id="navEdge" aria-label="Open menu" role="button" tabindex="0"></div>
 <div class="pd-alert" id="pdAlert" role="status" aria-live="polite" hidden>
   <strong id="pdAlertTitle"></strong>
   <p id="pdAlertMsg"></p>
@@ -668,6 +714,12 @@ body.auth-locked .pd-alert{display:none}
     <div class="eyebrow">a little place made for you</div>
     <h1>Hi <em>Laya.</em><br>stay a while.</h1>
     <p>Pick whatever feels right. Something silly, something cozy, a song, a message for Kimchi, or simply a quiet corner to breathe.</p>
+    <div class="together" id="together" hidden>
+      <div><span class="together-num" id="togetherDays"></span><span class="together-label" id="togetherLabel"></span></div>
+      <div class="together-sub" id="togetherSub"></div>
+      <div class="together-actions"><button class="smallbtn" id="togetherSet" type="button">Set our date</button></div>
+      <div class="together-form" id="togetherForm" hidden><input type="date" id="togetherDate" aria-label="The day we got together"><button class="smallbtn" id="togetherSave" type="button">Save</button></div>
+    </div>
     <div class="orn">☾ ✦ ♡ ✦ ☽</div>
   </section>
 
@@ -757,6 +809,24 @@ body.auth-locked .pd-alert{display:none}
         </div>
           </div>
         </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="quotes">
+    <div class="section-head">
+      <div><h2>Today's quote.</h2></div>
+      <p>It only pops up once a day, so keep the ones you love.</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Today</div>
+        <div id="todayQuote"><p class="fine">Today's quote shows up here once you're signed in.</p></div>
+        <button class="qheart" id="todayHeart" type="button" aria-pressed="false" hidden>♡ Save this one</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Saved quotes</div>
+        <div class="qlist" id="savedQuotes"></div>
       </div>
     </div>
   </section>
@@ -1361,42 +1431,81 @@ function notify(event, extra = {}) {
     .catch(() => {});
 })();
 
-/* Navigation */
-document.querySelectorAll("[data-go]").forEach(button => {
-  button.onclick = () => $(button.dataset.go).scrollIntoView({ behavior: "smooth" });
-});
-
-/* Highlight the current section in the top bar */
+/* Navigation: one page at a time. Home shows the hero plus the "us" cards; every other tab shows only its own section. */
 (() => {
+  const HOME_VIEW = ["home", "us", "quotes"];
   const btns = [...document.querySelectorAll(".navbtn[data-go]")];
-  const map = new Map(btns.map(b => [b.dataset.go, b]));
-  const secs = [...map.keys()].map(id => document.getElementById(id)).filter(Boolean);
-  let ticking = false;
-  function spy() {
-    ticking = false;
-    const line = innerHeight * 0.35;
-    let cur = null, best = -Infinity;
-    secs.forEach(sec => {
-      const r = sec.getBoundingClientRect();
-      if (!r.height) return;
-      if (r.top <= line && r.bottom > line * 0.5 && r.top > best) { best = r.top; cur = sec; }
-    });
-    const hero = document.getElementById("home");
-    if (hero && hero.getBoundingClientRect().bottom > innerHeight * 0.45) cur = hero;
-    if (!cur && secs.length) cur = secs[0];
-    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = secs[secs.length - 1] || cur;
-    const b = cur && map.get(cur.id);
-    if (!b || b.classList.contains("active")) return;
-    btns.forEach(x => x.classList.toggle("active", x === b));
-    b.scrollIntoView({ block: "nearest", inline: "center" });
-  }
-  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, { passive: true });
-  addEventListener("resize", spy);
-  spy();
-
+  const sections = [...document.querySelectorAll("main.app > section")];
   const top = $("backTop");
-  addEventListener("scroll", () => { top.hidden = scrollY < 700; }, { passive: true });
+  let currentView = "home";
+
+  function viewOf(id) { return HOME_VIEW.includes(id) ? "home" : id; }
+
+  function show(id, smooth) {
+    const view = viewOf(id);
+    const visible = view === "home" ? HOME_VIEW : [view];
+    currentView = view;
+    sections.forEach(sec => sec.classList.toggle("view-off", !visible.includes(sec.id)));
+    btns.forEach(x => x.classList.toggle("active", viewOf(x.dataset.go) === view && (view !== "home" || x.dataset.go === id || (id === "home" && x.dataset.go === "home"))));
+    const target = $(id);
+    if (id === "us" && target) target.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
+    else scrollTo({ top: 0, behavior: "auto" });
+    document.body.classList.remove("nav-open");
+  }
+
+  window.goTo = id => { if ($(id)) show(id, true); };
+
+  // Swipe left/right on a phone to move to the next/previous tab.
+  function swipeTab(dir) {
+    const views = [];
+    btns.filter(x => !x.classList.contains("hidden")).forEach(x => { const v = viewOf(x.dataset.go); if (!views.includes(v)) views.push(v); });
+    const i = views.indexOf(currentView), n = i + dir;
+    if (i < 0 || n < 0 || n >= views.length) return;
+    show(views[n], true);
+  }
+  const SKIP = "input,textarea,select,[contenteditable],.reader,.shelf-row,#catFilters,.controls,video,canvas,iframe,.picker,.chat-log,.qlist,.nav-edge,.topbar";
+  function scrollsSideways(el) {
+    for (; el && el !== document.body; el = el.parentElement) {
+      const o = getComputedStyle(el).overflowX;
+      if ((o === "auto" || o === "scroll") && el.scrollWidth > el.clientWidth + 2) return true;
+    }
+    return false;
+  }
+  let sx = 0, sy = 0, st = 0, swipeOk = false;
+  document.addEventListener("touchstart", e => {
+    const t = e.target;
+    swipeOk = e.touches.length === 1 && innerWidth <= 860 &&
+      !document.body.classList.contains("nav-open") && !document.body.classList.contains("auth-locked") &&
+      !(t.closest && t.closest(SKIP)) && !scrollsSideways(t);
+    if (swipeOk) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }
+  }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (!swipeOk) return;
+    swipeOk = false;
+    const c = e.changedTouches[0];
+    const dx = c.clientX - sx, dy = c.clientY - sy;
+    if (Date.now() - st < 700 && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) swipeTab(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
+  btns.forEach(button => { button.onclick = () => show(button.dataset.go, true); });
+
+  // Home highlights "Home" at the top and "Us" once you scroll down to the cards.
+  function spyHome() {
+    if (currentView !== "home") return;
+    const us = $("us");
+    if (!us) return;
+    const onUs = us.getBoundingClientRect().top <= innerHeight * 0.35;
+    btns.forEach(x => x.classList.toggle("active", x.dataset.go === (onUs ? "us" : "home")));
+  }
+  let ticking = false;
+  addEventListener("scroll", () => {
+    top.hidden = scrollY < 700;
+    if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; spyHome(); }); }
+  }, { passive: true });
   top.addEventListener("click", () => scrollTo({ top: 0, behavior: "smooth" }));
+
+  show("home", false);
+  spyHome();
 })();
 
 /* Manual sign out */
@@ -2133,7 +2242,7 @@ function nextGothicFact() {
     const row = document.createElement("div"); row.className = "gk-actions";
     const a = document.createElement("a"); a.href = chapter.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.className = "smallbtn"; a.style.textDecoration = "none"; a.textContent = "Read more ↗";
     const b = document.createElement("button"); b.type = "button"; b.className = "smallbtn"; b.textContent = "Light a candle & read ↓";
-    b.addEventListener("click", () => $("candleBooks").scrollIntoView({ behavior: "smooth" }));
+    b.addEventListener("click", () => window.goTo("candleBooks"));
     const c = document.createElement("button"); c.type = "button"; c.className = "smallbtn"; c.textContent = "Another fact ↻";
     c.addEventListener("click", () => showKnowledge(final));
     row.append(a, b, c);
@@ -2567,21 +2676,153 @@ $("cform").onsubmit = async event => {
 };
 
 
-/* Quote of the visit: a fresh line every time she opens the site */
+/* Days together */
 (() => {
+  const SINCE = "2026-07-02";   // the day we met, "YYYY-MM-DD"
+  const KEY = "layaTogetherSince";
+  const box = $("together");
+  if (!box) return;
+  const numEl = $("togetherDays"), labelEl = $("togetherLabel"), sub = $("togetherSub");
+  const setBtn = $("togetherSet"), form = $("togetherForm"), input = $("togetherDate"), save = $("togetherSave");
+  const valid = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "") && !isNaN(Date.parse(v));
+  const start = () => { if (valid(SINCE)) return SINCE; try { const v = localStorage.getItem(KEY); if (valid(v)) return v; } catch (_) {} return ""; };
+  function render() {
+    box.hidden = false;
+    setBtn.hidden = valid(SINCE);
+    const s = start();
+    if (!s) { numEl.textContent = "\u2661"; labelEl.textContent = "Count our days together"; sub.textContent = ""; setBtn.textContent = "Set our date"; return; }
+    setBtn.textContent = "Change date";
+    const [y, m, d] = s.split("-").map(Number);
+    const now = new Date();
+    const days = Math.round((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(y, m - 1, d)) / 86400000);
+    if (days < 0) { numEl.textContent = String(-days); labelEl.textContent = days === -1 ? "day to go" : "days to go"; sub.textContent = ""; return; }
+    numEl.textContent = days.toLocaleString();
+    labelEl.textContent = days === 1 ? "day together" : "days together";
+    let yrs = now.getFullYear() - y, mos = now.getMonth() - (m - 1);
+    if (now.getDate() < d) mos--;
+    if (mos < 0) { yrs--; mos += 12; }
+    const bits = [];
+    if (yrs > 0) bits.push(yrs + (yrs === 1 ? " year" : " years"));
+    if (mos > 0) bits.push(mos + (mos === 1 ? " month" : " months"));
+    const next = (Math.floor(days / 100) + 1) * 100;
+    const milestone = days > 0 && days % 100 === 0 ? "day " + days.toLocaleString() + " is today \u2661" : "day " + next.toLocaleString() + " is in " + (next - days) + (next - days === 1 ? " day" : " days");
+    sub.textContent = (bits.length ? bits.join(", ") + " \u00B7 " : "") + milestone;
+  }
+  setBtn.addEventListener("click", () => { form.hidden = !form.hidden; if (!form.hidden) { input.value = start(); input.focus(); } });
+  save.addEventListener("click", () => {
+    if (!valid(input.value)) return;
+    try { localStorage.setItem(KEY, input.value); } catch (_) {}
+    form.hidden = true;
+    render();
+  });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+  render();
+})();
+
+
+/* Quote cards: today's quote stays on Home, with hearts to keep favourites */
+(() => {
+  const TODAY = "layaQuoteToday_v1", FAV = "layaFavQuotes_v1";
+  const read = (k, f) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? f : v; } catch (_) { return f; } };
+  const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
+  const localDay = () => new Date().toLocaleDateString("en-CA");
+  const favs = () => { const a = read(FAV, []); return Array.isArray(a) ? a.filter(x => x && typeof x.text === "string") : []; };
+  const isFav = q => !!q && favs().some(x => x.text === q.text);
+  const todayQuote = () => { const t = read(TODAY, null); return t && t.day === localDay() && t.text ? t : null; };
+
+  function render() {
+    const box = $("todayQuote"), heart = $("todayHeart"), list = $("savedQuotes");
+    if (!box || !list) return;
+    const t = todayQuote();
+    if (t) {
+      box.innerHTML = "";
+      const p = document.createElement("p"); p.className = "qcard-text"; p.textContent = "\u201C" + t.text + "\u201D";
+      box.appendChild(p);
+      if (t.author) { const by = document.createElement("small"); by.className = "qcard-by"; by.textContent = "\u2014 " + t.author; box.appendChild(by); }
+      heart.hidden = false;
+      const on = isFav(t);
+      heart.setAttribute("aria-pressed", String(on));
+      heart.textContent = on ? "\u2665 Saved" : "\u2661 Save this one";
+    }
+    list.innerHTML = "";
+    const items = favs();
+    if (!items.length) { const e = document.createElement("p"); e.className = "fine"; e.textContent = "Nothing saved yet. Tap the heart on a quote you love."; list.appendChild(e); return; }
+    items.forEach(q => {
+      const row = document.createElement("div"); row.className = "qitem";
+      const left = document.createElement("div");
+      const p = document.createElement("p"); p.textContent = "\u201C" + q.text + "\u201D";
+      left.appendChild(p);
+      if (q.author) { const by = document.createElement("small"); by.textContent = "\u2014 " + q.author; left.appendChild(by); }
+      const x = document.createElement("button"); x.type = "button"; x.textContent = "\u00D7"; x.setAttribute("aria-label", "Remove saved quote");
+      x.addEventListener("click", () => { write(FAV, favs().filter(f => f.text !== q.text)); render(); });
+      row.append(left, x);
+      list.appendChild(row);
+    });
+  }
+
+  function toggleFav(q) {
+    if (!q || !q.text) return false;
+    let a = favs();
+    if (a.some(x => x.text === q.text)) a = a.filter(x => x.text !== q.text);
+    else a.unshift({ text: q.text, author: q.author || "", saved: Date.now() });
+    write(FAV, a);
+    render();
+    return isFav(q);
+  }
+  function setToday(day, q) { write(TODAY, { day, text: q.text, author: q.author || "" }); render(); }
+
+  window.layaQuotes = { setToday, toggleFav, isFav };
+
+  $("todayHeart").addEventListener("click", () => { const t = todayQuote(); if (t) toggleFav(t); });
+
+  let done = false;
+  async function ensureToday() {
+    if (done || !getToken()) return;
+    if (todayQuote()) { done = true; render(); return; }
+    done = true;
+    try {
+      const day = localDay();
+      const r = await api("/quote?day=" + day, { cache: "no-store" });
+      if (!r.ok) throw new Error("quote failed");
+      const q = await r.json();
+      if (q && q.text) setToday(day, q);
+    } catch (_) { done = false; }
+  }
+  render();
+  ensureToday();
+  const poll = setInterval(() => { ensureToday(); if (done) clearInterval(poll); }, 500);
+  setTimeout(() => clearInterval(poll), 30000);
+})();
+
+
+/* Quote of the day: shown once per day on this device. The server picks it and never repeats one. */
+(() => {
+  const DAY_KEY = "layaQuoteDay_v1";
   let done = false;
   async function loadQuote() {
     if (done || !getToken()) return;
     done = true;
     try {
       const day = new Date().toLocaleDateString("en-CA");
+      let last = ""; try { last = localStorage.getItem(DAY_KEY) || ""; } catch (_) {}
+      if (last === day) return;                        // already shown today
       const response = await api("/quote?day=" + day, { cache: "no-store" });
       if (!response.ok) throw new Error("quote failed");
       const q = await response.json();
       if (!q || !q.text) return;
+      try { localStorage.setItem(DAY_KEY, day); } catch (_) {}
+      if (window.layaQuotes) window.layaQuotes.setToday(day, q);
       const wq = $("welcomeQuote");
       wq.textContent = "\u201C" + q.text + "\u201D";
       if (q.author) { const by = document.createElement("small"); by.textContent = "\u2014 " + q.author; wq.appendChild(by); }
+      if (window.layaQuotes) {
+        const heart = document.createElement("button");
+        heart.type = "button"; heart.className = "quote-heart";
+        const paint = () => { const on = window.layaQuotes.isFav(q); heart.setAttribute("aria-pressed", String(on)); heart.textContent = on ? "\u2665 Saved" : "\u2661 Save"; };
+        heart.addEventListener("click", () => { window.layaQuotes.toggleFav(q); paint(); });
+        paint();
+        wq.appendChild(heart);
+      }
       wq.hidden = false;
       requestAnimationFrame(() => wq.classList.add("show"));
     } catch (error) { done = false; }
@@ -3105,16 +3346,29 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   })();
 })();
 
-/* Menu position: top bar or side menu */
+/* Side menu (always on) */
 (() => {
-  const KEY="layaNavLayout", b=document.body, btn=$("layoutBtn");
-  function apply(side){
-    b.classList.toggle("nav-side",side); b.classList.remove("nav-open");
-    btn.textContent=side?"Move menu to top":"Move menu to side";
-    try{localStorage.setItem(KEY,side?"side":"top")}catch(e){}
+  const b=document.body;
+  b.classList.add("nav-side");
+  const KEY = "layaNavAuto", modeBtn = $("navModeBtn"), edge = $("navEdge"), bar = document.querySelector(".topbar");
+  let auto = false; try { auto = localStorage.getItem(KEY) === "1"; } catch (_) {}
+  function applyMode(on) {
+    auto = on;
+    b.classList.toggle("nav-auto", on);
+    b.classList.remove("nav-open");
+    modeBtn.textContent = on ? "Keep menu on left" : "Hide menu on right";
+    try { localStorage.setItem(KEY, on ? "1" : "0"); } catch (_) {}
   }
-  apply(b.classList.contains("nav-side"));
-  btn.onclick=()=>apply(!b.classList.contains("nav-side"));
+  applyMode(auto);
+  modeBtn.onclick = () => applyMode(!auto);
+  const openMenu = () => { if (auto) b.classList.add("nav-open"); };
+  edge.addEventListener("mouseenter", openMenu);
+  edge.addEventListener("click", openMenu);
+  edge.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") openMenu(); });
+  let closeTimer = 0;
+  bar.addEventListener("mouseenter", () => clearTimeout(closeTimer));
+  bar.addEventListener("mouseleave", () => { if (auto) { clearTimeout(closeTimer); closeTimer = setTimeout(() => b.classList.remove("nav-open"), 250); } });
+  document.addEventListener("click", e => { if (auto && b.classList.contains("nav-open") && !bar.contains(e.target) && e.target !== edge) b.classList.remove("nav-open"); });
   $("menuBtn").onclick=()=>b.classList.toggle("nav-open");
   $("navScrim").onclick=()=>b.classList.remove("nav-open");
   document.querySelectorAll(".navbtn[data-go]").forEach(x=>x.addEventListener("click",()=>b.classList.remove("nav-open")));
@@ -3358,7 +3612,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   $("pdAlertX").onclick = () => { store(DKEY, iso(C.t) + ":" + $("pdAlert").dataset.kind); $("pdAlert").hidden = true; };
   $("pdAlertOff").onclick = () => { S.prefs.alerts = false; save(); renderAll(); toast("Period alerts are off. Turn them back on in the tracker settings."); };
   $("pdAlertsBtn").onclick = () => { S.prefs.alerts = !S.prefs.alerts; save(); renderAll(); toast(S.prefs.alerts ? "Period alerts are on" : "Period alerts are off"); };
-  $("pdAlertGo").onclick = () => { $("pdAlert").hidden = true; $("period").scrollIntoView({ behavior: "smooth" }); };
+  $("pdAlertGo").onclick = () => { $("pdAlert").hidden = true; window.goTo("period"); };
   $("pdNotifBtn").onclick = async () => {
     try {
       if (S.prefs.notify) S.prefs.notify = false;
