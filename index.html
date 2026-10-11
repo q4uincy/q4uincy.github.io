@@ -2347,6 +2347,32 @@ $("cform").onsubmit = async event => {
   setTimeout(() => clearInterval(poll), 30000);
 })();
 
+
+/* Bring back her earlier conversation */
+(() => {
+  let done = false;
+  async function loadHistory() {
+    if (done || !getToken()) return;
+    done = true;
+    try {
+      const response = await api("/history", { cache: "no-store" });
+      if (!response.ok) throw new Error("history failed");
+      const data = await response.json();
+      const past = Array.isArray(data.history) ? data.history : [];
+      if (!past.length || chatHistory.length) return;
+      chatLog.innerHTML = "";
+      past.forEach(item => {
+        addMsg("me", item.user);
+        addMsg("ai", item.reply);
+        chatHistory.push({ role: "user", content: item.user }, { role: "assistant", content: item.reply });
+      });
+    } catch (error) { done = false; }
+  }
+  loadHistory();
+  const poll = setInterval(() => { loadHistory(); if (done) clearInterval(poll); }, 500);
+  setTimeout(() => clearInterval(poll), 30000);
+})();
+
 /* Photo uploads */
 $("pickPics").onclick = () => $("pics").click();
 const shrink = file => new Promise((resolve,reject) => {
