@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -101,7 +100,37 @@
   .note small,.pic small{color:var(--note-small);font-size:.72rem}.note p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--note-text)}
   .note button{justify-self:start;width:auto;padding:7px 10px;border:1px solid rgba(240,140,164,.25);background:rgba(111,34,60,.3);color:#f4c7d7;font-size:.78rem}
   .empty-state{padding:18px 12px;border:1px dashed var(--line-strong);border-radius:14px;color:var(--muted);font-size:.85rem;text-align:center;background:var(--note-bg)}
-  #photosSection{grid-column:1/-1}
+  #photosSection,#activitySection,#chatsSection{grid-column:1/-1}
+  .chart-wrap{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--note-bg)}
+  .chart-wrap svg{width:100%;height:auto;display:block}
+  .chart-sum{font-size:.82rem;color:var(--text);margin:0 0 8px;line-height:1.5}
+  .chart-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.72rem;color:var(--muted);margin-top:6px}
+  .chart-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .day-list{display:grid;gap:6px;margin:12px 0}
+  .day-row{display:grid;grid-template-columns:96px 1fr 34px;align-items:center;gap:10px;font-size:.8rem;color:var(--muted)}
+  .day-bar{height:8px;border-radius:99px;background:var(--line)}
+  .day-bar i{display:block;height:100%;border-radius:99px;background:var(--secondary-text,#9cf)}
+  .day-row b{color:var(--text);text-align:right}
+  .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+  .filter-row button.on{outline:2px solid var(--line-strong)}
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .stat-chip{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--note-bg);display:grid;gap:3px}
+  .stat-chip b{font-size:1.3rem;font-weight:700;color:var(--text)}
+  .stat-chip span{font-size:.72rem;color:var(--muted);letter-spacing:.03em}
+  .timeline{display:grid;gap:8px;max-height:420px;overflow-y:auto;min-width:0}
+  .timeline:empty{display:none}
+  .trow{display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:13px;background:var(--note-bg);font-size:.86rem}
+  .trow .ticon{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);font-size:.82rem;flex:0 0 auto}
+  .trow .tbody{min-width:0;overflow-wrap:anywhere;color:var(--note-text)}
+  .trow .tbody b{font-weight:650}
+  .trow .tmeta{font-size:.72rem;color:var(--note-small);margin-top:2px}
+  .trow .ttime{font-size:.72rem;color:var(--muted);white-space:nowrap;text-align:right}
+  .chatpair{display:grid;gap:7px;padding:12px 13px;border:1px solid var(--line);border-radius:14px;background:var(--note-bg)}
+  .chatpair .cwho{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);font-weight:700}
+  .chatpair .cuser,.chatpair .creply{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.86rem;line-height:1.5}
+  .chatpair .cuser{color:var(--note-text)}
+  .chatpair .creply{color:var(--muted);padding-left:12px;border-left:2px solid var(--line-strong)}
+  .chatpair .ctime{font-size:.7rem;color:var(--muted)}
   .photo-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.photo-toolbar .section-description{max-width:56ch}.photo-toolbar button{width:auto;min-width:130px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:13px}
   .pic{padding:10px;display:grid;gap:9px;min-width:0;background:var(--note-bg);border:1px solid var(--line);border-radius:16px}
@@ -180,6 +209,8 @@
       <a href="#notesSection"><span>01</span> Regular notes</a>
       <a href="#cuteSection"><span>02</span> Cute notes</a>
       <a href="#photosSection"><span>03</span> Photos</a>
+      <a href="#activitySection"><span>04</span> Activity</a>
+      <a href="#chatsSection"><span>05</span> AI chats</a>
     </nav>
 
     <div class="dashboard-grid">
@@ -211,6 +242,36 @@
         <div class="photo-toolbar"><p class="section-description">View, save, or remove photos sent from the main website.</p><button id="loadPics" class="secondary" type="button">↻ Load photos</button></div>
         <p class="status" id="picStatus" aria-live="polite"></p>
         <div class="grid" id="pics"></div>
+      </section>
+
+      <section class="section" id="activitySection">
+        <div class="section-head"><span class="snow-icon" aria-hidden="true">◴</span><div class="section-title-group"><p class="section-kicker">WHO'S VISITING</p><h2>Activity</h2></div></div>
+        <div class="photo-toolbar"><p class="section-description">Visits, logins, and what she's clicked on the site.</p><button id="loadActivity" class="secondary" type="button">↻ Refresh</button></div>
+        <div class="stat-row" id="activityStats"></div>
+        <div class="chart-wrap" id="dayChart" aria-label="Times opened per day"></div>
+        <div class="filter-row" id="activityFilter">
+          <button type="button" class="secondary on" data-f="main">Opens &amp; sign-ins</button>
+          <button type="button" class="secondary" data-f="all">Everything she tapped</button>
+        </div>
+        <p class="status" id="activityStatus" aria-live="polite"></p>
+        <div id="activityList" class="timeline" aria-live="polite"></div>
+        <div class="cute-list-actions">
+          <button id="activityClearWeek" class="secondary" type="button">Clear last 7 days</button>
+          <button id="activityClear" class="secondary" type="button">Clear everything</button>
+        </div>
+      </section>
+
+      <section class="section" id="chatsSection">
+        <div class="section-head"><span class="snow-icon" aria-hidden="true">💬</span><div class="section-title-group"><p class="section-kicker">THE QUIET CORNER</p><h2>AI chats</h2></div></div>
+        <div class="photo-toolbar"><p class="section-description">What she's said to the AI, and how it replied.</p><button id="loadChats" class="secondary" type="button">↻ Refresh</button></div>
+        <p class="status" id="chatsStatus" aria-live="polite"></p>
+        <div id="chatsList" class="timeline" aria-live="polite"></div>
+        <div class="photo-toolbar" style="margin-top:18px"><p class="section-description">What the AI has learned to remember about each of you. Delete anything you don't want kept.</p><button id="loadMemory" class="secondary" type="button">↻ Refresh</button></div>
+        <p class="status" id="memoryStatus" aria-live="polite"></p>
+        <div id="memoryList" class="timeline" aria-live="polite"></div>
+        <div class="cute-list-actions">
+          <button id="chatsClear" class="secondary" type="button">Clear chat history</button>
+        </div>
       </section>
     </div>
   </div>
@@ -460,6 +521,9 @@
       load();
       loadCutes();
       loadPics();
+      loadActivity();
+      loadChats();
+      loadMemory();
     }catch(e){
       loginStatus.textContent="Couldn't connect to the admin service.";
     }
@@ -734,6 +798,289 @@
       history.replaceState({},document.title,location.pathname);
     }
   }
+
+  // ---- Activity: visits, logins, and clicks tracked from the main site ----
+  const activityStats=document.getElementById("activityStats"),
+        activityStatus=document.getElementById("activityStatus"),
+        activityList=document.getElementById("activityList");
+
+  // Older log entries may hold raw ids like "Button: wallPrev"; turn them into plain English.
+  const FRIENDLY={
+    wallPrev:"Wallpaper: previous",wallNext:"Wallpaper: next",liveToggle:"Wallpaper: live",stillModeBtn:"Wallpaper: still",
+    pagePrev:"Reader: previous page",pageNext:"Reader: next page",fontUp:"Reader: bigger text",fontDown:"Reader: smaller text",
+    readerClose:"Reader: close",readerStyle:"Reader: style (Aa) panel",markRead:"Reader: mark as read",
+    shelfPrev:"Bookshelf: previous shelf",shelfNext:"Bookshelf: next shelf",randomBook:"Bookshelf: pick a book for me",continueBook:"Bookshelf: continue reading",
+    lightAll:"Candles: light them all",blowAll:"Candles: blow them out",anotherSong:"Music: another song",colorToggle:"Music: adaptive colors",
+    anotherCute:"Cozy: another cute note",catBtn:"Cozy: pet the cat",realCat:"Cozy: show a real cat",pickPics:"Cozy: choose photos to send",
+    factBtn:"Random fact button",nextGothicPlace:"Gothic places: discover a place",resetGothicPlaces:"Gothic places: start over",
+    searchGothicPlaces:"Gothic places: search",gothicHistoryAnotherFact:"Gothic places: another fact",
+    giphyTrendingBtn:"GIPHY: show trending",giphySearchBtn:"GIPHY: search",giphyLoadMore:"GIPHY: load more",
+    klipyTrendingBtn:"KLIPY: show trending",klipySearchBtn:"KLIPY: search",klipyLoadMore:"KLIPY: load more",
+    sendGiphyBtn:"Send GIF to Kimchi",sendKlipyBtn:"Send sticker to Kimchi",hugBtn:"Send a hug",sendMsg:"Send message to Kimchi",
+    yesBtn:"Missing him: yes",alotBtn:"Missing him: a lot",backTop:"Back to top"
+  };
+  function friendlyLabel(label){
+    label=String(label||"").trim();
+    if(!label) return "something";
+    const raw=label.replace(/^Button:\s*/,"").replace(/^[#.]/,"");
+    if(FRIENDLY[raw]) return FRIENDLY[raw];
+    if(label==="Unlabeled button"||/^Button: \./.test(label)) return "a button";
+    if(/^Button: /.test(label)) return raw;
+    return label;
+  }
+  const EVENT_ICONS={login:"🔑",visit:"◴",click:"•",book:"📖",chat:"💬"};
+  function describeEvent(e){
+    const who=e.account==="laya"?"Laya":e.account==="quincy"?"Quincy":"Someone";
+    if(e.type==="login") return who+" signed in"+(e.email?" as "+e.email:"");
+    if(e.type==="visit") return who+" opened the site";
+    if(e.type==="click") return who+" tapped "+friendlyLabel(e.label);
+    if(e.extra) return who+": "+(e.label||e.type)+" — "+e.extra;
+    return who+": "+(e.label||e.type);
+  }
+
+  let activityView="main",lastActivity={events:[],stats:{}};
+  document.getElementById("activityFilter").addEventListener("click",ev=>{
+    const btn=ev.target.closest("button[data-f]");if(!btn)return;
+    activityView=btn.dataset.f;
+    document.querySelectorAll("#activityFilter button").forEach(b=>b.classList.toggle("on",b===btn));
+    renderActivity(lastActivity);
+  });
+  function renderActivity(data){
+    lastActivity=data;
+    const events=Array.isArray(data.events)?data.events:[];
+    const stats=data.stats||{};
+    activityStats.innerHTML="";
+    const dayKey=ts=>new Date(ts).toLocaleDateString("en-CA");
+    const opens={};
+    events.filter(e=>e.type==="visit").forEach(e=>{const k=dayKey(e.ts);opens[k]=(opens[k]||0)+1;});
+    const today=dayKey(Date.now()),yest=dayKey(Date.now()-864e5);
+    const chips=[
+      ["Opened today",opens[today]||0],
+      ["Opened yesterday",opens[yest]||0],
+      ["Total sign-ins",stats.totalLogins||0],
+      ["Last sign-in",stats.lastLogin?fmt(new Date(stats.lastLogin.ts).toISOString()):"—"]
+    ];
+    chips.forEach(([label,value])=>{
+      const c=document.createElement("div");c.className="stat-chip";
+      const b=document.createElement("b");b.textContent=String(value);
+      const sp=document.createElement("span");sp.textContent=label;
+      c.append(b,sp);activityStats.appendChild(c);
+    });
+
+    const box=document.getElementById("dayChart");
+    const N=14,days=[];
+    for(let i=N-1;i>=0;i--){const k=dayKey(Date.now()-i*864e5);days.push([k,opens[k]||0]);}
+    const counts=days.map(d=>d[1]),total=counts.reduce((x,y)=>x+y,0);
+    const avg=total/N,maxOpen=Math.max(...counts);
+    const peakIdx=maxOpen>0?counts.lastIndexOf(maxOpen):-1;
+    const kind=n=>n===0?"quiet":(n===maxOpen&&maxOpen>0)?"peak":n>=avg*1.5&&n>=2?"busy":"normal";
+    const COL={peak:"#e9a23b",busy:"#7fb2e5",normal:"#6d86a8",quiet:"rgba(128,128,128,.35)"};
+    const dname=k=>new Date(k+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+    const W=640,H=190,padL=26,padB=34,padT=16,bw=(W-padL-6)/N;
+    const top=Math.max(maxOpen,1),yOf=v=>padT+(H-padT-padB)*(1-v/top);
+    let svg='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Opens in the last 14 days">';
+    [0,Math.ceil(top/2),top].forEach(v=>{svg+='<text x="0" y="'+(yOf(v)+4)+'" font-size="10" fill="currentColor" opacity=".55">'+v+'</text><line x1="'+padL+'" x2="'+W+'" y1="'+yOf(v)+'" y2="'+yOf(v)+'" stroke="currentColor" opacity=".12"/>';});
+    days.forEach(([k,n],i)=>{
+      const x=padL+i*bw+bw*.18,w=bw*.64,y=yOf(n),h=Math.max(H-padB-y,n?2:1);
+      svg+='<rect x="'+x+'" y="'+(H-padB-h)+'" width="'+w+'" height="'+h+'" rx="4" fill="'+COL[kind(n)]+'"><title>'+dname(k)+': '+n+' open'+(n===1?"":"s")+'</title></rect>';
+      if(n)svg+='<text x="'+(x+w/2)+'" y="'+(H-padB-h-4)+'" font-size="10" text-anchor="middle" fill="currentColor">'+n+'</text>';
+      if(i%2===(N-1)%2)svg+='<text x="'+(x+w/2)+'" y="'+(H-padB+14)+'" font-size="9" text-anchor="middle" fill="currentColor" opacity=".6">'+new Date(k+"T12:00:00").toLocaleDateString(undefined,{day:"numeric",month:"short"})+'</text>';
+    });
+    if(total){svg+='<line x1="'+padL+'" x2="'+W+'" y1="'+yOf(avg)+'" y2="'+yOf(avg)+'" stroke="currentColor" stroke-dasharray="5 4" opacity=".55"/><text x="'+W+'" y="'+(yOf(avg)-4)+'" font-size="9" text-anchor="end" fill="currentColor" opacity=".7">average '+avg.toFixed(1)+'</text>';}
+    svg+='</svg>';
+    const tk=kind(counts[N-1]);
+    const todayNote=!total?"":tk==="peak"?"Today is her busiest day.":tk==="busy"?"Today is a busy day.":tk==="quiet"?"No opens yet today.":"Today is a normal day.";
+    box.innerHTML="";
+    const sum=document.createElement("p");sum.className="chart-sum";
+    sum.textContent=total?("Peak day: "+dname(days[peakIdx][0])+" ("+maxOpen+" opens). Average: "+avg.toFixed(1)+" a day over the last 14 days. "+todayNote):"No opens recorded in the last 14 days.";
+    const holder=document.createElement("div");holder.innerHTML=svg;
+    const leg=document.createElement("div");leg.className="chart-legend";
+    [["peak","Peak day"],["busy","Busy"],["normal","Normal"],["quiet","Quiet"]].forEach(([c,t])=>{const s=document.createElement("span");const i=document.createElement("i");i.style.background=COL[c];s.append(i,t);leg.appendChild(s);});
+    box.append(sum,holder,leg);
+
+    // Hide candle taps (old and new) and, by default, every tap, so the list stays clean.
+    const isCandle=e=>e.type==="click"&&/candle/i.test(String(e.label||""));
+    const shown=events.filter(e=>!isCandle(e)&&(activityView==="all"||e.type!=="click"));
+
+    activityList.innerHTML="";
+    if(!shown.length){
+      const empty=document.createElement("div");
+      empty.className="empty-state";
+      empty.textContent="No activity recorded yet. It will appear here once she opens the site.";
+      activityList.appendChild(empty);
+      return;
+    }
+    shown.slice(0,200).forEach(e=>{
+      const row=document.createElement("div");row.className="trow";
+      const icon=document.createElement("div");icon.className="ticon";icon.textContent=EVENT_ICONS[e.type]||"•";
+      const body=document.createElement("div");body.className="tbody";
+      const main=document.createElement("div");main.innerHTML="";
+      const b=document.createElement("b");b.textContent=describeEvent(e);
+      main.appendChild(b);
+      const meta=document.createElement("div");meta.className="tmeta";
+      meta.textContent=[e.device,e.account&&e.account!=="unknown"?e.account:null].filter(Boolean).join(" · ");
+      body.append(main,meta);
+      const time=document.createElement("div");time.className="ttime";time.textContent=fmt(new Date(e.ts).toISOString());
+      row.append(icon,body,time);
+      activityList.appendChild(row);
+    });
+  }
+
+  async function loadActivity(){
+    if(!authenticated)return;
+    activityStatus.textContent="Loading...";
+    try{
+      const r=await fetch(api("/admin/activity"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value})
+      });
+      if(r.status===401){activityStatus.textContent="Wrong password.";return;}
+      if(!r.ok)throw 0;
+      renderActivity(await r.json());
+      activityStatus.textContent="";
+    }catch(e){
+      activityStatus.textContent="Couldn't load activity. Try again.";
+    }
+  }
+  document.getElementById("loadActivity").onclick=loadActivity;
+  document.getElementById("activityClearWeek").onclick=async()=>{
+    if(!confirm("Delete the last 7 days of activity? Older history is kept."))return;
+    try{
+      const r=await fetch(api("/admin/activity-clear-recent"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value,days:7})
+      });
+      if(!r.ok)throw 0;
+      const d=await r.json();
+      activityStatus.textContent="Cleared the last 7 days ("+(d.removed||0)+" entries).";
+      loadActivity();
+    }catch(e){
+      activityStatus.textContent="Couldn't clear. Make sure the new worker is deployed.";
+    }
+  };
+  document.getElementById("activityClear").onclick=async()=>{
+    if(!confirm("Clear the whole activity log? This can't be undone."))return;
+    try{
+      const r=await fetch(api("/admin/activity-clear"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value})
+      });
+      if(!r.ok)throw 0;
+      activityStatus.textContent="Activity log cleared.";
+      loadActivity();
+    }catch(e){
+      activityStatus.textContent="Couldn't clear the log. Try again.";
+    }
+  };
+
+  // ---- AI chats: what she's told the AI, and its replies ----
+  const chatsStatus=document.getElementById("chatsStatus"),
+        chatsList=document.getElementById("chatsList");
+
+  function renderChats(chats){
+    chatsList.innerHTML="";
+    if(!chats.length){
+      const empty=document.createElement("div");
+      empty.className="empty-state";
+      empty.textContent="No AI conversations yet.";
+      chatsList.appendChild(empty);
+      return;
+    }
+    chats.slice(0,150).forEach(c=>{
+      const card=document.createElement("div");card.className="chatpair";
+      const who=document.createElement("div");who.className="cwho";
+      who.textContent=(c.account==="laya"?"Laya":c.account==="quincy"?"Quincy":"Someone")+" · "+fmt(new Date(c.ts).toISOString());
+      const u=document.createElement("div");u.className="cuser";u.textContent=c.user||"";
+      const r=document.createElement("div");r.className="creply";r.textContent=c.reply||"";
+      card.append(who,u,r);
+      chatsList.appendChild(card);
+    });
+  }
+
+  async function loadChats(){
+    if(!authenticated)return;
+    chatsStatus.textContent="Loading...";
+    try{
+      const r=await fetch(api("/admin/chats"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value})
+      });
+      if(r.status===401){chatsStatus.textContent="Wrong password.";return;}
+      if(!r.ok)throw 0;
+      renderChats((await r.json()).chats||[]);
+      chatsStatus.textContent="";
+    }catch(e){
+      chatsStatus.textContent="Couldn't load chats. Try again.";
+    }
+  }
+  document.getElementById("loadChats").onclick=loadChats;
+  // ---- AI memory: facts the assistant keeps about each account ----
+  const memoryList=document.getElementById("memoryList"),memoryStatus=document.getElementById("memoryStatus");
+  function memCreds(extra){return JSON.stringify(Object.assign({username:user.value.trim(),password:pw.value},extra||{}));}
+  function renderMemory(data){
+    memoryList.innerHTML="";
+    let any=false;
+    [["laya","Laya"],["quincy","Quincy"]].forEach(([id,name])=>{
+      const facts=Array.isArray(data[id])?data[id]:[];
+      if(!facts.length)return;
+      any=true;
+      const head=document.createElement("div");head.className="tmeta";head.style.fontWeight="700";head.textContent=name+" · "+facts.length+" remembered";
+      memoryList.appendChild(head);
+      facts.forEach((fact,i)=>{
+        const row=document.createElement("div");row.className="trow";
+        const icon=document.createElement("div");icon.className="ticon";icon.textContent="🧠";
+        const body=document.createElement("div");body.className="tbody";
+        const b=document.createElement("b");b.textContent=fact;body.appendChild(b);
+        const del=document.createElement("button");del.type="button";del.className="secondary";del.textContent="Forget";
+        del.onclick=async()=>{
+          try{
+            const r=await fetch(api("/admin/memory-delete"),{method:"POST",headers:{"Content-Type":"application/json"},body:memCreds({account:id,index:i})});
+            if(!r.ok)throw 0;
+            loadMemory();
+          }catch(e){memoryStatus.textContent="Couldn't delete that. Try again.";}
+        };
+        row.append(icon,body,del);
+        memoryList.appendChild(row);
+      });
+    });
+    if(!any){
+      const empty=document.createElement("div");empty.className="empty-state";
+      empty.textContent="Nothing remembered yet. It fills in as she chats.";
+      memoryList.appendChild(empty);
+    }
+  }
+  async function loadMemory(){
+    if(!authenticated)return;
+    memoryStatus.textContent="Loading...";
+    try{
+      const r=await fetch(api("/admin/memory"),{method:"POST",headers:{"Content-Type":"application/json"},body:memCreds()});
+      if(r.status===401){memoryStatus.textContent="Wrong password.";return;}
+      if(!r.ok)throw 0;
+      renderMemory(await r.json());
+      memoryStatus.textContent="";
+    }catch(e){memoryStatus.textContent="Couldn't load memory. Try again.";}
+  }
+  document.getElementById("loadMemory").onclick=loadMemory;
+
+  document.getElementById("chatsClear").onclick=async()=>{
+    if(!confirm("Clear the whole chat history? This can't be undone."))return;
+    try{
+      const r=await fetch(api("/admin/chats-clear"),{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({username:user.value.trim(),password:pw.value})
+      });
+      if(!r.ok)throw 0;
+      chatsStatus.textContent="Chat history cleared.";
+      loadChats();
+    }catch(e){
+      chatsStatus.textContent="Couldn't clear chats. Try again.";
+    }
+  };
 
   // Dashboard content stays hidden until the Worker verifies the login above.
 </script>
