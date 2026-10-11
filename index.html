@@ -431,10 +431,110 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 }
 </style>
   <link rel="stylesheet" href="phone.css"><script src="reader-themes.js" defer></script>
+<style id="redesign">
+/* ===== Redesign layer: calmer surfaces, one accent, switchable menu ===== */
+:root{--burg:#7a2543;--burg2:#9a3558;--text:#f2e8ee;--muted:#b4a4ae;--pink:#e5a3ba;--line:rgba(255,255,255,.08);--glow:rgba(154,53,88,.35);--surface:#17101c;--raised:#1f1626;--inset:#110b16;--r:18px;--bg-glow:#26152f;--bg-base:#0c080f;--pd-period:#c2456b;--pd-fert:#8f7bd6;--side-w:240px;color-scheme:dark}
+html{scroll-padding-top:84px}
+html:has(body.nav-side){scroll-padding-top:24px}
+body{font-size:15px;line-height:1.6;background:radial-gradient(1100px 560px at 15% -10%,var(--bg-glow) 0,transparent 62%),var(--bg-base)}
+.starfield,.orn,.section-kicker{display:none}
+.shade{background:linear-gradient(180deg,rgba(8,5,11,.35),rgba(8,5,11,.74))}
+.app{width:min(980px,calc(100% - 40px));padding-top:calc(84px + env(safe-area-inset-top))}
+.hero{min-height:0;padding:44px 0 56px}
+.eyebrow{text-transform:none;letter-spacing:.01em;font-size:.95rem;margin-bottom:14px}
+h1{font-size:clamp(2.8rem,7vw,5rem);font-weight:500;line-height:1.02}
+h1 em{color:inherit;font-style:italic}
+.hero p{font-size:1.02rem;max-width:520px;margin-top:20px;line-height:1.7}
+.section{margin:0 0 76px;scroll-margin-top:84px}
+.section-head{display:block;padding:0;margin-bottom:24px}
+.section-head:after{display:none}
+.section-head p{max-width:520px;margin-top:8px;font-size:.95rem}
+h2{font-size:clamp(1.8rem,3.6vw,2.4rem);font-weight:500;line-height:1.15}
+.grid{gap:16px}
+.card,.grid>.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:none;backdrop-filter:blur(10px)}
+.card:hover{border-color:rgba(255,255,255,.15)}
+.card-title{font-size:1.5rem;font-weight:500;margin-bottom:6px}
+.card p{margin-bottom:12px}
+.action{border:0;border-radius:12px;background:var(--burg);color:#fff;padding:12px 16px;font-weight:600;font-size:.9rem;margin-top:12px;transition:filter .2s}
+.action:hover{filter:brightness(1.2);transform:none;box-shadow:none}
+.smallbtn{background:transparent;border:1px solid rgba(255,255,255,.14);color:var(--text);font-size:.82rem;transition:background .2s}
+.smallbtn:hover{background:rgba(255,255,255,.07)}
+.smallbtn.active{background:color-mix(in srgb,var(--pink) 14%,transparent);border-color:var(--pink);color:#fff}
+textarea,input{background:var(--inset);border:1px solid rgba(255,255,255,.1);border-radius:12px}
+textarea:focus,input:focus{border-color:var(--pink);box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 16%,transparent)}
+#kimchiMsg{background:var(--inset);border:1px solid rgba(255,255,255,.1)}
+.note,.gothic-place-card,.picker,.gothic-history-fact{background:var(--inset);border:1px solid var(--line);border-radius:14px}
+.gothic-knowledge{background:var(--raised);border:1px solid color-mix(in srgb,var(--pink) 25%,transparent);border-radius:14px}
+.plush{background:var(--surface);border-radius:var(--r)}
+.shelf{background:var(--inset);border-radius:14px}
+.resultbox{color:var(--text)}
+.wallpaper-only{min-height:70svh;margin:0 0 76px;padding:0;scroll-margin-top:0}
+.wallpaper-only::before{display:none}
+.wallpaper-float{background:rgba(12,8,15,.72);border:1px solid var(--line);border-radius:999px;padding:6px 10px}
+
+/* Menu: top bar (default) */
+.topbar{background:rgba(12,8,15,.84);border-bottom:1px solid var(--line);padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top))}
+.topbar-inner{width:min(1240px,100%);justify-content:flex-start;gap:4px}
+.brand{font-size:1.25rem;letter-spacing:.06em;margin-right:12px}
+.navbtn{border:0;background:transparent;color:var(--muted);border-radius:999px;padding:8px 13px;font-size:.84rem}
+.navbtn:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.navbtn.active{background:color-mix(in srgb,var(--pink) 15%,transparent);color:#fff}
+.navbtn.layout-btn{margin-left:auto;border:1px solid rgba(255,255,255,.14)}
+.navbtn.sign-out,.navbtn.sign-out:hover{margin-left:0;color:var(--pink);border:0;background:transparent}
+.navbtn.sign-out:hover{background:color-mix(in srgb,var(--pink) 12%,transparent)}
+.menu-btn{display:none;position:fixed;top:calc(10px + env(safe-area-inset-top));left:12px;z-index:150;width:44px;height:44px;place-items:center;border-radius:12px;border:1px solid var(--line);background:rgba(12,8,15,.85);backdrop-filter:blur(10px);font-size:1.2rem;cursor:pointer}
+.nav-scrim{display:none;position:fixed;inset:0;z-index:190;background:rgba(0,0,0,.55)}
+
+/* Menu: side */
+body.nav-side{padding-left:var(--side-w)}
+body.nav-side .topbar{right:auto;bottom:0;width:var(--side-w);padding:24px 14px;border-bottom:0;border-right:1px solid var(--line)}
+body.nav-side .topbar-inner{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:2px;height:100%;overflow-x:hidden;overflow-y:auto}
+body.nav-side .brand{font-size:1.6rem;margin:0 10px 20px}
+body.nav-side .navbtn{text-align:left;border-radius:10px;padding:10px 12px;font-size:.9rem}
+body.nav-side .navbtn.layout-btn{margin:auto 0 4px;text-align:center}
+body.nav-side .navbtn.sign-out{text-align:center}
+body.nav-side .app{padding-top:40px}
+body.nav-side .wallpaper-only{min-height:80svh}
+
+@media(max-width:860px){
+  body.nav-side{padding-left:0}
+  body.nav-side .topbar{width:min(290px,84vw);z-index:200;background:rgba(12,8,15,.98);transform:translateX(-102%);transition:transform .25s ease}
+  body.nav-side.nav-open .topbar{transform:none}
+  body.nav-side .menu-btn{display:grid}
+  body.nav-side.nav-open .nav-scrim{display:block}
+  body.nav-side .app{padding-top:calc(72px + env(safe-area-inset-top))}
+}
+@media(max-width:760px){
+  .app{width:calc(100% - 28px)}
+  .card,.grid>.card{padding:18px}
+  .section{margin-bottom:56px}
+  .hero{padding:28px 0 36px}
+}
+
+/* Site themes */
+html[data-theme="rose"]{--burg:#8a2b3d;--burg2:#a8384d;--pink:#f0a6b0;--surface:#1c1015;--raised:#26151b;--inset:#140b0f;--bg-glow:#3a1520;--bg-base:#0e0709;--pd-fert:#d9a05b}
+html[data-theme="ocean"]{--burg:#1f5a8a;--burg2:#2b74ad;--pink:#8cc4ee;--surface:#0f1822;--raised:#15222f;--inset:#0b121a;--bg-glow:#12304a;--bg-base:#070d13;--pd-fert:#4fb3c8}
+html[data-theme="forest"]{--burg:#2f6b4f;--burg2:#3f8a67;--pink:#9fd4a8;--surface:#101a15;--raised:#16231c;--inset:#0b130f;--bg-glow:#123022;--bg-base:#070d0a;--pd-fert:#d9b25b}
+.navbtn.theme-pick{border:1px solid rgba(255,255,255,.14)}
+body.nav-side .navbtn.theme-pick{text-align:center}
+
+/* Cycle alert */
+.navbtn.alert::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#e0486f;margin-left:6px;vertical-align:middle}
+.pd-alert{position:fixed;z-index:140;right:16px;top:calc(72px + env(safe-area-inset-top));width:min(360px,calc(100% - 32px));padding:16px 18px;border-radius:16px;background:var(--raised);border:1px solid var(--line);border-left:4px solid var(--pink);box-shadow:0 18px 50px rgba(0,0,0,.55)}
+.pd-alert[data-kind="late"]{border-left-color:#e0486f}
+.pd-alert strong{display:block;font-family:"Cormorant Garamond",serif;font-size:1.3rem;font-weight:600;margin-bottom:4px}
+.pd-alert p{margin:0 0 12px;color:var(--muted);font-size:.86rem;line-height:1.5}
+.pd-alert .row{display:flex;gap:8px}
+.pd-alert .row .action{margin:0;flex:1;padding:9px 12px;min-height:40px}
+.pd-alert .row .smallbtn{min-height:40px}
+body.nav-side .pd-alert{top:16px}
+body.auth-locked .pd-alert{display:none}
+@media(max-width:860px){body.nav-side .pd-alert{top:calc(68px + env(safe-area-inset-top))}}
+</style>
 </head>
 
 <body>
-<script>(function(){var t="original";try{t=localStorage.getItem("layaTheme")||"original"}catch(e){}if(t==="live")document.body.classList.add("login-live");if(t==="snow")document.body.classList.add("login-snow");try{if(localStorage.getItem("layaLiveFx")==="rain")document.body.classList.add("live-rain")}catch(e){}})()</script>
+<script>(function(){var t="original";try{t=localStorage.getItem("layaTheme")||"original"}catch(e){}if(t==="live")document.body.classList.add("login-live");if(t==="snow")document.body.classList.add("login-snow");try{if(localStorage.getItem("layaLiveFx")==="rain")document.body.classList.add("live-rain")}catch(e){}try{document.documentElement.dataset.theme=localStorage.getItem("layaSiteTheme")||"midnight"}catch(e){}try{if(localStorage.getItem("layaNavLayout")==="side")document.body.classList.add("nav-side")}catch(e){}})()</script>
 
 <!-- Login screen -->
 <div id="loginGate" class="login-gate show" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
@@ -543,10 +643,25 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     <button class="navbtn" data-go="fact">Random fact</button>
     <button class="navbtn" data-go="gothicPlaces">Gothic places</button>
     <button class="navbtn" data-go="candleBooks">Candle &amp; books</button>
+    <button class="navbtn hidden" id="periodNav" data-go="period">Cycle</button>
     <button class="navbtn" data-go="talk">Talk</button>
+    <button class="navbtn layout-btn" id="layoutBtn" type="button">Move menu to side</button>
+    <button class="navbtn theme-pick" id="themeBtn" type="button">Theme</button>
     <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
   </div>
 </header>
+<button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+<div class="nav-scrim" id="navScrim"></div>
+<div class="pd-alert" id="pdAlert" role="status" aria-live="polite" hidden>
+  <strong id="pdAlertTitle"></strong>
+  <p id="pdAlertMsg"></p>
+  <div class="row"><button class="action" id="pdAlertGo" type="button">Open tracker</button><button class="smallbtn" id="pdAlertX" type="button">Dismiss</button><button class="smallbtn" id="pdAlertOff" type="button">Turn off</button></div>
+</div>
+<div class="pd-banner" id="pdBanner" role="status" hidden>
+  <strong id="pdBannerTitle"></strong>
+  <p id="pdBannerMsg"></p>
+  <div class="row"><button class="action" id="pdBannerLog" type="button" style="margin:0;width:auto">Log period today</button><button class="smallbtn" id="pdBannerClose" type="button">Dismiss</button></div>
+</div>
 
 <main class="app">
   <section class="hero" id="home">
@@ -558,7 +673,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="us">
     <div class="section-head">
-      <div><div class="section-kicker">01 · us</div><h2>For the Kimchi-shaped hole in your day.</h2></div>
+      <div><div class="section-kicker">us</div><h2>For the Kimchi-shaped hole in your day.</h2></div>
       <p>Little things that let Kimchi know what is going on, even when he's not right beside you.</p>
     </div>
 
@@ -648,7 +763,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="music">
     <div class="section-head">
-      <div><div class="section-kicker">02 · music</div><h2>Your twin's soundtrack.</h2></div>
+      <div><div class="section-kicker">music</div><h2>Your twin's soundtrack.</h2></div>
       <p>Currently playing if Spotify knows what he's listening to; otherwise a random song from <em>delusions</em>.</p>
     </div>
     <div class="card">
@@ -667,7 +782,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="plush">
     <div class="section-head">
-      <div><div class="section-kicker">03 · plushie room</div><h2>Pet the residents.</h2></div>
+      <div><div class="section-kicker">plushie room</div><h2>Pet the residents.</h2></div>
       <p>They are very needy. Please give them attention.</p>
     </div>
     <div class="plush-grid" id="plushGrid"></div>
@@ -676,7 +791,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="cozy">
     <div class="section-head">
-      <div><div class="section-kicker">04 · cozy corner</div><h2>For when you need a softer minute.</h2></div>
+      <div><div class="section-kicker">cozy corner</div><h2>For when you need a softer minute.</h2></div>
       <p>Food, cats, cute notes, and somewhere to put whatever is on your mind.</p>
     </div>
     <div class="grid">
@@ -724,7 +839,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="fact">
     <div class="section-head">
-      <div><div class="section-kicker">05 · tiny rabbit hole</div><h2>Random fact of the day.</h2></div>
+      <div><div class="section-kicker">tiny rabbit hole</div><h2>Random fact of the day.</h2></div>
       <p>Something normal, strange, fascinating, or mildly unbelievable.</p>
     </div>
     <div class="card">
@@ -736,7 +851,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="gothicPlaces">
     <div class="section-head">
-      <div><div class="section-kicker">06 · places of shadow</div><h2>Gothic places to get lost in.</h2></div>
+      <div><div class="section-kicker">places of shadow</div><h2>Gothic places to get lost in.</h2></div>
       <p>An endless wander through castles, graveyards, abbeys, and eerie places around the world. Every few places, a little gothic knowledge appears so you can learn as you wander.</p>
     </div>
     <div class="card">
@@ -764,7 +879,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 
   <section class="section" id="candleBooks">
     <div class="section-head">
-      <div><div class="section-kicker">07 · candlelight</div><h2>Light a candle, open a book.</h2></div>
+      <div><div class="section-kicker">candlelight</div><h2>Light a candle, open a book.</h2></div>
       <p>Light a few candles, pick a gothic classic to read for free, and learn one strange little fact before you go.</p>
     </div>
 
@@ -816,9 +931,134 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     </div>
   </section>
 
+  <section class="section hidden" id="period">
+    <style>
+      .pd-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:start}
+      .pd-col{display:grid;gap:16px;min-width:0}
+      @media(max-width:860px){.pd-wrap{grid-template-columns:1fr}}
+      .pd-ring{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+      .pd-ring svg{width:148px;height:148px;flex:0 0 auto}
+      .pd-big{font-family:"Cormorant Garamond",serif;font-size:2.3rem;line-height:1;font-weight:500}
+      .pd-phase{color:var(--pink);margin:4px 0 8px;font-weight:600}
+      .pd-text{color:var(--muted);font-size:.9rem;margin:0 0 4px!important}
+      .pd-main.on{background:var(--pd-period)}
+      .pd-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+      .pd-cal .h{font-size:.72rem;color:var(--muted);text-align:center;padding:4px 0}
+      .pd-d{position:relative;aspect-ratio:1;min-height:38px;display:grid;place-items:center;border-radius:12px;border:1px solid transparent;background:transparent;font-size:.85rem;color:var(--text);cursor:pointer;padding:0}
+      .pd-d.p{background:var(--pd-period);color:#fff}
+      .pd-d.pp{background:color-mix(in srgb,var(--pink) 18%,transparent);border:1px dashed var(--pink)}
+      .pd-d.f{background:color-mix(in srgb,var(--pd-fert) 28%,transparent)}
+      .pd-d.o{background:var(--pd-fert);color:#fff}
+      .pd-d.t{border-color:var(--pink)}
+      .pd-d.sel{outline:2px solid #fff;outline-offset:1px}
+      .pd-d i{position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:#fff;opacity:.85}
+      .pd-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.76rem;color:var(--muted);margin-top:14px}
+      .pd-legend b{display:inline-block;width:11px;height:11px;border-radius:4px;margin-right:6px;vertical-align:-1px}
+      .pd-label{font-size:.8rem;color:var(--muted);margin:14px 0 6px}
+      .pd-chips{display:flex;flex-wrap:wrap;gap:6px}
+      .pd-chips .smallbtn{min-height:36px;padding:6px 12px}
+      .pd-state{color:var(--pink);font-size:.85rem;min-height:1.2em}
+      .pd-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+      .pd-stat div{background:var(--inset);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+      .pd-stat strong{display:block;font-family:"Cormorant Garamond",serif;font-size:1.7rem;font-weight:500}
+      .pd-stat span{font-size:.74rem;color:var(--muted)}
+      .pd-hist div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:8px 0;font-size:.85rem}
+      .pd-set{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      .pd-set label{font-size:.8rem;color:var(--muted)}
+      .pd-set input{margin-top:4px}
+      .pd-banner{position:fixed;z-index:120;top:calc(68px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 24px));padding:14px 16px;border-radius:16px;background:var(--raised);border:1px solid var(--pd-period);box-shadow:0 14px 40px rgba(0,0,0,.5)}
+      .pd-banner strong{display:block;margin-bottom:4px}
+      .pd-banner p{margin:0 0 10px;color:var(--muted);font-size:.88rem}
+      .pd-banner .row{display:flex;gap:8px;flex-wrap:wrap}
+      body.nav-side .pd-banner{top:16px;left:calc(50% + var(--side-w) / 2)}
+      @media(max-width:860px){body.nav-side .pd-banner{top:calc(68px + env(safe-area-inset-top));left:50%}}
+    </style>
+    <div class="section-head">
+      <div><h2>Cycle tracker</h2></div>
+      <p>Private to this device. Everything here is an estimate, not medical advice or birth control.</p>
+    </div>
+    <div class="pd-wrap">
+      <div class="pd-col">
+        <div class="card">
+          <div class="pd-ring">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/>
+              <circle id="pdArc" cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 327" transform="rotate(-90 60 60)"/>
+            </svg>
+            <div>
+              <div class="pd-big" id="pdBig">Welcome</div>
+              <div class="pd-phase" id="pdPhase">Log your first period day</div>
+              <p class="pd-text" id="pdLine"></p>
+              <p class="pd-text" id="pdLine2"></p>
+            </div>
+          </div>
+          <button class="action pd-main" id="pdToday" type="button">My period started today</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Insights</div>
+          <div class="pd-stat">
+            <div><strong id="pdStCl">28</strong><span>avg cycle (days)</span></div>
+            <div><strong id="pdStPl">5</strong><span>avg period (days)</span></div>
+            <div><strong id="pdStN">0</strong><span>periods logged</span></div>
+          </div>
+          <p class="pd-text" id="pdInsNote"></p>
+          <p class="pd-text" id="pdSymTop"></p>
+          <div class="pd-hist" id="pdHist"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Settings and backup</div>
+          <p class="pd-text">Defaults are used until you've logged a couple of cycles.</p>
+          <div class="pd-set">
+            <label>Cycle length<input type="number" id="pdCl" min="21" max="45" inputmode="numeric"></label>
+            <label>Period length<input type="number" id="pdPl" min="2" max="10" inputmode="numeric"></label>
+          </div>
+          <div class="controls">
+            <button class="smallbtn" id="pdExport" type="button">Export backup</button>
+            <button class="smallbtn" id="pdImportBtn" type="button">Import backup</button>
+            <button class="smallbtn" id="pdAlertsBtn" type="button">Period alerts: on</button>
+            <button class="smallbtn" id="pdNotifBtn" type="button">Browser alerts: off</button>
+            <button class="smallbtn" id="pdErase" type="button">Erase all</button>
+          </div>
+          <input type="file" id="pdImport" accept="application/json" hidden>
+          <p class="fine">Data lives in this browser only. Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
+        </div>
+      </div>
+      <div class="pd-col">
+        <div class="card">
+          <div class="controls" style="justify-content:space-between;align-items:center;margin-top:0">
+            <button class="smallbtn" id="pdPrev" type="button" aria-label="Previous month">‹</button>
+            <strong id="pdMonth"></strong>
+            <button class="smallbtn" id="pdNextM" type="button" aria-label="Next month">›</button>
+          </div>
+          <div class="pd-cal" id="pdCal"></div>
+          <div class="pd-legend">
+            <span><b style="background:var(--pd-period)"></b>Period</span>
+            <span><b style="border:1px dashed var(--pink)"></b>Predicted</span>
+            <span><b style="background:color-mix(in srgb,var(--pd-fert) 50%,transparent)"></b>Fertile (est.)</span>
+            <span><b style="background:var(--pd-fert)"></b>Ovulation (est.)</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" id="pdDayTitle"></div>
+          <div class="pd-state" id="pdDayState"></div>
+          <p class="pd-text" id="pdFuture" hidden>You can log this day when it arrives.</p>
+          <div id="pdDayBody">
+            <button class="smallbtn" id="pdDayPeriod" type="button" style="margin-top:8px">Mark as period day</button>
+            <div class="pd-label">Flow</div><div class="pd-chips" id="pdFlow"></div>
+            <div class="pd-label">Pain</div><div class="pd-chips" id="pdPain"></div>
+            <div class="pd-label">Symptoms</div><div class="pd-chips" id="pdSym"></div>
+            <div class="pd-label">Mood</div><div class="pd-chips" id="pdMood"></div>
+            <div class="pd-label">Notes <span id="pdSaved"></span></div>
+            <textarea id="pdNotes" maxlength="1000" placeholder="Anything else about today…"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="talk">
     <div class="section-head">
-      <div><div class="section-kicker">08 · quiet corner</div><h2>I'm here.</h2></div>
+      <div><div class="section-kicker">quiet corner</div><h2>I'm here.</h2></div>
       <p>Ask the AI anything, or just talk. It remembers things you tell it. It is not Kimchi and it is not a therapist.</p>
     </div>
     <div class="card">
@@ -941,6 +1181,7 @@ function storeToken(value) {
       sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
     } else {
       sessionStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem("layaPeriod");
       sessionStorage.removeItem(LAST_ACTIVITY_KEY);
     }
   } catch (error) {}
@@ -1069,6 +1310,7 @@ async function api(path, opts = {}) {
       }
       try { sessionStorage.removeItem("layaWelcomeSeen"); } catch (error) {}
       storeToken(data.token);
+      try{sessionStorage.setItem("layaPeriod",$("loginEmail").value.trim().toLowerCase()==="lululemon181@gmail.com"?"1":"")}catch(e){}
       $("loginPass").value = "";
       status.textContent = "";
       hideLogin();
@@ -1139,6 +1381,8 @@ document.querySelectorAll("[data-go]").forEach(button => {
       if (!r.height) return;
       if (r.top <= line && r.bottom > line * 0.5 && r.top > best) { best = r.top; cur = sec; }
     });
+    const hero = document.getElementById("home");
+    if (hero && hero.getBoundingClientRect().bottom > innerHeight * 0.45) cur = hero;
     if (!cur && secs.length) cur = secs[0];
     if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = secs[secs.length - 1] || cur;
     const b = cur && map.get(cur.id);
@@ -2859,6 +3103,287 @@ $("sendKlipyBtn").addEventListener("click", async () => {
       requestAnimationFrame(tick);
     })();
   })();
+})();
+
+/* Menu position: top bar or side menu */
+(() => {
+  const KEY="layaNavLayout", b=document.body, btn=$("layoutBtn");
+  function apply(side){
+    b.classList.toggle("nav-side",side); b.classList.remove("nav-open");
+    btn.textContent=side?"Move menu to top":"Move menu to side";
+    try{localStorage.setItem(KEY,side?"side":"top")}catch(e){}
+  }
+  apply(b.classList.contains("nav-side"));
+  btn.onclick=()=>apply(!b.classList.contains("nav-side"));
+  $("menuBtn").onclick=()=>b.classList.toggle("nav-open");
+  $("navScrim").onclick=()=>b.classList.remove("nav-open");
+  document.querySelectorAll(".navbtn[data-go]").forEach(x=>x.addEventListener("click",()=>b.classList.remove("nav-open")));
+})();
+
+/* Cycle tracker (only for the gated email) */
+(() => {
+  let ok = false; try { ok = sessionStorage.getItem("layaPeriod") === "1"; } catch (e) {}
+  if (!ok || !getToken()) return;
+  ["period","periodNav"].forEach(id => $(id).classList.remove("hidden"));
+  const KEY = "layaCycleData_v2";
+  const D = s => new Date(s + "T12:00:00");
+  const iso = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  const add = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+  const diff = (a,b) => Math.round((a-b) / 864e5);
+  const avg = a => a.length ? a.reduce((x,y) => x+y, 0) / a.length : 0;
+  const fmt = d => d.toLocaleDateString(undefined, { month:"short", day:"numeric" });
+  const todayD = () => { const t = new Date(); t.setHours(12,0,0,0); return t; };
+  const FLOW = ["Spotting","Light","Medium","Heavy"], PAIN = ["None","Mild","Moderate","Severe"];
+  const SYM = ["Cramps","Headache","Bloating","Back pain","Tender breasts","Acne","Nausea","Fatigue","Cravings","Poor sleep"];
+  const MOOD = ["Happy","Calm","Energetic","Sensitive","Low","Anxious","Irritable"];
+  const DATE_RE = /^\d{4}-\d\d-\d\d$/;
+  const num = (v, lo, hi, d) => { v = Math.round(Number(v)); return v >= lo && v <= hi ? v : d; };
+  const blank = () => ({ days: [], logs: {}, prefs: { cl: 28, pl: 5, notify: false, alerts: true } });
+  function cleanState(r) {
+    const days = (Array.isArray(r.days) ? r.days : []).filter(x => typeof x === "string" && DATE_RE.test(x));
+    const logs = {};
+    Object.entries(r.logs && typeof r.logs === "object" ? r.logs : {}).forEach(([k, l]) => {
+      if (!DATE_RE.test(k) || !l || typeof l !== "object") return;
+      const o = { flow: FLOW.includes(l.flow) ? l.flow : "", pain: PAIN.includes(l.pain) ? l.pain : "",
+        sym: (Array.isArray(l.sym) ? l.sym : []).filter(x => SYM.includes(x)), mood: (Array.isArray(l.mood) ? l.mood : []).filter(x => MOOD.includes(x)),
+        notes: typeof l.notes === "string" ? l.notes.slice(0, 1000) : "" };
+      if (o.flow || o.pain || o.sym.length || o.mood.length || o.notes.trim()) logs[k] = o;
+    });
+    const p = r.prefs || {};
+    return { days, logs, prefs: { cl: num(p.cl, 21, 45, 28), pl: num(p.pl, 2, 10, 5), notify: !!p.notify, alerts: p.alerts !== false } };
+  }
+  let S = blank();
+  try { const r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r) S = cleanState(r); } catch (e) {}
+  try { // bring over entries from the first version
+    if (!S.days.length) JSON.parse(localStorage.getItem("layaCycles_v1") || "[]").forEach(c => { const e = c.e ? D(c.e) : add(D(c.s), 4); for (let d = D(c.s); d <= e; d = add(d,1)) S.days.push(iso(d)); });
+  } catch (e) {}
+  const save = () => { S.days = [...new Set(S.days)].sort(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+  let view = todayD(); view.setDate(1);
+  let sel = iso(todayD()), C = null;
+
+  function periods() {
+    const out = [];
+    S.days.slice().sort().forEach(s => { const d = D(s), L = out[out.length-1]; if (L && diff(d, L.e) <= 2) L.e = d; else out.push({ s: d, e: d }); });
+    return out;
+  }
+
+  function calc() {
+    const P = periods(), t = todayD(), gaps = [];
+    for (let i = 1; i < P.length; i++) gaps.push(diff(P[i].s, P[i-1].s));
+    const good = gaps.filter(g => g >= 18 && g <= 50), rec = good.slice(-6);
+    const cl = rec.length ? Math.round(avg(rec)) : S.prefs.cl;
+    const lens = P.filter(p => diff(t, p.e) > 1).map(p => diff(p.e, p.s) + 1).filter(n => n >= 2 && n <= 10).slice(-6);
+    const pl = lens.length ? Math.round(avg(lens)) : S.prefs.pl;
+    const fert = new Set(), ovu = new Set(), pred = new Set(), last = P[P.length-1] || null;
+    const mark = (start, isPred) => {
+      const o = add(start, -14); ovu.add(iso(o));
+      for (let k = -5; k <= 1; k++) fert.add(iso(add(o, k)));
+      if (isPred) for (let k = 0; k < pl; k++) pred.add(iso(add(start, k)));
+    };
+    P.forEach((p, i) => { if (i > 0) mark(p.s, false); });
+    let ns = null;
+    if (last) for (let k = 1; k <= 6; k++) { const s = add(last.s, cl * k); if (k === 1) ns = s; if (k === 1 || (diff(s, t) > 0 && diff(ns, t) >= 0)) mark(s, true); }
+    return { P, cl, pl, last, ns, fert, ovu, pred, good, t, dset: new Set(S.days) };
+  }
+
+  function setRing(frac, col) {
+    const a = $("pdArc"); a.setAttribute("stroke", col);
+    a.setAttribute("stroke-dasharray", (Math.max(0, Math.min(1, frac)) * 326.7).toFixed(1) + " 327");
+  }
+
+  function renderHero() {
+    const { last, ns, cl, pl, fert, ovu, t, dset } = C, ti = iso(t), logged = dset.has(ti);
+    const active = last && diff(t, last.e) <= 2 && diff(t, last.s) <= 12;
+    const btn = $("pdToday");
+    btn.textContent = logged ? "Today is a period day ✓ (tap to undo)" : active ? "Period still going today" : "My period started today";
+    btn.classList.toggle("on", logged);
+    if (!last) {
+      $("pdBig").textContent = "Welcome"; $("pdPhase").textContent = "Log your first period day";
+      $("pdLine").textContent = "Tap the button below, or pick a past day on the calendar."; $("pdLine2").textContent = "";
+      setRing(0, "#7a2543"); return;
+    }
+    const day = diff(t, last.s) + 1, nd = diff(ns, t);
+    if (nd < -45) {
+      $("pdBig").textContent = "Welcome back"; $("pdPhase").textContent = "No recent period logged";
+      $("pdLine").textContent = "Log your latest period and predictions will pick up from there."; $("pdLine2").textContent = "";
+      setRing(0, "#7a2543"); return;
+    }
+    let phase, col = "#e5a3ba";
+    if (logged || (active && day <= pl)) { phase = "Period"; col = "#c2456b"; }
+    else if (nd < 0) { phase = "Period late"; col = "#e0486f"; }
+    else if (nd === 0) phase = "Period due";
+    else if (ovu.has(ti)) { phase = "Ovulation (estimated)"; col = "#8f7bd6"; }
+    else if (fert.has(ti)) { phase = "Fertile window (estimated)"; col = "#8f7bd6"; }
+    else if (nd > 19) phase = "Follicular phase";
+    else phase = "Luteal phase";
+    $("pdBig").textContent = "Day " + day;
+    $("pdPhase").textContent = phase;
+    $("pdLine").textContent = nd > 0 ? "Next period in " + nd + " day" + (nd === 1 ? "" : "s") + " (around " + fmt(ns) + ")" : nd === 0 ? "Period expected today" : "Period is " + (-nd) + " day" + (nd === -1 ? "" : "s") + " late";
+    const od = add(ns, -14);
+    $("pdLine2").textContent = nd > 0 && diff(od, t) >= -1 ? "Fertile window " + fmt(add(od, -5)) + " to " + fmt(add(od, 1)) : "";
+    setRing(day / cl, col);
+  }
+
+  function renderCal() {
+    $("pdMonth").textContent = view.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+    const cal = $("pdCal"); cal.replaceChildren();
+    "SMTWTFS".split("").forEach(l => { const h = document.createElement("div"); h.className = "h"; h.textContent = l; cal.appendChild(h); });
+    for (let i = 0; i < view.getDay(); i++) cal.appendChild(document.createElement("div"));
+    const n = new Date(view.getFullYear(), view.getMonth()+1, 0).getDate(), ti = iso(C.t);
+    for (let d = 1; d <= n; d++) {
+      const dt = new Date(view.getFullYear(), view.getMonth(), d, 12), k = iso(dt);
+      const cls = C.dset.has(k) ? "p" : C.ovu.has(k) ? "o" : C.fert.has(k) ? "f" : C.pred.has(k) ? "pp" : "";
+      const b = document.createElement("button"); b.type = "button"; b.className = "pd-d" + (cls ? " " + cls : "") + (k === ti ? " t" : "") + (k === sel ? " sel" : "");
+      b.textContent = d;
+      if (S.logs[k]) b.appendChild(document.createElement("i"));
+      b.setAttribute("aria-label", dt.toDateString() + ({ p: ", period day", pp: ", predicted period", f: ", fertile window estimate", o: ", ovulation estimate" }[cls] || ""));
+      b.onclick = () => { sel = k; renderCal(); renderDay(); };
+      cal.appendChild(b);
+    }
+  }
+
+  function tidy() {
+    const l = S.logs[sel];
+    if (l && !l.flow && !l.pain && !(l.sym || []).length && !(l.mood || []).length && !(l.notes || "").trim()) delete S.logs[sel];
+  }
+
+  function chipRow(id, opts, key, multi) {
+    const box = $(id); box.replaceChildren();
+    const cur = (S.logs[sel] || {})[key];
+    opts.forEach(o => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "smallbtn"; b.textContent = o;
+      b.classList.toggle("active", multi ? (cur || []).includes(o) : cur === o);
+      b.onclick = () => {
+        const l = S.logs[sel] = S.logs[sel] || {};
+        if (multi) { const a = l[key] || []; l[key] = a.includes(o) ? a.filter(x => x !== o) : [...a, o]; }
+        else l[key] = l[key] === o ? "" : o;
+        if (key === "flow" && l.flow && l.flow !== "Spotting" && !S.days.includes(sel)) S.days.push(sel);
+        tidy(); save(); renderAll();
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function renderDay() {
+    const d = D(sel), future = diff(d, C.t) > 0, isP = C.dset.has(sel);
+    $("pdDayTitle").textContent = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }) + (sel === iso(C.t) ? " (today)" : "");
+    $("pdDayState").textContent = isP ? "Period day" : C.ovu.has(sel) ? "Estimated ovulation" : C.fert.has(sel) ? "Estimated fertile window" : C.pred.has(sel) ? "Predicted period" : "";
+    $("pdDayBody").hidden = future; $("pdFuture").hidden = !future;
+    if (future) return;
+    const pb = $("pdDayPeriod"); pb.classList.toggle("active", isP); pb.textContent = isP ? "Period day ✓" : "Mark as period day";
+    chipRow("pdFlow", FLOW, "flow", false); chipRow("pdPain", PAIN, "pain", false);
+    chipRow("pdSym", SYM, "sym", true); chipRow("pdMood", MOOD, "mood", true);
+    const nt = $("pdNotes"); if (document.activeElement !== nt) nt.value = (S.logs[sel] || {}).notes || "";
+  }
+
+  function renderInsights() {
+    const { P, cl, pl, good } = C;
+    $("pdStCl").textContent = cl; $("pdStPl").textContent = pl; $("pdStN").textContent = P.length;
+    $("pdInsNote").textContent = good.length >= 2
+      ? "Your cycles range from " + Math.min(...good) + " to " + Math.max(...good) + " days, which is " + (Math.max(...good) - Math.min(...good) <= 7 ? "fairly regular." : "quite variable.")
+      : "Log at least three periods and predictions will adapt to you.";
+    const cnt = {}; Object.values(S.logs).forEach(l => (l.sym || []).forEach(s => cnt[s] = (cnt[s] || 0) + 1));
+    const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0].toLowerCase());
+    $("pdSymTop").textContent = top.length ? "Most logged symptoms: " + top.join(", ") + "." : "";
+    const hist = $("pdHist"); hist.replaceChildren();
+    P.slice(-6).reverse().forEach(p => {
+      const i = P.indexOf(p), row = document.createElement("div"), a = document.createElement("span"), b = document.createElement("span");
+      a.textContent = fmt(p.s) + " · " + (diff(p.e, p.s) + 1) + "-day period";
+      b.textContent = i < P.length - 1 ? diff(P[i+1].s, p.s) + "-day cycle" : "current";
+      b.style.color = "var(--muted)"; row.append(a, b); hist.appendChild(row);
+    });
+    $("pdCl").value = S.prefs.cl; $("pdPl").value = S.prefs.pl;
+  }
+
+  const DKEY = "layaCycleDismiss", NKEY = "layaCycleNotified";
+  const store = (k, v) => { try { if (v === undefined) return localStorage.getItem(k) || ""; localStorage.setItem(k, v); } catch (e) { return ""; } };
+  function renderAlert() {
+    const box = $("pdAlert"), nav = $("periodNav");
+    nav.classList.remove("alert"); box.hidden = true;
+    if (!S.prefs.alerts) return;
+    if (!C.last || !C.ns) return;
+    const ti = iso(C.t), nd = diff(C.ns, C.t);
+    let kind = "", title = "", msg = "";
+    if (nd < -45) { kind = "stale"; title = "Update your cycle"; msg = "Your last logged period was a while ago. Log your latest one to get accurate predictions."; }
+    else if (nd < 0) { kind = "late"; title = "Your period is " + (-nd) + " day" + (nd === -1 ? "" : "s") + " late"; msg = "It was expected around " + fmt(C.ns) + ". Stress, travel, illness and sleep can all shift a cycle. If it's much later than usual, consider a test or check in with a doctor."; }
+    else if (nd === 0) { kind = "due"; title = "Your period is due today"; msg = "Log it when it starts so predictions stay accurate."; }
+    else if (nd <= 2) { kind = "soon"; title = "Period expected in " + nd + " day" + (nd === 1 ? "" : "s"); msg = "Around " + fmt(C.ns) + "."; }
+    if (!kind) return;
+    if (kind === "late") nav.classList.add("alert");
+    if (store(DKEY) === ti + ":" + kind) return;
+    if (S.prefs.notify && "Notification" in window && Notification.permission === "granted" && store(NKEY) !== ti + ":" + kind) {
+      store(NKEY, ti + ":" + kind);
+      try { new Notification(title, { body: msg }); } catch (e) {}
+    }
+    $("pdAlertTitle").textContent = title; $("pdAlertMsg").textContent = msg; box.dataset.kind = kind; box.hidden = false;
+  }
+  function renderNotifBtn() {
+    const b = $("pdNotifBtn");
+    $("pdAlertsBtn").textContent = "Period alerts: " + (S.prefs.alerts ? "on" : "off");
+    if (!("Notification" in window)) { b.hidden = true; return; }
+    b.textContent = "Browser alerts: " + (S.prefs.notify && Notification.permission === "granted" ? "on" : "off");
+  }
+  function renderAll() { C = calc(); renderHero(); renderCal(); renderDay(); renderInsights(); renderAlert(); renderNotifBtn(); }
+
+  $("pdToday").onclick = () => {
+    const ti = iso(todayD()), had = S.days.includes(ti);
+    S.days = had ? S.days.filter(x => x !== ti) : [...S.days, ti];
+    sel = ti; view = todayD(); view.setDate(1); save(); renderAll(); toast(had ? "Removed today" : "Logged ♡");
+  };
+  $("pdDayPeriod").onclick = () => { S.days = S.days.includes(sel) ? S.days.filter(x => x !== sel) : [...S.days, sel]; save(); renderAll(); };
+  let nt; $("pdNotes").oninput = e => {
+    const l = S.logs[sel] = S.logs[sel] || {}; l.notes = e.target.value.slice(0, 1000); tidy();
+    clearTimeout(nt); nt = setTimeout(() => { save(); C = calc(); renderCal(); $("pdSaved").textContent = "· saved"; }, 400);
+  };
+  $("pdPrev").onclick = () => { view.setMonth(view.getMonth() - 1); renderCal(); };
+  $("pdNextM").onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
+  const pref = (id, key, lo, hi) => $(id).onchange = e => { const v = Math.round(Number(e.target.value)); S.prefs[key] = v >= lo && v <= hi ? v : S.prefs[key]; save(); renderAll(); };
+  pref("pdCl", "cl", 21, 45); pref("pdPl", "pl", 2, 10);
+  $("pdExport").onclick = () => {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type: "application/json" }));
+    a.download = "laya-cycle-backup.json"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $("pdImportBtn").onclick = () => $("pdImport").click();
+  $("pdImport").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const r = JSON.parse(await f.text());
+      if (!r || !Array.isArray(r.days)) throw 0;
+      S = cleanState(r);
+      save(); renderAll(); toast("Backup restored");
+    } catch (_) { toast("That file isn't a valid backup"); }
+    e.target.value = "";
+  };
+  $("pdAlertX").onclick = () => { store(DKEY, iso(C.t) + ":" + $("pdAlert").dataset.kind); $("pdAlert").hidden = true; };
+  $("pdAlertOff").onclick = () => { S.prefs.alerts = false; save(); renderAll(); toast("Period alerts are off. Turn them back on in the tracker settings."); };
+  $("pdAlertsBtn").onclick = () => { S.prefs.alerts = !S.prefs.alerts; save(); renderAll(); toast(S.prefs.alerts ? "Period alerts are on" : "Period alerts are off"); };
+  $("pdAlertGo").onclick = () => { $("pdAlert").hidden = true; $("period").scrollIntoView({ behavior: "smooth" }); };
+  $("pdNotifBtn").onclick = async () => {
+    try {
+      if (S.prefs.notify) S.prefs.notify = false;
+      else {
+        let p = Notification.permission;
+        if (p === "default") p = await Notification.requestPermission();
+        if (p === "granted") S.prefs.notify = true; else toast("Alerts are blocked in your browser settings");
+      }
+    } catch (e) { toast("This browser can't show alerts"); }
+    save(); renderNotifBtn(); renderAlert();
+  };
+  $("pdErase").onclick = () => { if (confirm("Erase all cycle data on this device?")) { S = blank(); save(); renderAll(); } };
+  renderAll();
+})();
+
+/* Site theme */
+(() => {
+  const T = [["midnight","Midnight"],["rose","Rose"],["ocean","Ocean"],["forest","Forest"]], KEY = "layaSiteTheme", btn = $("themeBtn"), root = document.documentElement;
+  function apply(id) {
+    if (!T.some(t => t[0] === id)) id = "midnight";
+    root.dataset.theme = id; btn.textContent = "Theme: " + T.find(t => t[0] === id)[1];
+    try { localStorage.setItem(KEY, id); } catch (e) {}
+  }
+  apply(root.dataset.theme || "midnight");
+  btn.onclick = () => { const i = T.findIndex(t => t[0] === root.dataset.theme); apply(T[(i + 1) % T.length][0]); };
 })();
 </script>
 </body>
