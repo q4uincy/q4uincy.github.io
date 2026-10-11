@@ -1061,7 +1061,6 @@ body.auth-locked .pd-alert{display:none}
       <div><h2>Cycle tracker</h2></div>
       <p>Everything here is an estimate, not medical advice or birth control. Your notes stay on this device.</p>
     </div>
-    <div class="card pd-share-note" style="margin-bottom:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><p class="pd-text" id="pdShareNote" style="margin:0!important"></p><button class="smallbtn" id="pdShareBtn2" type="button"></button></div>
     <div class="pd-wrap">
       <div class="pd-col">
         <div class="card">
@@ -1102,11 +1101,10 @@ body.auth-locked .pd-alert{display:none}
             <button class="smallbtn" id="pdImportBtn" type="button">Import backup</button>
             <button class="smallbtn" id="pdAlertsBtn" type="button">Period alerts: on</button>
             <button class="smallbtn" id="pdNotifBtn" type="button">Browser alerts: off</button>
-            <button class="smallbtn" id="pdShareBtn" type="button">Share how I feel with Kimchi: off</button>
             <button class="smallbtn" id="pdErase" type="button">Erase all</button>
           </div>
           <input type="file" id="pdImport" accept="application/json" hidden>
-          <p class="fine">Data lives in this browser only. The one exception is sharing: while it is on, the mood, pain, flow and symptoms you log are sent to Kimchi's admin page (never your notes). Kimchi is also told when you turn sharing on or off. Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
+          <p class="fine">Data lives in this browser only. The one exception is the "Save &amp; send to Kimchi" button on a day: it sends that day's mood, pain, flow and symptoms to Kimchi's admin page (never your notes). Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
         </div>
       </div>
       <div class="pd-col">
@@ -1136,7 +1134,8 @@ body.auth-locked .pd-alert{display:none}
             <div class="pd-label">Mood</div><div class="pd-chips" id="pdMood"></div>
             <div class="pd-label">Notes <span id="pdSaved"></span></div>
             <textarea id="pdNotes" maxlength="1000" placeholder="Anything else about today…"></textarea>
-            <button class="action" id="pdSaveShare" type="button">Save &amp; update</button>
+            <button class="action" id="pdSaveShare" type="button">Save &amp; send to Kimchi</button>
+            <p class="fine">Sends this day's mood, pain, flow and symptoms to Kimchi's admin page. Your notes stay on this device.</p>
           </div>
         </div>
       </div>
@@ -3418,7 +3417,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   const MOOD = ["Happy","Calm","Energetic","Sensitive","Low","Anxious","Irritable"];
   const DATE_RE = /^\d{4}-\d\d-\d\d$/;
   const num = (v, lo, hi, d) => { v = Math.round(Number(v)); return v >= lo && v <= hi ? v : d; };
-  const blank = () => ({ days: [], logs: {}, prefs: { cl: 28, pl: 5, notify: false, alerts: true, share: true, shareAsked: false } });
+  const blank = () => ({ days: [], logs: {}, prefs: { cl: 28, pl: 5, notify: false, alerts: true } });
   function cleanState(r) {
     const days = (Array.isArray(r.days) ? r.days : []).filter(x => typeof x === "string" && DATE_RE.test(x));
     const logs = {};
@@ -3430,32 +3429,29 @@ $("sendKlipyBtn").addEventListener("click", async () => {
       if (o.flow || o.pain || o.sym.length || o.mood.length || o.notes.trim()) logs[k] = o;
     });
     const p = r.prefs || {};
-    return { days, logs, prefs: { cl: num(p.cl, 21, 45, 28), pl: num(p.pl, 2, 10, 5), notify: !!p.notify, alerts: p.alerts !== false, share: p.shareAsked ? !!p.share : true, shareAsked: !!p.shareAsked } };
+    return { days, logs, prefs: { cl: num(p.cl, 21, 45, 28), pl: num(p.pl, 2, 10, 5), notify: !!p.notify, alerts: p.alerts !== false } };
   }
   let S = blank();
   try { const r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r) S = cleanState(r); } catch (e) {}
   try { // bring over entries from the first version
     if (!S.days.length) JSON.parse(localStorage.getItem("layaCycles_v1") || "[]").forEach(c => { const e = c.e ? D(c.e) : add(D(c.s), 4); for (let d = D(c.s); d <= e; d = add(d,1)) S.days.push(iso(d)); });
   } catch (e) {}
-  const save = () => { S.days = [...new Set(S.days)].sort(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} queueShare(); };
+  const save = () => { S.days = [...new Set(S.days)].sort(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
 
-  // Only runs when she has switched sharing on. Sends mood, pain, flow and symptoms for the day she is logging. Never her notes.
-  let shareTimer = 0, lastShared = "";
-  function queueShare() { if (!S.prefs.share) return; clearTimeout(shareTimer); shareTimer = setTimeout(sendShare, 1200); }
-  function sendShare(force) {
-    if (!S.prefs.share || !getToken()) return;
+  // Runs only when she presses "Save & send to Kimchi". Sends mood, pain, flow and symptoms for the selected day. Never her notes.
+  function sendShare() {
+    if (!getToken()) return false;
     const k = sel, l = S.logs[k] || {}, isP = S.days.includes(k);
     const sym = l.sym || [], mood = l.mood || [];
     const parts = [];
     if (mood.length) parts.push("Mood: " + mood.join(", "));
     if (l.pain) parts.push("Pain: " + l.pain);
     if (l.flow) parts.push("Flow: " + l.flow);
-    if (!parts.length && !sym.length && !isP) return;
+    if (!parts.length && !sym.length && !isP) return false;
     const label = (parts.join(" \u00B7 ") || (isP ? "Period day" : "")).slice(0, 160);
     const extra = (k + "|" + (isP ? "period" : "") + "|" + sym.join(", ")).slice(0, 160);
-    if (force !== true && label + extra === lastShared) return;
-    lastShared = label + extra;
     api("/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "period-mood", label, extra }) }).catch(() => {});
+    return true;
   }
 
   let view = todayD(); view.setDate(1);
@@ -3620,16 +3616,8 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   function renderNotifBtn() {
     const b = $("pdNotifBtn");
     $("pdAlertsBtn").textContent = "Period alerts: " + (S.prefs.alerts ? "on" : "off");
-    renderShareBtn();
     if (!("Notification" in window)) { b.hidden = true; return; }
     b.textContent = "Browser alerts: " + (S.prefs.notify && Notification.permission === "granted" ? "on" : "off");
-  }
-  function renderShareBtn() {
-    $("pdShareBtn").textContent = "Share how I feel with Kimchi: " + (S.prefs.share ? "on" : "off");
-    $("pdShareBtn2").textContent = S.prefs.share ? "Turn off" : "Turn on";
-    $("pdShareNote").textContent = S.prefs.share
-      ? "Your mood, pain, flow and symptoms update on Kimchi's admin page when you log them. Your notes stay private. Turning this off is fine; Kimchi will just see that it's off."
-      : "Sharing with Kimchi is off. Nothing from this tracker is sent.";
   }
   function renderAll() { C = calc(); renderHero(); renderCal(); renderDay(); renderInsights(); renderAlert(); renderNotifBtn(); }
 
@@ -3664,18 +3652,10 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   };
   $("pdAlertX").onclick = () => { store(DKEY, iso(C.t) + ":" + $("pdAlert").dataset.kind); $("pdAlert").hidden = true; };
   $("pdAlertOff").onclick = () => { S.prefs.alerts = false; save(); renderAll(); toast("Period alerts are off. Turn them back on in the tracker settings."); };
-  const toggleShare = () => {
-    S.prefs.shareAsked = true;
-    const tell = state => api("/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "period-share", label: state }) }).catch(() => {});
-    if (S.prefs.share) { S.prefs.share = false; save(); renderShareBtn(); tell("off"); toast("Sharing is off. Kimchi won't get new updates."); return; }
-    S.prefs.share = true; lastShared = ""; save(); renderShareBtn(); tell("on"); toast("Sharing is on. Kimchi's page will update when you log.");
-  };
-  $("pdShareBtn").onclick = toggleShare;
-  $("pdShareBtn2").onclick = toggleShare;
   $("pdSaveShare").onclick = () => {
     save();
-    if (S.prefs.share) { clearTimeout(shareTimer); sendShare(true); toast("Saved \u2661 Kimchi's page is updated"); }
-    else toast("Saved on this device");
+    if (sendShare()) toast("Saved \u2661 Sent to Kimchi");
+    else toast("Pick a mood, pain, flow or symptom first \u2661");
   };
   $("pdAlertsBtn").onclick = () => { S.prefs.alerts = !S.prefs.alerts; save(); renderAll(); toast(S.prefs.alerts ? "Period alerts are on" : "Period alerts are off"); };
   $("pdAlertGo").onclick = () => { $("pdAlert").hidden = true; window.goTo("period"); };
