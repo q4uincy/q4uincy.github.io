@@ -514,9 +514,9 @@ body.nav-side .wallpaper-only{min-height:calc(100svh - 60px)}
 }
 
 /* Menu tucked away on the right: opens on hover (desktop) or tap on the edge tab (phone) */
-.nav-edge{display:none;position:fixed;right:0;top:0;bottom:0;width:18px;z-index:180;cursor:pointer}
-.nav-edge::after{content:"";position:absolute;right:4px;top:50%;width:4px;height:60px;margin-top:-30px;border-radius:4px;background:color-mix(in srgb,var(--pink) 55%,transparent);transition:height .2s,background .2s}
-.nav-edge:hover::after{height:90px;margin-top:-45px;background:var(--pink)}
+.nav-edge{display:none;position:fixed;right:var(--sbw,0px);top:0;bottom:0;width:30px;z-index:180;cursor:pointer}
+.nav-edge::after{content:"";position:absolute;right:6px;top:50%;width:5px;height:70px;margin-top:-35px;border-radius:4px;background:color-mix(in srgb,var(--pink) 70%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--pink) 45%,transparent);transition:height .2s,background .2s}
+.nav-edge:hover::after{height:100px;margin-top:-50px;background:var(--pink)}
 body.nav-auto .nav-edge{display:block}
 body.nav-auto.nav-open .nav-edge{display:none}
 body.nav-side.nav-auto{padding-left:0}
@@ -530,14 +530,14 @@ body.nav-side.nav-auto .pd-banner{left:50%}
   body.nav-side.nav-auto.nav-open .nav-scrim{display:block}
 }
 @media(pointer:coarse){
-  .nav-edge{width:30px}
+  .nav-edge{right:0;width:34px}
   .nav-edge::after{right:5px;width:5px;height:72px;margin-top:-36px}
 }
 
 /* Days together and quote cards */
 .together{display:inline-grid;gap:4px;margin-top:20px;padding:14px 18px;border:1px solid var(--line);border-radius:16px;background:var(--surface);max-width:100%}
 .together[hidden],.together-form[hidden]{display:none}
-.together-num{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.7rem;line-height:1;color:#fff;margin-right:10px}
+.together-num{font-family:"Manrope",system-ui,sans-serif;font-variant-numeric:lining-nums;font-weight:700;font-size:2.3rem;line-height:1;color:#fff;margin-right:10px;letter-spacing:.01em}
 .together-label{color:var(--pink);font-size:.95rem}
 .together-sub{color:var(--muted);font-size:.84rem}
 .together-actions{margin-top:6px}
@@ -555,6 +555,19 @@ body.nav-side.nav-auto .pd-banner{left:50%}
 .qitem button:hover{color:var(--text)}
 .welcome-quote .quote-heart{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:999px;border:1px solid rgba(227,207,220,.4);background:transparent;color:#e3cfdc;font:inherit;font-size:.8rem;font-style:normal;letter-spacing:.06em;cursor:pointer}
 .welcome-quote .quote-heart[aria-pressed="true"]{background:rgba(229,163,186,.2);border-color:#e5a3ba}
+
+/* Tighter spacing */
+.app{padding-bottom:28px}
+.hero{padding:14px 0 4px}
+.hero p{margin-top:12px}
+.together{margin-top:14px;padding:12px 16px}
+.section{margin:0 0 26px}
+.section-head{margin-bottom:12px}
+.section-head p{margin-top:6px}
+.grid{gap:12px}
+.card,.grid>.card{padding:18px}
+.card p{margin-bottom:10px}
+body.nav-side .app{padding-top:20px}
 
 /* Site themes */
 html[data-theme="rose"]{--burg:#8a2b3d;--burg2:#a8384d;--pink:#f0a6b0;--surface:#1c1015;--raised:#26151b;--inset:#140b0f;--bg-glow:#3a1520;--bg-base:#0e0709;--pd-fert:#d9a05b}
@@ -681,6 +694,7 @@ body.auth-locked .pd-alert{display:none}
     <div class="brand">✦ LAYA</div>
     <button class="navbtn" data-go="home">Home</button>
     <button class="navbtn" data-go="us">Us</button>
+    <button class="navbtn" data-go="quotes">Quotes</button>
     <button class="navbtn" data-go="music">Music</button>
     <button class="navbtn" data-go="plush">Plushies</button>
     <button class="navbtn" data-go="cozy">Cozy</button>
@@ -1045,7 +1059,7 @@ body.auth-locked .pd-alert{display:none}
     </style>
     <div class="section-head">
       <div><h2>Cycle tracker</h2></div>
-      <p>Private to this device. Everything here is an estimate, not medical advice or birth control.</p>
+      <p>Stays on this device unless you choose to share how you're feeling with Kimchi. Everything here is an estimate, not medical advice or birth control.</p>
     </div>
     <div class="pd-wrap">
       <div class="pd-col">
@@ -1087,10 +1101,11 @@ body.auth-locked .pd-alert{display:none}
             <button class="smallbtn" id="pdImportBtn" type="button">Import backup</button>
             <button class="smallbtn" id="pdAlertsBtn" type="button">Period alerts: on</button>
             <button class="smallbtn" id="pdNotifBtn" type="button">Browser alerts: off</button>
+            <button class="smallbtn" id="pdShareBtn" type="button">Share how I feel with Kimchi: off</button>
             <button class="smallbtn" id="pdErase" type="button">Erase all</button>
           </div>
           <input type="file" id="pdImport" accept="application/json" hidden>
-          <p class="fine">Data lives in this browser only. Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
+          <p class="fine">Data lives in this browser only. The one exception is the sharing button above: when it is on, the mood, pain, flow and symptoms you log are sent to Kimchi (never your notes). Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
         </div>
       </div>
       <div class="pd-col">
@@ -1433,7 +1448,7 @@ function notify(event, extra = {}) {
 
 /* Navigation: one page at a time. Home shows the hero plus the "us" cards; every other tab shows only its own section. */
 (() => {
-  const HOME_VIEW = ["home", "us", "quotes"];
+  const HOME_VIEW = ["home", "us"];
   const btns = [...document.querySelectorAll(".navbtn[data-go]")];
   const sections = [...document.querySelectorAll("main.app > section")];
   const top = $("backTop");
@@ -3360,7 +3375,16 @@ $("sendKlipyBtn").addEventListener("click", async () => {
     try { localStorage.setItem(KEY, on ? "1" : "0"); } catch (_) {}
   }
   applyMode(auto);
-  modeBtn.onclick = () => applyMode(!auto);
+  modeBtn.onclick = () => {
+    applyMode(!auto);
+    if (auto) toast(matchMedia("(hover:hover)").matches ? "Menu hidden. Move your mouse to the right edge to bring it back." : "Menu hidden. Tap the pink bar on the right edge to bring it back.");
+  };
+  // keep the hover strip just left of the scrollbar so the scrollbar still works
+  const root = document.documentElement;
+  const syncSb = () => root.style.setProperty("--sbw", Math.max(0, innerWidth - root.clientWidth) + "px");
+  syncSb();
+  addEventListener("resize", syncSb);
+  if (window.ResizeObserver) new ResizeObserver(syncSb).observe(document.body);
   const openMenu = () => { if (auto) b.classList.add("nav-open"); };
   edge.addEventListener("mouseenter", openMenu);
   edge.addEventListener("click", openMenu);
@@ -3392,7 +3416,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   const MOOD = ["Happy","Calm","Energetic","Sensitive","Low","Anxious","Irritable"];
   const DATE_RE = /^\d{4}-\d\d-\d\d$/;
   const num = (v, lo, hi, d) => { v = Math.round(Number(v)); return v >= lo && v <= hi ? v : d; };
-  const blank = () => ({ days: [], logs: {}, prefs: { cl: 28, pl: 5, notify: false, alerts: true } });
+  const blank = () => ({ days: [], logs: {}, prefs: { cl: 28, pl: 5, notify: false, alerts: true, share: false } });
   function cleanState(r) {
     const days = (Array.isArray(r.days) ? r.days : []).filter(x => typeof x === "string" && DATE_RE.test(x));
     const logs = {};
@@ -3404,14 +3428,33 @@ $("sendKlipyBtn").addEventListener("click", async () => {
       if (o.flow || o.pain || o.sym.length || o.mood.length || o.notes.trim()) logs[k] = o;
     });
     const p = r.prefs || {};
-    return { days, logs, prefs: { cl: num(p.cl, 21, 45, 28), pl: num(p.pl, 2, 10, 5), notify: !!p.notify, alerts: p.alerts !== false } };
+    return { days, logs, prefs: { cl: num(p.cl, 21, 45, 28), pl: num(p.pl, 2, 10, 5), notify: !!p.notify, alerts: p.alerts !== false, share: !!p.share } };
   }
   let S = blank();
   try { const r = JSON.parse(localStorage.getItem(KEY) || "null"); if (r) S = cleanState(r); } catch (e) {}
   try { // bring over entries from the first version
     if (!S.days.length) JSON.parse(localStorage.getItem("layaCycles_v1") || "[]").forEach(c => { const e = c.e ? D(c.e) : add(D(c.s), 4); for (let d = D(c.s); d <= e; d = add(d,1)) S.days.push(iso(d)); });
   } catch (e) {}
-  const save = () => { S.days = [...new Set(S.days)].sort(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  const save = () => { S.days = [...new Set(S.days)].sort(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} queueShare(); };
+
+  // Only runs when she has switched sharing on. Sends mood, pain, flow and symptoms for the day she is logging. Never her notes.
+  let shareTimer = 0, lastShared = "";
+  function queueShare() { if (!S.prefs.share) return; clearTimeout(shareTimer); shareTimer = setTimeout(sendShare, 1200); }
+  function sendShare() {
+    if (!S.prefs.share || !getToken()) return;
+    const k = sel, l = S.logs[k] || {}, isP = S.days.includes(k);
+    const sym = l.sym || [], mood = l.mood || [];
+    const parts = [];
+    if (mood.length) parts.push("Mood: " + mood.join(", "));
+    if (l.pain) parts.push("Pain: " + l.pain);
+    if (l.flow) parts.push("Flow: " + l.flow);
+    if (!parts.length && !sym.length && !isP) return;
+    const label = (parts.join(" \u00B7 ") || (isP ? "Period day" : "")).slice(0, 160);
+    const extra = (k + "|" + (isP ? "period" : "") + "|" + sym.join(", ")).slice(0, 160);
+    if (label + extra === lastShared) return;
+    lastShared = label + extra;
+    api("/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "period-mood", label, extra }) }).catch(() => {});
+  }
 
   let view = todayD(); view.setDate(1);
   let sel = iso(todayD()), C = null;
@@ -3575,9 +3618,11 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   function renderNotifBtn() {
     const b = $("pdNotifBtn");
     $("pdAlertsBtn").textContent = "Period alerts: " + (S.prefs.alerts ? "on" : "off");
+    renderShareBtn();
     if (!("Notification" in window)) { b.hidden = true; return; }
     b.textContent = "Browser alerts: " + (S.prefs.notify && Notification.permission === "granted" ? "on" : "off");
   }
+  function renderShareBtn() { $("pdShareBtn").textContent = "Share how I feel with Kimchi: " + (S.prefs.share ? "on" : "off"); }
   function renderAll() { C = calc(); renderHero(); renderCal(); renderDay(); renderInsights(); renderAlert(); renderNotifBtn(); }
 
   $("pdToday").onclick = () => {
@@ -3611,6 +3656,11 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   };
   $("pdAlertX").onclick = () => { store(DKEY, iso(C.t) + ":" + $("pdAlert").dataset.kind); $("pdAlert").hidden = true; };
   $("pdAlertOff").onclick = () => { S.prefs.alerts = false; save(); renderAll(); toast("Period alerts are off. Turn them back on in the tracker settings."); };
+  $("pdShareBtn").onclick = () => {
+    if (S.prefs.share) { S.prefs.share = false; save(); renderShareBtn(); toast("Sharing is off. Kimchi won't get new updates."); return; }
+    if (!confirm("Share how you're feeling with Kimchi?\n\nWhen this is on, the mood, pain, flow and symptoms you log are sent to him. Your notes are never sent. You can turn it off any time.")) return;
+    S.prefs.share = true; lastShared = ""; save(); renderShareBtn(); toast("Kimchi will see how you're feeling \u2661");
+  };
   $("pdAlertsBtn").onclick = () => { S.prefs.alerts = !S.prefs.alerts; save(); renderAll(); toast(S.prefs.alerts ? "Period alerts are on" : "Period alerts are off"); };
   $("pdAlertGo").onclick = () => { $("pdAlert").hidden = true; window.goTo("period"); };
   $("pdNotifBtn").onclick = async () => {
