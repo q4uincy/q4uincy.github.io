@@ -100,7 +100,8 @@
   .note small,.pic small{color:var(--note-small);font-size:.72rem}.note p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--note-text)}
   .note button{justify-self:start;width:auto;padding:7px 10px;border:1px solid rgba(240,140,164,.25);background:rgba(111,34,60,.3);color:#f4c7d7;font-size:.78rem}
   .empty-state{padding:18px 12px;border:1px dashed var(--line-strong);border-radius:14px;color:var(--muted);font-size:.85rem;text-align:center;background:var(--note-bg)}
-  #photosSection,#activitySection,#chatsSection{grid-column:1/-1}
+  #photosSection,#activitySection,#chatsSection,#moodSection{grid-column:1/-1}
+  .mood-tag{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--accent-soft);font-size:.72rem;font-weight:600}
   .chart-wrap{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--note-bg)}
   .chart-wrap svg{width:100%;height:auto;display:block}
   .chart-sum{font-size:.82rem;color:var(--text);margin:0 0 8px;line-height:1.5}
@@ -212,6 +213,7 @@
       <a href="#cuteSection"><span>02</span> Cute notes</a>
       <a href="#photosSection"><span>03</span> Photos</a>
       <a href="#activitySection"><span>04</span> Activity</a>
+      <a href="#moodSection"><span>♡</span> How she feels</a>
       <a href="#chatsSection"><span>05</span> AI chats</a>
     </nav>
 
@@ -263,6 +265,13 @@
           <button id="activityClearWeek" class="secondary" type="button">Clear last 7 days</button>
           <button id="activityClear" class="secondary" type="button">Clear everything</button>
         </div>
+      </section>
+
+
+      <section class="section" id="moodSection">
+        <div class="section-head"><span class="snow-icon" aria-hidden="true">♡</span><div class="section-title-group"><p class="section-kicker">LOOK AFTER HER</p><h2>How she's feeling</h2></div></div>
+        <div class="photo-toolbar"><p class="section-description">Mood, pain, flow and symptoms she logs in the Cycle tab. This only shows once she has switched on “Share how I feel with Kimchi”, and her private notes are never sent.</p><button id="loadMood" class="secondary" type="button">↻ Refresh</button></div>
+        <div id="moodList" class="timeline" aria-live="polite"></div>
       </section>
 
       <section class="section" id="chatsSection">
@@ -853,6 +862,40 @@
     return who+": "+(e.label||e.type);
   }
 
+  function renderMood(allEvents){
+    const list=document.getElementById("moodList");
+    list.innerHTML="";
+    const seen=new Set(),rows=[];
+    allEvents.filter(e=>e.type==="period-mood"&&e.account==="laya").forEach(e=>{
+      const parts=String(e.extra||"").split("|");
+      const date=/^\d{4}-\d\d-\d\d$/.test(parts[0])?parts[0]:new Date(e.ts).toLocaleDateString("en-CA");
+      if(seen.has(date))return;
+      seen.add(date);
+      rows.push({date,period:parts[1]==="period",sym:parts.slice(2).join("|").trim(),label:e.label||"",ts:e.ts});
+    });
+    if(!rows.length){
+      const empty=document.createElement("div");empty.className="empty-state";
+      empty.textContent="Nothing shared yet. It shows up here after she turns on “Share how I feel with Kimchi” in her Cycle tab and logs a day.";
+      list.appendChild(empty);return;
+    }
+    rows.slice(0,60).forEach(r=>{
+      const row=document.createElement("div");row.className="trow";
+      const icon=document.createElement("div");icon.className="ticon";icon.textContent=r.period?"🩸":"♡";
+      const body=document.createElement("div");body.className="tbody";
+      const main=document.createElement("div");
+      const b=document.createElement("b");
+      b.textContent=new Date(r.date+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+      main.appendChild(b);
+      if(r.period){const t=document.createElement("span");t.className="mood-tag";t.textContent="Period day";main.appendChild(t);}
+      const meta=document.createElement("div");meta.className="tmeta";
+      meta.textContent=[r.label==="Period day"?"":r.label,r.sym?"Symptoms: "+r.sym:""].filter(Boolean).join(" · ")||"Period day";
+      body.append(main,meta);
+      const time=document.createElement("div");time.className="ttime";time.textContent="logged "+fmt(new Date(r.ts).toISOString());
+      row.append(icon,body,time);list.appendChild(row);
+    });
+  }
+  document.getElementById("loadMood").onclick=()=>loadActivity();
+
   let activityView="main",lastActivity={events:[],stats:{}};
   document.getElementById("activityWho").addEventListener("change",()=>renderActivity(lastActivity));
   document.getElementById("activityFilter").addEventListener("click",ev=>{
@@ -864,6 +907,7 @@
   function renderActivity(data){
     lastActivity=data;
     const allEvents=Array.isArray(data.events)?data.events:[];
+    renderMood(allEvents);
 
     // Only two people use the site: Laya and you.
     const who=document.getElementById("activityWho");
@@ -928,7 +972,7 @@
 
     // Hide candle taps (old and new) and, by default, every tap, so the list stays clean.
     const isCandle=e=>e.type==="click"&&/candle/i.test(String(e.label||""));
-    const shown=events.filter(e=>!isCandle(e)&&(activityView==="all"||e.type!=="click"));
+    const shown=events.filter(e=>e.type!=="period-mood"&&!isCandle(e)&&(activityView==="all"||e.type!=="click"));
 
     activityList.innerHTML="";
     if(!shown.length){
