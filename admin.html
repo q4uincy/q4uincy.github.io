@@ -111,6 +111,7 @@
   .day-bar{height:8px;border-radius:99px;background:var(--line)}
   .day-bar i{display:block;height:100%;border-radius:99px;background:var(--secondary-text,#9cf)}
   .day-row b{color:var(--text);text-align:right}
+  #activityWho{padding:8px 10px;border-radius:10px;border:1px solid var(--line-strong);background:var(--note-bg);color:var(--text);font:inherit;max-width:100%}
   .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
   .filter-row button.on{outline:2px solid var(--line-strong)}
   .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
@@ -249,6 +250,8 @@
         <div class="photo-toolbar"><p class="section-description">Visits, logins, and what she's clicked on the site.</p><button id="loadActivity" class="secondary" type="button">↻ Refresh</button></div>
         <div class="stat-row" id="activityStats"></div>
         <div class="chart-wrap" id="dayChart" aria-label="Times opened per day"></div>
+        <div class="filter-row"><label class="compose-label" for="activityWho" style="margin:0;align-self:center">Show activity for</label>
+          <select id="activityWho" aria-label="Show activity for one email"></select></div>
         <div class="filter-row" id="activityFilter">
           <button type="button" class="secondary on" data-f="main">Opens &amp; sign-ins</button>
           <button type="button" class="secondary" data-f="all">Everything she tapped</button>
@@ -839,6 +842,7 @@
   }
 
   let activityView="main",lastActivity={events:[],stats:{}};
+  document.getElementById("activityWho").addEventListener("change",()=>renderActivity(lastActivity));
   document.getElementById("activityFilter").addEventListener("click",ev=>{
     const btn=ev.target.closest("button[data-f]");if(!btn)return;
     activityView=btn.dataset.f;
@@ -847,8 +851,27 @@
   });
   function renderActivity(data){
     lastActivity=data;
-    const events=Array.isArray(data.events)?data.events:[];
-    const stats=data.stats||{};
+    const allEvents=Array.isArray(data.events)?data.events:[];
+
+    // Work out which email belongs to which account from the sign-in records.
+    const emailOf={};
+    allEvents.slice().reverse().forEach(e=>{if(e.type==="login"&&e.account&&e.email)emailOf[e.account]=e.email;});
+    const who=document.getElementById("activityWho");
+    const accounts=Object.keys(emailOf);
+    if(who.dataset.built!==accounts.join("|")){
+      const prev=who.value;
+      who.innerHTML="";
+      const add=(v,t)=>{const o=document.createElement("option");o.value=v;o.textContent=t;who.appendChild(o);};
+      accounts.forEach(id=>add(id,emailOf[id]));
+      add("all","Everyone");
+      who.dataset.built=accounts.join("|");
+      const pick=accounts.find(id=>/lululemon/i.test(emailOf[id]));
+      who.value=prev&&[...who.options].some(o=>o.value===prev)?prev:(pick||"all");
+    }
+    const sel=who.value||"all";
+    const events=sel==="all"?allEvents:allEvents.filter(e=>e.account===sel);
+    const loginsSel=events.filter(e=>e.type==="login");
+    const stats={totalLogins:loginsSel.length,lastLogin:loginsSel[0]||null};
     activityStats.innerHTML="";
     const dayKey=ts=>new Date(ts).toLocaleDateString("en-CA");
     const opens={};
