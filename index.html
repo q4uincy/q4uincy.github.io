@@ -211,10 +211,8 @@ body.login-snow .welcome-card:before,body.login-snow .welcome-card:after { color
 body.login-snow .welcome-moon { color: #c7e5ff; text-shadow: 0 0 22px rgba(125,190,245,.65); }
 body.login-snow .welcome-kuromi { filter: drop-shadow(0 5px 12px rgba(125,190,245,.35)); }
 body.login-snow .welcome-title { color: #e4f1ff; text-shadow: 0 0 28px rgba(125,190,245,.38); }
-.welcome-quote { margin: 20px auto 0; max-width: 340px; font-family: "Cormorant Garamond",Georgia,serif; font-style: italic; font-size: 1.12rem; line-height: 1.4; color: #e3cfdc; opacity: 0; transition: opacity 1.2s ease; }
+body.login-snow .welcome-quote { margin: 20px auto 0; max-width: 340px; font-family: "Cormorant Garamond",Georgia,serif; font-style: italic; font-size: 1.12rem; line-height: 1.4; color: #e3cfdc; opacity: 0; transition: opacity 1.2s ease; }
 .welcome-quote.show { opacity: .95; }
-.welcome-quote.loading { min-height: 4.6em; display: grid; place-items: center; opacity: .55; }
-.welcome-quote.loading::before { content: "\2726"; color: #c58cae; font-style: normal; animation: twinkle 1.3s ease-in-out infinite alternate; }
 .welcome-quote small { display: block; margin-top: 6px; font-style: normal; font-size: .68rem; letter-spacing: .12em; color: #c9b2c4; }
 .welcome-sub { color: #b4cce3; }
 body.login-snow .welcome-skip { border-color: rgba(150,200,240,.38); background: rgba(190,225,255,.06); color: #e4f1ff; }
@@ -557,12 +555,6 @@ body.nav-side.nav-auto .pd-banner{left:50%}
 .qitem button:hover{color:var(--text)}
 .welcome-quote .quote-heart{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:999px;border:1px solid rgba(227,207,220,.4);background:transparent;color:#e3cfdc;font:inherit;font-size:.8rem;font-style:normal;letter-spacing:.06em;cursor:pointer}
 .welcome-quote .quote-heart[aria-pressed="true"]{background:rgba(229,163,186,.2);border-color:#e5a3ba}
-
-/* Keep the site wallpaper hidden behind the sign-in and welcome screens (stops the stray picture flash) */
-body > video{transition:opacity 1.2s ease}
-body.auth-locked .wall,body.auth-locked > video,
-body:has(#welcomeVeil:not(.dismissed)) .wall,body:has(#welcomeVeil:not(.dismissed)) > video{opacity:0!important}
-.login-gate:not(.show) .login-wallpaper{visibility:hidden}
 
 /* Tighter spacing */
 .app{padding-bottom:28px}
@@ -2815,30 +2807,36 @@ $("cform").onsubmit = async event => {
   render();
   ensureToday();
   const poll = setInterval(() => { ensureToday(); if (done) clearInterval(poll); }, 500);
-  setTimeout(() => clearInterval(poll), 30000);
+  setTimeout(() => {
+    clearInterval(poll);
+    if (!todayQuote()) {
+      const box = $("todayQuote");
+      if (box) box.innerHTML = '<p class="fine">' + (getToken()
+        ? "Couldn't load today's quote right now. Refresh the page in a moment."
+        : "Today's quote shows up here once you're signed in.") + '</p>';
+    }
+  }, 30000);
 })();
 
 
 /* Quote of the day: shown once per day on this device. The server picks it and never repeats one. */
 (() => {
   const DAY_KEY = "layaQuoteDay_v1";
-  const wq = $("welcomeQuote");
-  const day = new Date().toLocaleDateString("en-CA");
-  let last = ""; try { last = localStorage.getItem(DAY_KEY) || ""; } catch (_) {}
-  const expecting = last !== day;                  // first sign-in of the day
-  if (expecting && getToken()) { wq.hidden = false; wq.classList.add("loading"); }   // reserve the space so nothing jumps
   let done = false;
   async function loadQuote() {
     if (done || !getToken()) return;
     done = true;
-    if (!expecting) return;                        // already shown today
     try {
+      const day = new Date().toLocaleDateString("en-CA");
+      let last = ""; try { last = localStorage.getItem(DAY_KEY) || ""; } catch (_) {}
+      if (last === day) return;                        // already shown today
       const response = await api("/quote?day=" + day, { cache: "no-store" });
       if (!response.ok) throw new Error("quote failed");
       const q = await response.json();
-      if (!q || !q.text) { wq.hidden = true; wq.classList.remove("loading"); return; }
+      if (!q || !q.text) return;
       try { localStorage.setItem(DAY_KEY, day); } catch (_) {}
       if (window.layaQuotes) window.layaQuotes.setToday(day, q);
+      const wq = $("welcomeQuote");
       wq.textContent = "\u201C" + q.text + "\u201D";
       if (q.author) { const by = document.createElement("small"); by.textContent = "\u2014 " + q.author; wq.appendChild(by); }
       if (window.layaQuotes) {
@@ -2849,14 +2847,13 @@ $("cform").onsubmit = async event => {
         paint();
         wq.appendChild(heart);
       }
-      wq.classList.remove("loading");
       wq.hidden = false;
       requestAnimationFrame(() => wq.classList.add("show"));
     } catch (error) { done = false; }
   }
   loadQuote();
   const poll = setInterval(() => { loadQuote(); if (done) clearInterval(poll); }, 500);
-  setTimeout(() => { clearInterval(poll); if (wq.classList.contains("loading")) { wq.classList.remove("loading"); wq.hidden = true; } }, 20000);
+  setTimeout(() => clearInterval(poll), 30000);
 })();
 
 
@@ -3377,7 +3374,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
 (() => {
   const b=document.body;
   b.classList.add("nav-side");
-  const KEY = "layaNavAuto", modeBtn = $("navModeBtn"), edge = $("navEdge"), bar = document.querySelector(".topbar");
+  const KEY = "layaNavAuto2", modeBtn = $("navModeBtn"), edge = $("navEdge"), bar = document.querySelector(".topbar");
   let auto = false; try { auto = localStorage.getItem(KEY) === "1"; } catch (_) {}
   function applyMode(on) {
     auto = on;
