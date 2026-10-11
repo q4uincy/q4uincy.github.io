@@ -516,6 +516,9 @@ body.nav-side .wallpaper-only{min-height:calc(100svh - 60px)}
 .login-remember{display:flex;align-items:center;gap:8px;margin:4px 0 12px;font-size:.82rem;color:#d8c6d2;cursor:pointer;text-align:left}
 .login-remember input{width:auto!important;margin:0;accent-color:#9a3558}
 
+.menu-btn{width:40px;height:40px;background:rgba(12,8,15,.62);opacity:.92;transition:transform .25s ease,opacity .25s ease}
+.menu-btn.menu-hidden{transform:translateY(-72px);opacity:0;pointer-events:none}
+
 /* Menu tucked away on the right: opens on hover (desktop) or tap on the edge tab (phone) */
 .nav-edge{display:none;position:fixed;right:var(--sbw,0px);top:0;bottom:0;width:30px;z-index:180;cursor:pointer}
 .nav-edge::after{content:"";position:absolute;right:6px;top:50%;width:5px;height:70px;margin-top:-35px;border-radius:4px;background:color-mix(in srgb,var(--pink) 70%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--pink) 45%,transparent);transition:height .2s,background .2s}
@@ -1150,7 +1153,7 @@ body.auth-locked .pd-alert{display:none}
     </div>
   </section>
 
-  <div class="footer">made with a little midnight purple, a little burgundy, and a lot of love ✦<br><small id="buildStamp" style="opacity:.55">build 11 Oct · v6 · left menu + stay signed in + fixed colours</small></div>
+  <div class="footer">made with a little midnight purple, a little burgundy, and a lot of love ✦<br><small id="buildStamp" style="opacity:.55">build 11 Oct · v7 · phone menu button + no flash after login</small></div>
 </main>
 
 <!-- Book reader -->
@@ -1400,8 +1403,7 @@ async function api(path, opts = {}) {
         if (remember) localStorage.setItem("layaPeriod",pv);
       }catch(e){}
       $("loginPass").value = "";
-      status.textContent = "";
-      hideLogin();
+      status.textContent = "Welcome \u2726";
 
       const params = new URLSearchParams(location.search);
       if (params.has("code") && params.has("state")) {
@@ -3376,6 +3378,13 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   bar.addEventListener("mouseleave", () => { if (auto) { clearTimeout(closeTimer); closeTimer = setTimeout(() => b.classList.remove("nav-open"), 250); } });
   document.addEventListener("click", e => { if (auto && b.classList.contains("nav-open") && !bar.contains(e.target) && e.target !== edge && !$("menuBtn").contains(e.target)) b.classList.remove("nav-open"); });
   $("menuBtn").onclick=()=>b.classList.toggle("nav-open");
+  let lastY = scrollY;
+  addEventListener("scroll", () => {
+    const y = scrollY, dy = y - lastY;
+    if (Math.abs(dy) < 8) return;
+    $("menuBtn").classList.toggle("menu-hidden", dy > 0 && y > 60 && !b.classList.contains("nav-open"));
+    lastY = y;
+  }, { passive: true });
   $("navScrim").onclick=()=>b.classList.remove("nav-open");
   document.querySelectorAll(".navbtn[data-go]").forEach(x=>x.addEventListener("click",()=>b.classList.remove("nav-open")));
 })();
