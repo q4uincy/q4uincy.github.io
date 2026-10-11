@@ -522,7 +522,8 @@ body.nav-auto.nav-open .nav-edge{display:none}
 body.nav-side.nav-auto{padding-left:0}
 body.nav-side.nav-auto .topbar{left:auto;right:0;width:min(270px,84vw);z-index:200;background:rgba(12,8,15,.98);border-right:0;border-left:1px solid var(--line);transform:translateX(102%);transition:transform .25s ease}
 body.nav-side.nav-auto.nav-open .topbar{transform:none}
-body.nav-side.nav-auto .menu-btn{display:none}
+body.nav-side.nav-auto .menu-btn{display:grid;left:auto;right:calc(14px + var(--sbw,0px));width:auto;padding:0 16px;font-size:.9rem;color:var(--text)}
+body.nav-auto.nav-open .menu-btn{display:none}
 body.nav-side.nav-auto .app{padding-top:28px}
 body.nav-side.nav-auto .pd-banner{left:50%}
 @media(max-width:860px){
@@ -570,11 +571,6 @@ body.nav-side.nav-auto .pd-banner{left:50%}
 body.nav-side .app{padding-top:20px}
 
 /* Site themes */
-html[data-theme="rose"]{--burg:#8a2b3d;--burg2:#a8384d;--pink:#f0a6b0;--surface:#1c1015;--raised:#26151b;--inset:#140b0f;--bg-glow:#3a1520;--bg-base:#0e0709;--pd-fert:#d9a05b}
-html[data-theme="ocean"]{--burg:#1f5a8a;--burg2:#2b74ad;--pink:#8cc4ee;--surface:#0f1822;--raised:#15222f;--inset:#0b121a;--bg-glow:#12304a;--bg-base:#070d13;--pd-fert:#4fb3c8}
-html[data-theme="forest"]{--burg:#2f6b4f;--burg2:#3f8a67;--pink:#9fd4a8;--surface:#101a15;--raised:#16231c;--inset:#0b130f;--bg-glow:#123022;--bg-base:#070d0a;--pd-fert:#d9b25b}
-.navbtn.theme-pick{border:1px solid rgba(255,255,255,.14)}
-body.nav-side .navbtn.theme-pick{text-align:center}
 
 /* Cycle alert */
 .navbtn.alert::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#e0486f;margin-left:6px;vertical-align:middle}
@@ -592,7 +588,7 @@ body.auth-locked .pd-alert{display:none}
 </head>
 
 <body class="nav-side">
-<script>(function(){var t="original";try{t=localStorage.getItem("layaTheme")||"original"}catch(e){}if(t==="live")document.body.classList.add("login-live");if(t==="snow")document.body.classList.add("login-snow");try{if(localStorage.getItem("layaLiveFx")==="rain")document.body.classList.add("live-rain")}catch(e){}try{document.documentElement.dataset.theme=localStorage.getItem("layaSiteTheme")||"midnight"}catch(e){}try{if(localStorage.getItem("layaNavLayout")==="side")document.body.classList.add("nav-side")}catch(e){}})()</script>
+<script>(function(){var t="original";try{t=localStorage.getItem("layaTheme")||"original"}catch(e){}if(t==="live")document.body.classList.add("login-live");if(t==="snow")document.body.classList.add("login-snow");try{if(localStorage.getItem("layaLiveFx")==="rain")document.body.classList.add("live-rain")}catch(e){}try{localStorage.removeItem("layaSiteTheme")}catch(e){}try{if(localStorage.getItem("layaNavLayout")==="side")document.body.classList.add("nav-side")}catch(e){}})()</script>
 
 <!-- Login screen -->
 <div id="loginGate" class="login-gate show" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
@@ -705,7 +701,6 @@ body.auth-locked .pd-alert{display:none}
     <button class="navbtn hidden" id="periodNav" data-go="period">Cycle</button>
     <button class="navbtn" data-go="talk">Talk</button>
     <button class="navbtn layout-btn" id="navModeBtn" type="button">Hide menu on right</button>
-    <button class="navbtn theme-pick" id="themeBtn" type="button">Theme</button>
     <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
   </div>
 </header>
@@ -858,7 +853,7 @@ body.auth-locked .pd-alert{display:none}
       <button class="action" id="anotherSong">Another song</button>
       <div class="toggle-row">
         <span>Adaptive Colors</span>
-        <button class="switch on" id="colorToggle" aria-label="Toggle adaptive colors"><i></i></button>
+        <button class="switch" id="colorToggle" aria-label="Toggle adaptive colors"><i></i></button>
       </div>
       <div class="status">When on, the site's mood subtly follows the album art without losing its dark identity.</div>
     </div>
@@ -1792,7 +1787,7 @@ $("realCat").onclick = () => {
 };
 
 /* Spotify + adaptive colors */
-let adaptive = true, lastArt = "", lastSongId = "", songPollBusy = false;
+let adaptive = false, lastArt = "", lastSongId = "", songPollBusy = false;
 
 function applySongColor(url) {
   if (!adaptive || !url) return;
@@ -3381,12 +3376,13 @@ $("sendKlipyBtn").addEventListener("click", async () => {
     b.classList.toggle("nav-auto", on);
     b.classList.remove("nav-open");
     modeBtn.textContent = on ? "Keep menu on left" : "Hide menu on right";
+    $("menuBtn").textContent = on ? "\u2630 Menu" : "\u2630";
     try { localStorage.setItem(KEY, on ? "1" : "0"); } catch (_) {}
   }
   applyMode(auto);
   modeBtn.onclick = () => {
     applyMode(!auto);
-    if (auto) toast(matchMedia("(hover:hover)").matches ? "Menu hidden. Move your mouse to the right edge to bring it back." : "Menu hidden. Tap the pink bar on the right edge to bring it back.");
+    if (auto) toast(matchMedia("(hover:hover)").matches ? "Menu hidden. Click the Menu button at the top right to bring it back." : "Menu hidden. Tap the Menu button at the top right to bring it back.");
   };
   // keep the hover strip just left of the scrollbar so the scrollbar still works
   const root = document.documentElement;
@@ -3401,7 +3397,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   let closeTimer = 0;
   bar.addEventListener("mouseenter", () => clearTimeout(closeTimer));
   bar.addEventListener("mouseleave", () => { if (auto) { clearTimeout(closeTimer); closeTimer = setTimeout(() => b.classList.remove("nav-open"), 250); } });
-  document.addEventListener("click", e => { if (auto && b.classList.contains("nav-open") && !bar.contains(e.target) && e.target !== edge) b.classList.remove("nav-open"); });
+  document.addEventListener("click", e => { if (auto && b.classList.contains("nav-open") && !bar.contains(e.target) && e.target !== edge && !$("menuBtn").contains(e.target)) b.classList.remove("nav-open"); });
   $("menuBtn").onclick=()=>b.classList.toggle("nav-open");
   $("navScrim").onclick=()=>b.classList.remove("nav-open");
   document.querySelectorAll(".navbtn[data-go]").forEach(x=>x.addEventListener("click",()=>b.classList.remove("nav-open")));
@@ -3682,17 +3678,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   renderAll();
 })();
 
-/* Site theme */
-(() => {
-  const T = [["midnight","Midnight"],["rose","Rose"],["ocean","Ocean"],["forest","Forest"]], KEY = "layaSiteTheme", btn = $("themeBtn"), root = document.documentElement;
-  function apply(id) {
-    if (!T.some(t => t[0] === id)) id = "midnight";
-    root.dataset.theme = id; btn.textContent = "Theme: " + T.find(t => t[0] === id)[1];
-    try { localStorage.setItem(KEY, id); } catch (e) {}
-  }
-  apply(root.dataset.theme || "midnight");
-  btn.onclick = () => { const i = T.findIndex(t => t[0] === root.dataset.theme); apply(T[(i + 1) % T.length][0]); };
-})();
+
 </script>
 </body>
 </html>
