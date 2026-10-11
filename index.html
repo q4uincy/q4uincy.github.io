@@ -704,7 +704,6 @@ body.auth-locked .pd-alert{display:none}
     <button class="navbtn" data-go="candleBooks">Candle &amp; books</button>
     <button class="navbtn hidden" id="periodNav" data-go="period">Cycle</button>
     <button class="navbtn" data-go="talk">Talk</button>
-    <button class="navbtn layout-btn" id="navModeBtn" type="button">Hide menu on right</button>
     <button class="navbtn sign-out" id="signOutBtn" type="button" title="Sign out of this website">Sign out</button>
   </div>
 </header>
@@ -3383,17 +3382,16 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   const b=document.body;
   b.classList.add("nav-side");
   const KEY = "layaNavAuto2", modeBtn = $("navModeBtn"), edge = $("navEdge"), bar = document.querySelector(".topbar");
-  let auto = false; try { auto = localStorage.getItem(KEY) === "1"; } catch (_) {}
+  let auto = false; try { localStorage.removeItem("layaNavAuto"); localStorage.removeItem(KEY); } catch (_) {}
   function applyMode(on) {
     auto = on;
     b.classList.toggle("nav-auto", on);
     b.classList.remove("nav-open");
-    modeBtn.textContent = on ? "Keep menu on left" : "Hide menu on right";
+    if (modeBtn) modeBtn.textContent = on ? "Keep menu on left" : "Hide menu on right";
     $("menuBtn").textContent = on ? "\u2630 Menu" : "\u2630";
-    try { localStorage.setItem(KEY, on ? "1" : "0"); } catch (_) {}
   }
   applyMode(auto);
-  modeBtn.onclick = () => {
+  if (modeBtn) modeBtn.onclick = () => {
     applyMode(!auto);
     if (auto) toast(matchMedia("(hover:hover)").matches ? "Menu hidden. Click the Menu button at the top right to bring it back." : "Menu hidden. Tap the Menu button at the top right to bring it back.");
   };
