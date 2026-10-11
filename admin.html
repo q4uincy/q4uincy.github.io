@@ -270,7 +270,7 @@
 
       <section class="section" id="moodSection">
         <div class="section-head"><span class="snow-icon" aria-hidden="true">♡</span><div class="section-title-group"><p class="section-kicker">LOOK AFTER HER</p><h2>How she's feeling</h2></div></div>
-        <div class="photo-toolbar"><p class="section-description">Mood, pain, flow and symptoms she logs in the Cycle tab. This only shows once she has switched on “Share how I feel with Kimchi”, and her private notes are never sent.</p><button id="loadMood" class="secondary" type="button">↻ Refresh</button></div>
+        <div class="photo-toolbar"><p class="section-description">Mood, pain, flow and symptoms she logs in the Cycle tab. It updates when she logs a day or taps Save &amp; update. She can turn sharing off in her Cycle tab, and her private notes are never sent.</p><button id="loadMood" class="secondary" type="button">↻ Refresh</button></div>
         <div id="moodList" class="timeline" aria-live="polite"></div>
       </section>
 
@@ -875,7 +875,7 @@
     });
     if(!rows.length){
       const empty=document.createElement("div");empty.className="empty-state";
-      empty.textContent="Nothing shared yet. It shows up here after she turns on “Share how I feel with Kimchi” in her Cycle tab and logs a day.";
+      empty.textContent="Nothing shared yet. It shows up here after she logs a day in her Cycle tab (unless she has turned sharing off).";
       list.appendChild(empty);return;
     }
     rows.slice(0,60).forEach(r=>{
