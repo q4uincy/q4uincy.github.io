@@ -210,7 +210,10 @@ body.login-snow .welcome-card:before,body.login-snow .welcome-card:after { color
 body.login-snow .welcome-moon { color: #c7e5ff; text-shadow: 0 0 22px rgba(125,190,245,.65); }
 body.login-snow .welcome-kuromi { filter: drop-shadow(0 5px 12px rgba(125,190,245,.35)); }
 body.login-snow .welcome-title { color: #e4f1ff; text-shadow: 0 0 28px rgba(125,190,245,.38); }
-body.login-snow .welcome-sub { color: #b4cce3; }
+body.login-snow .welcome-quote { margin: 20px auto 0; max-width: 340px; font-family: "Cormorant Garamond",Georgia,serif; font-style: italic; font-size: 1.12rem; line-height: 1.4; color: #e3cfdc; opacity: 0; transition: opacity 1.2s ease; }
+.welcome-quote.show { opacity: .95; }
+.welcome-quote small { display: block; margin-top: 6px; font-style: normal; font-size: .68rem; letter-spacing: .12em; color: #c9b2c4; }
+.welcome-sub { color: #b4cce3; }
 body.login-snow .welcome-skip { border-color: rgba(150,200,240,.38); background: rgba(190,225,255,.06); color: #e4f1ff; }
 body.login-snow .welcome-skip:hover { background: rgba(100,160,220,.16); border-color: rgba(180,220,255,.65); }
 .welcome-card { position: relative; text-align: center; padding: 36px 28px; max-width: min(90vw,440px); animation: welcomeRise 1.05s cubic-bezier(.2,.75,.25,1) both; }
@@ -444,7 +447,6 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     <div class="login-symbol">☾ ✦ ♡</div>
     <h1 id="loginTitle" class="login-title">made by kimchi</h1>
     <p class="login-sub">Enter your email and password.</p>
-    <p class="login-sub" style="margin-top:-12px">This is Kimchi's site, so he can see your visits and chats here.</p>
     <form id="loginForm" class="login-form" autocomplete="on">
       <label for="loginEmail">Email
         <input id="loginEmail" name="email" type="email" autocomplete="username" required maxlength="254" placeholder="Your email address">
@@ -507,6 +509,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
     </svg>
     <h1 class="welcome-title">welcome laya</h1>
     <p class="welcome-sub">Kimchi Loves You</p>
+    <p class="welcome-quote" id="welcomeQuote" hidden></p>
     <button class="welcome-skip" id="welcomeEnter" type="button">click here ✦</button>
   </div>
 </div>
@@ -824,7 +827,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
         <input id="cin" autocomplete="off" placeholder="Ask me anything, or tell me what's on your mind..." aria-label="Your message">
         <button class="action" type="submit">Send</button>
       </form>
-      <div class="fine">Kimchi can see your visits, what you talk about here, and what the AI remembers, since this is his site. If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust in person right now.</div>
+      <div class="fine">If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust in person right now.</div>
     </div>
   </section>
 
@@ -2318,6 +2321,31 @@ $("cform").onsubmit = async event => {
     waiting.textContent = "I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you.";
   }
 };
+
+
+/* Quote of the visit: a fresh line every time she opens the site */
+(() => {
+  let done = false;
+  async function loadQuote() {
+    if (done || !getToken()) return;
+    done = true;
+    try {
+      const day = new Date().toLocaleDateString("en-CA");
+      const response = await api("/quote?day=" + day, { cache: "no-store" });
+      if (!response.ok) throw new Error("quote failed");
+      const q = await response.json();
+      if (!q || !q.text) return;
+      const wq = $("welcomeQuote");
+      wq.textContent = "\u201C" + q.text + "\u201D";
+      if (q.author) { const by = document.createElement("small"); by.textContent = "\u2014 " + q.author; wq.appendChild(by); }
+      wq.hidden = false;
+      requestAnimationFrame(() => wq.classList.add("show"));
+    } catch (error) { done = false; }
+  }
+  loadQuote();
+  const poll = setInterval(() => { loadQuote(); if (done) clearInterval(poll); }, 500);
+  setTimeout(() => clearInterval(poll), 30000);
+})();
 
 /* Photo uploads */
 $("pickPics").onclick = () => $("pics").click();
