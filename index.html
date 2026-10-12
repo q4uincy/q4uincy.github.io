@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title> ♡</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0c080f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Laya">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
@@ -432,6 +440,7 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 }
 </style>
   <link rel="stylesheet" href="phone.css"><script src="reader-themes.js" defer></script>
+  <link rel="stylesheet" href="extras.css"><script src="extras.js" defer></script>
 <style id="redesign">
 /* ===== Redesign layer: calmer surfaces, one accent, switchable menu ===== */
 :root{--burg:#7a2543;--burg2:#9a3558;--text:#f2e8ee;--muted:#b4a4ae;--pink:#e5a3ba;--line:rgba(255,255,255,.08);--glow:rgba(154,53,88,.35);--surface:#17101c;--raised:#1f1626;--inset:#110b16;--r:18px;--bg-glow:#26152f;--bg-base:#0c080f;--pd-period:#c2456b;--pd-fert:#8f7bd6;--side-w:240px;color-scheme:dark}
@@ -875,6 +884,11 @@ body.auth-locked .pd-alert{display:none}
       <p>Food, cats, cute notes, and somewhere to put whatever is on your mind.</p>
     </div>
     <div class="grid">
+      <div class="card ambient-card" id="ambientCard">
+        <div class="card-title">Ambient sounds</div>
+        <p>Rain, a fire, a clock, an old cathedral. Mix them how you like, and they keep playing while you read.</p>
+        <div id="ambientMount"></div>
+      </div>
       <div class="card">
         <div class="card-title">What are you craving?</div>
         <p>Tell Kimchi what sounds good.</p>
@@ -901,6 +915,15 @@ body.auth-locked .pd-alert{display:none}
         <button class="action" id="pickPics">Choose photos</button>
         <div class="thumbs" id="thumbs"></div>
         <div class="status" id="upmsg"></div>
+      </div>
+      <div class="card surprise-card" id="surpriseCard" hidden>
+        <div class="card-title">Surprises from Kimchi</div>
+        <p>The ones you've already opened. Tap one to read it again.</p>
+        <div class="sup-list" id="surpriseList"></div>
+      </div>
+      <div class="card install-card" id="installCard" hidden>
+        <div class="card-title">Keep this on your home screen</div>
+        <div id="installBody"></div>
       </div>
     </div>
   </section>
@@ -1057,6 +1080,11 @@ body.auth-locked .pd-alert{display:none}
       <div><h2>Cycle tracker</h2></div>
       <p>Everything here is an estimate, not medical advice or birth control. Your notes stay on this device.</p>
     </div>
+    <div class="pd-backup" id="pdBackup" hidden role="status">
+      <strong id="pdBackupTitle"></strong>
+      <p id="pdBackupMsg"></p>
+      <div class="row"><button class="action" id="pdBackupNow" type="button">Back up now</button><button class="smallbtn" id="pdBackupLater" type="button">Remind me in a week</button></div>
+    </div>
     <div class="pd-wrap">
       <div class="pd-col">
         <div class="card">
@@ -1100,6 +1128,7 @@ body.auth-locked .pd-alert{display:none}
             <button class="smallbtn" id="pdErase" type="button">Erase all</button>
           </div>
           <input type="file" id="pdImport" accept="application/json" hidden>
+          <p class="fine pd-backup-info" id="pdBackupInfo"></p>
           <p class="fine">Data lives in this browser only. The one exception is the "Save &amp; send to Kimchi" button on a day: it sends that day's mood, pain, flow and symptoms to Kimchi's admin page (never your notes). Export a backup before clearing site data or switching phones. If cycles are very irregular, painful or heavy, talk to a doctor.</p>
         </div>
       </div>
@@ -1130,8 +1159,8 @@ body.auth-locked .pd-alert{display:none}
             <div class="pd-label">Mood</div><div class="pd-chips" id="pdMood"></div>
             <div class="pd-label">Notes <span id="pdSaved"></span></div>
             <textarea id="pdNotes" maxlength="1000" placeholder="Anything else about today…"></textarea>
-            <button class="action" id="pdSaveShare" type="button">Save &amp; </button>
-            <p class="fine">Data is saved on the website.</p>
+            <button class="action" id="pdSaveShare" type="button">Save &amp; send to Kimchi</button>
+            <p class="fine">Sends this day's mood, pain, flow and symptoms to Kimchi's admin page. Your notes stay on this device.</p>
           </div>
         </div>
       </div>
@@ -1153,7 +1182,7 @@ body.auth-locked .pd-alert{display:none}
     </div>
   </section>
 
-  <div class="footer">made with a little midnight purple, a little burgundy, and a lot of love ✦<br><small id="buildStamp" style="opacity:.55">build 11 Oct · v7 · phone menu button + no flash after login</small></div>
+  <div class="footer">made with a little midnight purple, a little burgundy, and a lot of love ✦<br><small id="buildStamp" style="opacity:.55">build 11 Oct · v8 · sounds, surprises, home-screen app, backup reminder</small></div>
 </main>
 
 <!-- Book reader -->
@@ -1245,8 +1274,7 @@ const $ = id => document.getElementById(id);
 
 const AUTH_KEY = "layaSiteToken";
 const LAST_ACTIVITY_KEY = "layaSiteLastActivity";
-const IDLE_TIMEOUT_MS = 15 * 60 * 1000;           // signed in without "Keep me signed in"
-const REMEMBER_IDLE_TIMEOUT_MS = 30 * 60 * 1000; // signed in with "Keep me signed in"
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
 
 let memoryToken = "";
 let idleTimer = null;
@@ -1259,8 +1287,6 @@ function getToken() {
 
 const REMEMBER_KEY = "layaRemember";
 function remembered() { try { return localStorage.getItem(REMEMBER_KEY) === "1"; } catch (error) { return false; } }
-function idleLimit() { return remembered() ? REMEMBER_IDLE_TIMEOUT_MS : IDLE_TIMEOUT_MS; }
-function idleMinutes() { return Math.round(idleLimit() / 60000); }
 
 function storeToken(value, remember) {
   memoryToken = value || "";
@@ -1268,12 +1294,12 @@ function storeToken(value, remember) {
     if (value) {
       sessionStorage.setItem(AUTH_KEY, value);
       sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
-      if (remember) { localStorage.setItem(AUTH_KEY, value); localStorage.setItem(REMEMBER_KEY, "1"); localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now())); }
+      if (remember) { localStorage.setItem(AUTH_KEY, value); localStorage.setItem(REMEMBER_KEY, "1"); }
       else if (remember === false) { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(REMEMBER_KEY); localStorage.removeItem("layaPeriod"); }
     } else {
       sessionStorage.removeItem(AUTH_KEY);
       sessionStorage.removeItem("layaPeriod");
-      sessionStorage.removeItem(LAST_ACTIVITY_KEY); localStorage.removeItem(LAST_ACTIVITY_KEY);
+      sessionStorage.removeItem(LAST_ACTIVITY_KEY);
       localStorage.removeItem(AUTH_KEY); localStorage.removeItem(REMEMBER_KEY); localStorage.removeItem("layaPeriod"); localStorage.removeItem("layaWelcomeSeen");
     }
   } catch (error) {}
@@ -1303,15 +1329,7 @@ function hideLogin() {
 }
 
 function readLastActivity() {
-  try {
-    const a = Number(sessionStorage.getItem(LAST_ACTIVITY_KEY) || 0);
-    const b = remembered() ? Number(localStorage.getItem(LAST_ACTIVITY_KEY) || 0) : 0;
-    return Math.max(a, b);
-  } catch (error) { return 0; }
-}
-function writeLastActivity(t) {
-  try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(t)); } catch (error) {}
-  try { if (remembered()) localStorage.setItem(LAST_ACTIVITY_KEY, String(t)); } catch (error) {}
+  try { return Number(sessionStorage.getItem(LAST_ACTIVITY_KEY) || 0); } catch (error) { return 0; }
 }
 
 function recordActivity() {
@@ -1319,38 +1337,37 @@ function recordActivity() {
   const now = Date.now();
   if (now - lastActivityWrite < 1000) return;
   lastActivityWrite = now;
-  writeLastActivity(now);
+  try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(now)); } catch (error) {}
   scheduleIdleLogout();
 }
 
 function lockForInactivity() {
-  const mins = idleMinutes();   // read before storeToken clears the remember flag
   storeToken("");
   try { sessionStorage.removeItem("layaWelcomeSeen"); } catch (error) {}
-  showLogin("You’ve been signed out after " + mins + " minutes of inactivity. Please sign in again.");
+  showLogin("You’ve been signed out after 15 minutes of inactivity. Please sign in again.");
 }
 
 function scheduleIdleLogout() {
   clearTimeout(idleTimer);
-  if (!getToken()) return;
+  if (!getToken() || remembered()) return;
   let last = readLastActivity();
   if (!last) {
     last = Date.now();
-    writeLastActivity(last);
+    try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(last)); } catch (error) {}
   }
-  const remaining = idleLimit() - (Date.now() - last);
+  const remaining = IDLE_TIMEOUT_MS - (Date.now() - last);
   if (remaining <= 0) { lockForInactivity(); return; }
   idleTimer = setTimeout(() => {
     if (!getToken()) return;
     const latest = readLastActivity();
-    if (Date.now() - latest >= idleLimit()) lockForInactivity(); else scheduleIdleLogout();
+    if (Date.now() - latest >= IDLE_TIMEOUT_MS) lockForInactivity(); else scheduleIdleLogout();
   }, remaining);
 }
 
 function checkIdleOnReturn() {
-  if (!getToken()) return;
+  if (!getToken() || remembered()) return;
   const last = readLastActivity();
-  if (last && Date.now() - last >= idleLimit()) lockForInactivity(); else scheduleIdleLogout();
+  if (last && Date.now() - last >= IDLE_TIMEOUT_MS) lockForInactivity(); else scheduleIdleLogout();
 }
 
 ["pointerdown","keydown","touchstart","scroll","wheel","click"].forEach(type => {
@@ -1380,10 +1397,10 @@ async function api(path, opts = {}) {
 
   if (getToken()) {
     const last = readLastActivity();
-    if (last && Date.now() - last >= idleLimit()) {
+    if (last && !remembered() && Date.now() - last >= IDLE_TIMEOUT_MS) {
       lockForInactivity();
     } else {
-      if (!last) writeLastActivity(Date.now());
+      if (!last) { try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now())); } catch (error) {} }
       scheduleIdleLogout();
       hideLogin();
     }
@@ -3621,7 +3638,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
     if (!("Notification" in window)) { b.hidden = true; return; }
     b.textContent = "Browser alerts: " + (S.prefs.notify && Notification.permission === "granted" ? "on" : "off");
   }
-  function renderAll() { C = calc(); renderHero(); renderCal(); renderDay(); renderInsights(); renderAlert(); renderNotifBtn(); }
+  function renderAll() { C = calc(); renderHero(); renderCal(); renderDay(); renderInsights(); renderAlert(); renderNotifBtn(); renderBackup(); }
 
   $("pdToday").onclick = () => {
     const ti = iso(todayD()), had = S.days.includes(ti);
@@ -3637,18 +3654,59 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   $("pdNextM").onclick = () => { view.setMonth(view.getMonth() + 1); renderCal(); };
   const pref = (id, key, lo, hi) => $(id).onchange = e => { const v = Math.round(Number(e.target.value)); S.prefs[key] = v >= lo && v <= hi ? v : S.prefs[key]; save(); renderAll(); };
   pref("pdCl", "cl", 21, 45); pref("pdPl", "pl", 2, 10);
-  $("pdExport").onclick = () => {
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], { type: "application/json" }));
-    a.download = "laya-cycle-backup.json"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  };
+  /* ---- Backup: remembers when she last backed up and nudges her gently ---- */
+  const BKEY = "layaCycleBackup_v1";
+  const bk = () => { try { return JSON.parse(localStorage.getItem(BKEY) || "{}") || {}; } catch (e) { return {}; } };
+  const setBk = o => { try { localStorage.setItem(BKEY, JSON.stringify(Object.assign(bk(), o))); } catch (e) {} };
+  const hasData = () => S.days.length > 0 || Object.keys(S.logs).length > 0;
+  const ago = ms => { const d = Math.floor((Date.now() - ms) / 864e5); return d <= 0 ? "today" : d === 1 ? "yesterday" : d + " days ago"; };
+  function renderBackup() {
+    const info = $("pdBackupInfo"), box = $("pdBackup");
+    if (!info || !box) return;
+    if (hasData() && !bk().first) setBk({ first: Date.now() });
+    const b = bk();
+    info.textContent = b.last ? "Last backup: " + ago(b.last) + "." : (hasData() ? "You haven't made a backup yet." : "");
+    let show = false;
+    if (hasData() && !(b.snooze && Date.now() < b.snooze)) {
+      const base = b.last || b.first || Date.now();
+      show = (Date.now() - base) / 864e5 >= (b.last ? 14 : 3);
+    }
+    box.hidden = !show;
+    if (!show) return;
+    $("pdBackupTitle").textContent = b.last ? "Time for a little backup" : "Keep your cycle data safe";
+    $("pdBackupMsg").textContent = b.last
+      ? "Your last backup was " + ago(b.last) + ". Your data lives only in this browser, so a fresh backup means it can never be lost."
+      : "Your data lives only in this browser. If the browser's data is cleared, or you change phones, it would be gone. A backup takes one tap.";
+  }
+  async function doExport() {
+    const json = JSON.stringify(S), name = "laya-cycle-backup-" + iso(todayD()) + ".json";
+    let shared = false;
+    try {   // on a phone, the share sheet lets her save straight to Files, Drive or send it to herself
+      const file = new File([json], name, { type: "application/json" });
+      if (matchMedia("(pointer:coarse)").matches && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "Laya cycle backup" });
+        shared = true;
+      }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+    if (!shared) {
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }
+    setBk({ last: Date.now(), snooze: 0 }); renderBackup(); toast("Backup saved \u2661");
+  }
+  $("pdExport").onclick = doExport;
+  $("pdBackupNow").onclick = doExport;
+  $("pdBackupLater").onclick = () => { setBk({ snooze: Date.now() + 7 * 864e5 }); renderBackup(); };
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}   // asks the browser not to clear this data when space is low
   $("pdImportBtn").onclick = () => $("pdImport").click();
   $("pdImport").onchange = async e => {
     const f = e.target.files[0]; if (!f) return;
     try {
       const r = JSON.parse(await f.text());
       if (!r || !Array.isArray(r.days)) throw 0;
+      if (hasData() && !confirm("This replaces the cycle data on this device with the backup. Continue?")) { e.target.value = ""; return; }
       S = cleanState(r);
-      save(); renderAll(); toast("Backup restored");
+      save(); setBk({ last: Date.now(), first: Date.now(), snooze: 0 }); renderAll(); toast("Backup restored");
     } catch (_) { toast("That file isn't a valid backup"); }
     e.target.value = "";
   };
@@ -3672,7 +3730,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
     } catch (e) { toast("This browser can't show alerts"); }
     save(); renderNotifBtn(); renderAlert();
   };
-  $("pdErase").onclick = () => { if (confirm("Erase all cycle data on this device?")) { S = blank(); save(); renderAll(); } };
+  $("pdErase").onclick = () => { if (confirm("Erase all cycle data on this device? Export a backup first if you might want it back.")) { S = blank(); save(); renderAll(); } };
   renderAll();
 })();
 
