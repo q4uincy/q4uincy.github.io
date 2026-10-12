@@ -2931,7 +2931,7 @@ $("pics").onchange = async () => {
 };
 
 /* ============ GIPHY (nothing loads until you ask) ============ */
-const GIPHY_API_KEY = "j0Mx5XH6nEDBz1jfBVAjkcAOYnbIrH3X";
+/* GIPHY and KLIPY keys now live in Cloudflare; this page talks to the Worker (/giphy, /klipy). */
 let giphyKind = "gifs", selectedGiphy = null, giphyOffset = 0, giphyLastQuery = "", giphyLoading = false, giphySeenIds = new Set();
 const GIPHY_PAGE_SIZE = 25;
 
@@ -2965,9 +2965,9 @@ async function loadGiphyPage(reset = false) {
   try {
     const endpoint = giphyKind === "stickers" ? "stickers" : "gifs";
     const path = query ? "/search" : "/trending";
-    const params = new URLSearchParams({ api_key: GIPHY_API_KEY, limit: String(GIPHY_PAGE_SIZE), offset: String(giphyOffset), rating: "g", lang: "en" });
+    const params = new URLSearchParams({ kind: endpoint, limit: String(GIPHY_PAGE_SIZE), offset: String(giphyOffset) });
     if (query) params.set("q", query);
-    const response = await fetch("https://api.giphy.com/v1/" + endpoint + path + "?" + params.toString());
+    const response = await api("/giphy?" + params.toString());
     if (!response.ok) throw new Error("GIPHY request failed: " + response.status);
     const data = await response.json();
     const items = data.data || [];
@@ -3085,9 +3085,7 @@ renderSearchHistory(SEARCH_HISTORY_GIPHY, "giphyRecentSearches", "giphySearch", 
 const KLIPY_KEY_STORAGE = "layaKlipyTestKey";
 let klipyKind = "gifs", klipyPage = 1, klipyQuery = "", klipyLoading = false, selectedKlipy = null, klipySeen = new Set();
 
-function getKlipyKey() {
-  try { return localStorage.getItem(KLIPY_KEY_STORAGE) || ""; } catch (_) { return ""; }
-}
+function getKlipyKey() { return "server"; }   // the real key is a Cloudflare secret; this just means "go through the Worker"
 renderSearchHistory(SEARCH_HISTORY_KLIPY, "klipyRecentSearches", "klipySearch", () => loadKlipyPage(true));
 
 document.querySelectorAll("[data-media-source]").forEach(button => {
@@ -3134,11 +3132,10 @@ function klipyPick(item) {
 }
 
 async function klipyFetch(key, kind, query, page, filtered) {
-  const params = new URLSearchParams({ page: String(page), per_page: "24", customer_id: "laya-kimchi" });
-  if (filtered) { params.set("locale", "us"); params.set("content_filter", "high"); }
+  const params = new URLSearchParams({ kind, page: String(page), per_page: "24" });
+  if (filtered) params.set("filtered", "1");
   if (query) params.set("q", query);
-  const url = "https://api.klipy.com/api/v1/" + encodeURIComponent(key) + "/" + kind + "/" + (query ? "search" : "trending") + "?" + params;
-  const response = await fetch(url);
+  const response = await api("/klipy?" + params);
   if (!response.ok) throw new Error("KLIPY returned " + response.status);
   const payload = await response.json();
   if (payload.result === false) throw new Error("KLIPY rejected the request");
@@ -3217,9 +3214,9 @@ $("sendKlipyBtn").addEventListener("click", async () => {
     notify("media", { url: selectedKlipy.url, kind: selectedKlipy.kind });
     $("klipyStatus").textContent = "Sent to Kimchi. ♡";
     if (selectedKlipy.slug) {
-      fetch("https://api.klipy.com/api/v1/" + encodeURIComponent(getKlipyKey()) + "/" + selectedKlipy.kind + "/share/" + encodeURIComponent(selectedKlipy.slug), {
+      api("/klipy-share", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customer_id: "laya-kimchi", q: selectedKlipy.query || "" })
+        body: JSON.stringify({ kind: selectedKlipy.kind, slug: selectedKlipy.slug, q: selectedKlipy.query || "" })
       }).catch(() => {});
     }
   } catch (_) {
