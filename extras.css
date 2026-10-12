@@ -1,0 +1,79 @@
+/* extras.css: ambient sounds, surprise letter, install card, backup reminder. Loads after phone.css. */
+
+/* ---------- Cozy cards ---------- */
+.ambient-card, .surprise-card, .install-card { grid-column: 1 / -1; }
+.ambient-card > p, .surprise-card > p, #installCard > p { margin-top: 2px; }
+#installCard[hidden], #surpriseCard[hidden] { display: none; }
+
+/* ---------- Sound controls (Cozy card and reader panel) ---------- */
+.amb { display: grid; gap: 14px; margin-top: 12px; }
+.amb-presets { display: flex; flex-wrap: wrap; gap: 8px; }
+.amb-rows { display: grid; gap: 10px; }
+.amb-row { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: var(--inset, rgba(255,255,255,.03)); transition: border-color .2s, background .2s; }
+.amb-row.on { border-color: rgba(229,163,186,.55); background: color-mix(in srgb, var(--burg, #7a2543) 22%, var(--inset, #110b16)); }
+.amb-toggle { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line); background: rgba(255,255,255,.05); font-size: 1.35rem; line-height: 1; cursor: pointer; display: grid; place-items: center; padding: 0; opacity: .6; transition: opacity .2s, background .2s, border-color .2s; }
+.amb-row.on .amb-toggle { opacity: 1; background: rgba(229,163,186,.16); border-color: rgba(229,163,186,.6); }
+.amb-label { display: flex; justify-content: space-between; gap: 8px; font-size: .9rem; margin-bottom: 2px; }
+.amb-pct { color: var(--muted); font-size: .78rem; }
+.amb input[type=range] { width: 100%; min-height: 30px; padding: 0; border: 0; background: transparent; accent-color: #d98da5; cursor: pointer; }
+.amb-foot { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 12px; align-items: end; }
+.amb-foot label { display: grid; gap: 2px; font-size: .78rem; color: var(--muted); min-width: 0; }
+.amb-foot select { min-height: 40px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--inset, #110b16); color: var(--text); }
+.amb-foot .amb-stop { align-self: end; }
+.amb-note { margin: 0; }
+.amb-note:empty { display: none; }
+@media (max-width: 520px) {
+  .amb-foot { grid-template-columns: 1fr 1fr; }
+  .amb-foot .amb-master { grid-column: 1 / -1; }
+  .amb-foot .amb-stop { grid-column: 1 / -1; }
+}
+
+/* ---------- Reader: sound button and panel ---------- */
+#readerSound.playing { border-color: rgba(229,163,186,.7); box-shadow: 0 0 0 3px rgba(229,163,186,.14); }
+@media (max-width: 640px) {
+  /* one more button in the toolbar than phone.css planned for */
+  .reader-tools { display: flex; gap: 6px; }
+  .reader-tools .smallbtn { flex: 1 1 0; min-width: 0; }
+  .reader-tools #markRead { flex: 2.2 1 0; }
+  .reader-tools #readerClose { flex: 1.5 1 0; }
+}
+.apanel { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(10px + env(safe-area-inset-bottom)); width: min(440px, calc(100% - 16px)); max-height: calc(100% - 96px); overflow-y: auto; z-index: 11; padding: 14px; border-radius: 16px; background: rgba(14,10,18,.98); border: 1px solid var(--line); box-shadow: 0 18px 50px rgba(0,0,0,.65); overscroll-behavior: contain; }
+.apanel[hidden] { display: none; }
+.apanel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.apanel-head strong { font-family: "Cormorant Garamond", serif; font-size: 1.25rem; font-weight: 600; }
+.apanel .amb { margin-top: 6px; gap: 10px; }
+.apanel .amb-row { padding: 8px 10px; }
+
+/* ---------- Surprise letter ---------- */
+.sup { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom)); overflow-y: auto; background: radial-gradient(ellipse at 50% 42%, #481a42, #060409 70%); opacity: 0; pointer-events: none; transition: opacity .6s ease; }
+.sup.show { opacity: 1; pointer-events: auto; }
+.sup-card { width: min(460px, 100%); margin: auto; padding: 30px 24px 26px; text-align: center; border-radius: 22px; border: 1px solid rgba(217,141,165,.3); background: rgba(9,7,12,.8); box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+.sup-orn { color: var(--pink); letter-spacing: .3em; font-size: .95rem; margin-bottom: 10px; }
+.sup-head { font-family: "Cormorant Garamond", serif; font-weight: 600; font-size: clamp(1.7rem, 7vw, 2.15rem); line-height: 1.15; color: #f6e6ee; margin: 0; }
+.sup-sub { margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
+.sup-sub:empty { display: none; }
+.sup-seal { display: grid; place-items: center; width: 100px; height: 100px; margin: 26px auto 8px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; font-size: 2.3rem; color: #f6cfdc; background: radial-gradient(circle at 35% 30%, #b8365e, #7a2543 55%, #4a1228); box-shadow: inset 0 -6px 12px rgba(0,0,0,.45), inset 0 4px 8px rgba(255,255,255,.18), 0 10px 30px rgba(0,0,0,.6), 0 0 0 7px rgba(122,37,67,.35); animation: supPulse 2.8s ease-in-out infinite; }
+.sup-seal:focus-visible { outline: 2px solid var(--pink); outline-offset: 6px; }
+.sup-seal.break { animation: supBreak .55s ease forwards; }
+.sup-hint { margin: 10px 0 0; color: var(--muted); font-size: .82rem; }
+.sup-date { color: var(--muted); font-size: .8rem; margin: 6px 0 16px; }
+.sup-letter { max-height: 52vh; overflow-y: auto; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; font-family: "Cormorant Garamond", Georgia, serif; font-size: 1.32rem; line-height: 1.6; color: #f3e6ec; padding: 2px 4px; animation: supIn 1s .15s both; }
+.sup-letter.short { text-align: center; font-size: 1.5rem; }
+.sup-sign { margin: 18px 0 4px; color: var(--pink); font-family: "Cormorant Garamond", serif; font-size: 1.1rem; animation: supIn 1s .9s both; }
+.sup-close { margin-top: 14px; width: 100%; }
+@keyframes supPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes supBreak { 0% { transform: scale(1); opacity: 1; } 35% { transform: scale(1.18) rotate(-6deg); opacity: 1; } 100% { transform: scale(.4) rotate(14deg); opacity: 0; } }
+@keyframes supIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.sup-list { display: grid; gap: 8px; margin-top: 10px; }
+.sup-kept { display: flex; justify-content: space-between; align-items: center; gap: 10px; text-align: left; width: 100%; }
+.sup-kept span { color: var(--muted); font-size: .78rem; font-weight: 400; }
+
+/* ---------- Cycle backup reminder ---------- */
+.pd-backup { margin: 0 0 16px; padding: 16px 18px; border-radius: var(--r, 18px); background: var(--raised, #1f1626); border: 1px solid var(--line); border-left: 4px solid var(--pink); }
+.pd-backup strong { display: block; margin-bottom: 4px; }
+.pd-backup p { margin: 0 0 12px; color: var(--muted); font-size: .88rem; }
+.pd-backup .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.pd-backup .row .action { margin: 0; width: auto; flex: 1 1 160px; min-height: 44px; }
+.pd-backup .row .smallbtn { min-height: 44px; }
+.pd-backup-info { margin-top: 8px; }
