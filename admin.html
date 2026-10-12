@@ -96,6 +96,7 @@
   .cute-list-actions{display:flex;justify-content:center;padding-top:2px}
   .cute-list-actions button{width:auto;min-width:138px;padding:9px 15px;border-radius:999px;font-size:.82rem}
   .cute-list-actions button[hidden]{display:none!important}
+  .list[hidden]{display:none!important}
   .note{background:var(--note-bg);border:1px solid var(--line);border-radius:15px;padding:13px;display:grid;gap:9px;min-width:0}
   .note small,.pic small{color:var(--note-small);font-size:.72rem}.note p{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--note-text)}
   .note button{justify-self:start;width:auto;padding:7px 10px;border:1px solid rgba(240,140,164,.25);background:rgba(111,34,60,.3);color:#f4c7d7;font-size:.78rem}
@@ -232,7 +233,9 @@
         <textarea id="text" placeholder="Write a note for Laya…" aria-label="Note"></textarea>
         <div class="form-actions"><button id="post" type="button">Post note</button><p class="status" id="status" aria-live="polite"></p></div>
         <div class="list-heading"><h3>Posted notes</h3><span class="list-count">Your collection</span></div>
-        <div id="list" class="list" aria-live="polite"></div>
+        <div class="cute-list-actions"><button id="notesToggle" class="secondary" type="button" aria-expanded="false" aria-controls="list">Show notes</button></div>
+        <div id="list" class="list" aria-live="polite" hidden></div>
+        <div class="cute-list-actions"><button id="notesMore" class="secondary" type="button" hidden>Show more</button></div>
       </section>
 
       <section class="section" id="cuteSection">
@@ -242,7 +245,8 @@
         <textarea id="cuteText" placeholder="Write a sweet little note…" aria-label="Cute note"></textarea>
         <div class="form-actions"><button id="addCute" type="button">Add cute note</button><p class="status" id="cuteStatus" aria-live="polite"></p></div>
         <div class="list-heading"><h3>Saved cute notes</h3><span class="list-count">Tiny love notes</span></div>
-        <div id="cuteList" class="list" aria-live="polite"></div>
+        <div class="cute-list-actions"><button id="cuteToggle" class="secondary" type="button" aria-expanded="false" aria-controls="cuteList">Show notes</button></div>
+        <div id="cuteList" class="list" aria-live="polite" hidden></div>
         <div class="cute-list-actions">
           <button id="cuteShowMore" class="secondary" type="button" hidden>Show more</button>
         </div>
@@ -479,6 +483,7 @@
   function lockDashboard(message="Dashboard locked after 15 minutes of inactivity."){
     authenticated=false;
     try{setPhotosVisible(false);}catch(e){}
+    try{notesOpen=false;cutesOpen=false;render();renderCutes(cuteItems);}catch(e){}
     clearTimeout(idleTimer);
     document.body.classList.remove("dashboard-open");
     dashboard.hidden=true;
@@ -573,8 +578,19 @@
         cuteStatus = document.getElementById("cuteStatus"), cuteList = document.getElementById("cuteList");
   const fmt = d => /^\d{4}-\d\d-\d\d/.test(d || "") ? new Date(d).toLocaleString() : (d || "");
 
+  const notesToggle = document.getElementById("notesToggle"), notesMore = document.getElementById("notesMore");
+  const NOTES_PAGE_SIZE = 5;
+  let allNotes = [], notesOpen = false, visibleNotes = NOTES_PAGE_SIZE;
+
   function render(notes) {
+    if (Array.isArray(notes)) allNotes = notes;
+    notes = allNotes;
     list.innerHTML = "";
+    list.hidden = !notesOpen;
+    notesToggle.textContent = notesOpen ? "Hide notes" : "Show notes · " + notes.length;
+    notesToggle.setAttribute("aria-expanded", String(notesOpen));
+    notesMore.hidden = true;
+    if (!notesOpen) return;
     if (!notes.length) {
       const empty=document.createElement("div");
       empty.className="empty-state";
@@ -582,7 +598,9 @@
       list.appendChild(empty);
       return;
     }
-    notes.slice().reverse().forEach(n => {
+    const remaining = notes.length - visibleNotes;
+    if (remaining > 0) { notesMore.hidden = false; notesMore.textContent = "Show more · " + remaining + " left"; }
+    notes.slice().reverse().slice(0, visibleNotes).forEach(n => {
       const d = document.createElement("div"); d.className = "note";
       const s = document.createElement("small"); s.textContent = fmt(n.date);
       const p = document.createElement("p"); p.textContent = n.text;
@@ -591,6 +609,9 @@
       d.append(s, p, b); list.appendChild(d);
     });
   }
+
+  notesToggle.addEventListener("click", () => { notesOpen = !notesOpen; visibleNotes = NOTES_PAGE_SIZE; render(); });
+  notesMore.addEventListener("click", () => { visibleNotes += NOTES_PAGE_SIZE; render(); });
 
   async function load() {
     try {
@@ -629,13 +650,21 @@
   };
 
   const cuteShowMore = document.getElementById("cuteShowMore");
-  const CUTE_NOTES_INITIAL = 1;
+  const CUTE_NOTES_INITIAL = 3;
   const CUTE_NOTES_PAGE_SIZE = 4;
   let cuteItems = [];
   let visibleCuteCount = CUTE_NOTES_INITIAL;
 
+  const cuteToggle = document.getElementById("cuteToggle");
+  let cutesOpen = false;
+  cuteToggle.addEventListener("click", () => { cutesOpen = !cutesOpen; visibleCuteCount = CUTE_NOTES_INITIAL; renderCutes(cuteItems); });
+
   function renderCutes(items) {
     cuteItems = Array.isArray(items) ? items.slice() : [];
+    cuteList.hidden = !cutesOpen;
+    cuteToggle.textContent = cutesOpen ? "Hide notes" : "Show notes · " + cuteItems.length;
+    cuteToggle.setAttribute("aria-expanded", String(cutesOpen));
+    if (!cutesOpen) { cuteList.innerHTML = ""; cuteShowMore.hidden = true; return; }
     visibleCuteCount = Math.min(Math.max(visibleCuteCount, CUTE_NOTES_INITIAL), Math.max(cuteItems.length, CUTE_NOTES_INITIAL));
     cuteList.innerHTML = "";
 
