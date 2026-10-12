@@ -155,6 +155,12 @@
   @media(max-width:760px){body{padding:16px}.dashboard-header{display:grid;align-items:start}.header-actions{justify-content:flex-start}.dashboard-grid{grid-template-columns:1fr}#photosSection{grid-column:auto}.quick-nav{gap:3px}.quick-nav a{padding:8px 10px}.panel{margin-top:8vh}}
   @media(max-width:420px){body{padding:11px}.panel{padding:22px 18px;border-radius:20px}.section{padding:17px;border-radius:19px}.header-actions{display:flex}.form-actions{align-items:stretch;flex-direction:column}.form-actions button{width:100%}.form-actions .status{text-align:left}.quick-nav{display:grid;grid-template-columns:1fr 1fr}.photo-toolbar button{width:100%}}
   @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+  .sup-when{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sup-when label{display:grid;gap:5px;font-size:.78rem;color:var(--muted);min-width:0}
+  .sup-note strong{display:block;font-size:.95rem;color:var(--note-text)}
+  .sup-state{display:inline-block;margin-top:2px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);background:var(--accent-soft);font-size:.7rem;color:var(--text)}
+  .sup-state.opened{border-color:rgba(140,200,160,.55)}
+  @media(max-width:420px){.sup-when{grid-template-columns:1fr}}
 </style>
 <script>
   try { document.documentElement.dataset.theme = localStorage.getItem("layaAdminTheme") === "space" ? "space" : "snow"; }
@@ -211,6 +217,7 @@
     <nav class="quick-nav" aria-label="Dashboard sections">
       <a href="#notesSection"><span>01</span> Regular notes</a>
       <a href="#cuteSection"><span>02</span> Cute notes</a>
+      <a href="#surpriseSection"><span>✦</span> Surprises</a>
       <a href="#photosSection"><span>03</span> Photos</a>
       <a href="#activitySection"><span>04</span> Activity</a>
       <a href="#moodSection"><span>♡</span> How she feels</a>
@@ -239,6 +246,21 @@
         <div class="cute-list-actions">
           <button id="cuteShowMore" class="secondary" type="button" hidden>Show more</button>
         </div>
+      </section>
+
+      <section class="section" id="surpriseSection">
+        <div class="section-head"><span class="snow-icon" aria-hidden="true">✦</span><div class="section-title-group"><p class="section-kicker">WAITING FOR THE RIGHT DAY</p><h2>Scheduled surprises</h2></div></div>
+        <p class="section-description">Write a note and choose the day it unlocks. When Laya signs in on or after that day, a sealed letter appears for her to open. You get a ping the moment she opens it.</p>
+        <input id="supTitle" type="text" maxlength="80" placeholder="Title (optional), e.g. Day 200 ♡" aria-label="Surprise title">
+        <textarea id="supText" maxlength="4000" placeholder="Write the surprise…" aria-label="Surprise message"></textarea>
+        <div class="sup-when">
+          <label>Unlock on this date<input id="supDate" type="date"></label>
+          <label>or on this day together<input id="supDay" type="number" min="0" inputmode="numeric" placeholder="e.g. 200"></label>
+        </div>
+        <p class="status" id="supHint" aria-live="polite">Pick a date, or type a day number and the date fills in.</p>
+        <div class="form-actions"><button id="addSurprise" type="button">Schedule surprise</button><p class="status" id="supStatus" aria-live="polite"></p></div>
+        <div class="list-heading"><h3>Scheduled</h3><span class="list-count" id="supCount">0</span></div>
+        <div id="supList" class="list" aria-live="polite"></div>
       </section>
 
       <section class="section" id="photosSection">
@@ -538,6 +560,7 @@
       loadActivity();
       loadChats();
       loadMemory();
+      loadSurprises();
     }catch(e){
       loginStatus.textContent="Couldn't connect to the admin service.";
     }
@@ -571,7 +594,7 @@
 
   async function load() {
     try {
-      const r = await fetch(api("/notes"), { method: "GET", cache: "no-store" });
+      const r = await fetch(api("/admin/notes"), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: user.value.trim(), password: pw.value }), cache: "no-store" });
       if (!r.ok) throw new Error("Notes request failed");
       const data = await r.json();
       render(Array.isArray(data.notes) ? data.notes : []);
@@ -1151,6 +1174,90 @@
       loadChats();
     }catch(e){
       chatsStatus.textContent="Couldn't clear chats. Try again.";
+    }
+  };
+
+  // ---- Scheduled surprises ----
+  const SINCE = "2026-07-02";   // same "day we met" as the main site, so day numbers match the counter Laya sees
+  const supTitle=document.getElementById("supTitle"), supText=document.getElementById("supText"),
+        supDate=document.getElementById("supDate"), supDay=document.getElementById("supDay"),
+        supHint=document.getElementById("supHint"), supStatus=document.getElementById("supStatus"),
+        supList=document.getElementById("supList"), supCount=document.getElementById("supCount");
+  const DAY_MS=864e5;
+  const utcOf=s=>{const [y,m,d]=s.split("-").map(Number);return Date.UTC(y,m-1,d);};
+  const dateOfDay=n=>new Date(utcOf(SINCE)+n*DAY_MS).toISOString().slice(0,10);
+  const dayOfDate=s=>Math.round((utcOf(s)-utcOf(SINCE))/DAY_MS);
+  const prettyDay=s=>new Date(s+"T12:00:00").toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"});
+  const todayLocal=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+
+  function supSync(from){
+    if(from==="day"){
+      const n=parseInt(supDay.value,10);
+      if(isFinite(n)&&n>=0&&n<=20000) supDate.value=dateOfDay(n);
+    } else if(supDate.value){
+      supDay.value=dayOfDate(supDate.value);
+    }
+    if(supDate.value){
+      const n=dayOfDate(supDate.value), t=todayLocal();
+      supHint.textContent="Unlocks "+prettyDay(supDate.value)+" (day "+n+" together)."+(supDate.value<=t?" That's today or earlier, so she'll see it next time she signs in.":"");
+    } else supHint.textContent="Pick a date, or type a day number and the date fills in.";
+  }
+  supDate.addEventListener("input",()=>supSync("date"));
+  supDay.addEventListener("input",()=>supSync("day"));
+
+  function renderSurprises(items){
+    items=Array.isArray(items)?items:[];
+    supCount.textContent=String(items.length);
+    supList.innerHTML="";
+    if(!items.length){
+      const empty=document.createElement("div"); empty.className="empty-state";
+      empty.textContent="Nothing scheduled yet. Write one above.";
+      supList.appendChild(empty); return;
+    }
+    const today=todayLocal();
+    items.forEach(sv=>{
+      const d=document.createElement("div"); d.className="note sup-note";
+      const small=document.createElement("small");
+      small.textContent=prettyDay(sv.date)+" · day "+dayOfDate(sv.date);
+      const title=document.createElement("strong"); title.textContent=sv.title||"(no title)";
+      const p=document.createElement("p"); p.textContent=sv.text.length>180?sv.text.slice(0,180)+"…":sv.text;
+      const st=document.createElement("span"); st.className="sup-state";
+      if(sv.openedAt){ st.classList.add("opened"); st.textContent="Opened by Laya · "+new Date(sv.openedAt).toLocaleString(); }
+      else if(sv.date<=today) st.textContent="Unlocked · waiting for Laya to sign in";
+      else { const n=Math.round((utcOf(sv.date)-utcOf(today))/DAY_MS); st.textContent="Locked · unlocks in "+n+" day"+(n===1?"":"s"); }
+      const b=document.createElement("button"); b.className="small"; b.textContent="Delete";
+      b.onclick=async()=>{ if(!confirm("Delete this surprise? If she has opened it, it disappears from her kept list too.")) return; await supSend("/admin/surprise-delete",{id:sv.id},"Deleted."); };
+      d.append(small,title,p,st,b); supList.appendChild(d);
+    });
+  }
+
+  async function supSend(path, extra, okMsg){
+    if(!authenticated){supStatus.textContent="Please sign in first.";return false;}
+    supStatus.textContent="Working...";
+    try{
+      const r=await fetch(api(path),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:user.value.trim(),password:pw.value,...extra})});
+      if(r.status===401){supStatus.textContent="Wrong password.";return false;}
+      if(!r.ok){supStatus.textContent=(await r.text())||"Something went wrong. Try again.";return false;}
+      renderSurprises((await r.json()).surprises||[]);
+      supStatus.textContent=okMsg;
+      return true;
+    }catch(e){supStatus.textContent="Something went wrong. Try again.";return false;}
+  }
+
+  async function loadSurprises(){
+    if(!authenticated)return;
+    try{
+      const r=await fetch(api("/admin/surprises"),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:user.value.trim(),password:pw.value})});
+      if(!r.ok)throw 0;
+      renderSurprises((await r.json()).surprises||[]);
+    }catch(e){supStatus.textContent="Couldn't load surprises. Try again.";}
+  }
+
+  document.getElementById("addSurprise").onclick=async()=>{
+    if(!supText.value.trim()){supStatus.textContent="Write the surprise first.";return;}
+    if(!supDate.value){supStatus.textContent="Pick the day it unlocks.";return;}
+    if(await supSend("/admin/surprise-add",{title:supTitle.value,text:supText.value,date:supDate.value},"Scheduled. It unlocks on the day, when she signs in.")){
+      supTitle.value="";supText.value="";supDate.value="";supDay.value="";supSync();
     }
   };
 
