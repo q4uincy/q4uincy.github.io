@@ -893,7 +893,6 @@ body.auth-locked .pd-alert{display:none}
   <section class="section" id="wall">
     <div class="section-head"><div><div class="section-kicker">photo wall</div><h2>Our little wall of memories.</h2></div></div>
     <div class="gw-bar">
-      <input id="gwCap" maxlength="100" placeholder="Caption (optional)" aria-label="Caption">
       <input id="gwFiles" type="file" accept="image/*" multiple hidden>
       <button class="smallbtn" id="gwPick" type="button">＋ Add photos</button>
     </div>
@@ -1323,22 +1322,22 @@ body.auth-locked .pd-alert{display:none}
 <canvas class="snow-layer" id="snowCanvas" aria-hidden="true"></canvas>
 
 <script>
-/* Who is signed in: read from the login token (laya or quincy). */
+/* Who is signed in: read from the login token (laya or kimchi). */
 const ME = (() => {
   try {
     const t = sessionStorage.getItem("layaSiteToken") || localStorage.getItem("layaSiteToken") || "";
     const p = t.split(".")[1];
     if (!p) return "laya";
-    return JSON.parse(atob(p.replace(/-/g, "+").replace(/_/g, "/"))).sub === "quincy" ? "quincy" : "laya";
+    return JSON.parse(atob(p.replace(/-/g, "+").replace(/_/g, "/"))).sub === "kimchi" ? "kimchi" : "laya";
   } catch (error) { return "laya"; }
 })();
-if (ME === "quincy") {
+if (ME === "kimchi") {
   const q = (sel, fn) => { const el = document.querySelector(sel); if (el) fn(el); };
-  q(".welcome-title", el => el.textContent = "welcome quincy");
+  q(".welcome-title", el => el.textContent = "welcome kimchi");
   q(".welcome-sub", el => el.textContent = "Laya's corner, with you in it");
-  q("#welcomeVeil", el => el.setAttribute("aria-label", "Welcome Quincy"));
+  q("#welcomeVeil", el => el.setAttribute("aria-label", "Welcome Kimchi"));
   q(".brand", el => el.textContent = "✦ QUINCY");
-  q("#home h1", el => el.innerHTML = "Hi <em>Quincy.</em><br>welcome back.");
+  q("#home h1", el => el.innerHTML = "Hi <em>Kimchi.</em><br>welcome back.");
   q("#home .eyebrow", el => el.textContent = "the site you made for Laya");
   q("#home h1 + p", el => el.textContent = "Look around, test things, and ask the AI what Laya has been saying.");
   q('.navbtn[data-go="us"]', el => el.classList.add("hidden"));   // the Us tab is Laya-to-Kimchi only
@@ -1346,10 +1345,10 @@ if (ME === "quincy") {
   // Cards that are Laya-to-Kimchi only (food pings, photo uploads, his own notes to her)
   ["#foodBox", "#cuteText", "#pics"].forEach(sel => q(sel, el => { const c = el.closest(".card"); if (c) c.classList.add("hidden"); }));
   q("#talk .section-head p", el => el.textContent = "Ask the AI anything. It remembers what you tell it, and it will tell you once, when you start chatting, what Laya said about you or asked it to pass on. It is not Laya and it is not a therapist.");
-  document.title = "Quincy";
+  document.title = "Kimchi";
 }
-const CHAT_GREETING = ME === "quincy"
-  ? "Hey Quincy. Ask me anything, or ask what Laya has been telling me. Tell me \"tell Laya...\" and I'll pass it on."
+const CHAT_GREETING = ME === "kimchi"
+  ? "Hey Kimchi. Ask me anything, or ask what Laya has been telling me. Tell me \"tell Laya...\" and I'll pass it on."
   : "Hey Laya. Ask me anything, or just tell me what's on your mind. I'll remember the important stuff for next time.";
 </script>
 <script>
@@ -1641,7 +1640,7 @@ function toast(message) {
 }
 
 function notify(event, extra = {}) {
-  if (typeof ME !== "undefined" && ME === "quincy") return;   // never ping Kimchi about his own visits
+  if (typeof ME !== "undefined" && ME === "kimchi") return;   // never ping Kimchi about his own visits
   api("/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event, ...extra }) }).catch(() => {});
 }
 
@@ -2874,7 +2873,7 @@ $("cform").onsubmit = async event => {
   } catch (error) {
     chatHistory.pop();
     waiting.classList.remove("typing");
-    waiting.textContent = ME === "quincy" ? "I can't connect right now. Try again in a bit." : "I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you.";
+    waiting.textContent = ME === "kimchi" ? "I can't connect right now. Try again in a bit." : "I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you.";
     if (!input.value) input.value = text;     // keep what she typed so nothing is lost
   } finally {
     chatBusy = false;
@@ -4022,13 +4021,13 @@ $("sendKlipyBtn").addEventListener("click", async () => {
 (function(){
   var grid=document.getElementById("gwGrid");if(!grid)return;
   var msg=document.getElementById("gwMsg"),files=document.getElementById("gwFiles"),loaded=false,urls={};
-  var who=function(b){return b==="laya"?"Laya":b==="quincy"?"Kimchi":"Unknown uploader"};
+  var who=function(b){if(b&&typeof b==="object")b=b.id||b.name||"";return b==="laya"?"laya":b==="kimchi"?"kimchi":""};
   async function img(id){if(urls[id])return urls[id];var r=await api("/wall/photo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:id})});if(!r.ok)throw 0;return urls[id]=URL.createObjectURL(await r.blob());}
   var lazy=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;lazy.unobserve(e.target);
     img(e.target.dataset.id).then(function(u){e.target.src=u}).catch(function(){});});},{rootMargin:"200px"});
   function open(p){var box=document.createElement("div");box.className="gw-box";
     var im=document.createElement("img"),c=document.createElement("p"),del=document.createElement("button"),cl=document.createElement("button");
-    img(p.id).then(function(u){im.src=u});c.textContent=(p.caption?p.caption+" \u00B7 ":"")+who(p.by);
+    img(p.id).then(function(u){im.src=u});var uploader=who(p.by);if(uploader)c.textContent=uploader;
     del.className=cl.className="smallbtn";del.type=cl.type="button";del.textContent="Delete";cl.textContent="Close";
     cl.onclick=function(){box.remove()};box.onclick=function(e){if(e.target===box)box.remove()};
     del.onclick=async function(){if(!confirm("Delete this photo?"))return;var r=await api("/wall/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:p.id})});
@@ -4037,14 +4036,14 @@ $("sendKlipyBtn").addEventListener("click", async () => {
   async function load(force){if((loaded&&!force)||!getToken())return;loaded=true;
     try{var r=await api("/wall/list",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});var d=await r.json();grid.textContent="";
       (d.photos||[]).forEach(function(p){var c=document.createElement("div"),i=document.createElement("img"),b=document.createElement("span");
-        c.className="gw-card";i.dataset.id=p.id;i.alt=p.caption||"photo";b.className="gw-by";b.textContent=(p.caption? p.caption+" · ":"")+who(p.by);
-        c.appendChild(i);c.appendChild(b);c.onclick=function(){open(p)};grid.appendChild(c);lazy.observe(i);});
+        c.className="gw-card";i.dataset.id=p.id;i.alt="photo";b.className="gw-by";b.textContent=who(p.by);
+        c.appendChild(i);c.onclick=function(){open(p)};grid.appendChild(c);lazy.observe(i);});
       if(!(d.photos||[]).length)grid.innerHTML='<p class="fine">No photos yet. Add the first one.</p>';
     }catch(e){loaded=false;}}
   document.getElementById("gwPick").onclick=function(){files.click()};
   files.onchange=async function(){var fs=[].slice.call(files.files).slice(0,6);if(!fs.length)return;msg.textContent="Adding "+fs.length+"…";
-    try{var f=new FormData();for(var i=0;i<fs.length;i++)f.append("photos",await shrink(fs[i]),"photo.jpg");f.append("caption",document.getElementById("gwCap").value.trim());
-      var r=await api("/wall/upload",{method:"POST",body:f});if(!r.ok)throw 0;msg.textContent="Added \u2726";document.getElementById("gwCap").value="";load(true);}
+    try{var f=new FormData();for(var i=0;i<fs.length;i++)f.append("photos",await shrink(fs[i]),"photo.jpg");
+      var r=await api("/wall/upload",{method:"POST",body:f});if(!r.ok)throw 0;msg.textContent="Added \u2726";load(true);}
     catch(e){msg.textContent="Couldn't add photos, try again.";}files.value="";};
   new IntersectionObserver(function(e){if(e[0].isIntersecting)load();},{rootMargin:"300px"}).observe(document.getElementById("wall"));
 })();
