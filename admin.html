@@ -507,9 +507,9 @@
   }));
   applyFxLabels();
 
-  const IDLE_TIMEOUT_MS=15*60*1000;
+  const IDLE_TIMEOUT_MS=3*60*1000;
   let authenticated=false, idleTimer=null, lastActivityAt=0, lastPointerMoveAt=0;
-  function lockDashboard(message="Dashboard locked after 15 minutes of inactivity."){
+  function lockDashboard(message="Dashboard locked after 3 minutes of inactivity."){
     authenticated=false;
     try{setPhotosVisible(false);}catch(e){}
     try{notesOpen=false;cutesOpen=false;render();renderCutes(cuteItems);}catch(e){}
@@ -553,12 +553,15 @@
     lastPointerMoveAt=now;
     noteAdminActivity();
   },{passive:true});
-  document.addEventListener("visibilitychange",()=>{
-    if(!document.hidden&&authenticated){
-      if(Date.now()-lastActivityAt>=IDLE_TIMEOUT_MS)lockDashboard();
-      else scheduleIdleLock();
-    }
-  });
+  function checkAdminIdle(){
+    if(!authenticated)return;
+    if(Date.now()-lastActivityAt>=IDLE_TIMEOUT_MS)lockDashboard();
+    else scheduleIdleLock();
+  }
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkAdminIdle();});
+  window.addEventListener("focus",checkAdminIdle);
+  window.addEventListener("pageshow",checkAdminIdle);
+  setInterval(checkAdminIdle,15000);
 
   try {
     const savedUser = sessionStorage.getItem("adminUsername");
@@ -604,35 +607,6 @@
 
   pw.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("login").click();});
 
-  // Auto sign-in when the browser fills in a saved username + password (no click needed).
-  // Typing by hand never triggers it; you still press Enter or Continue. Each combination is tried once,
-  // so a wrong saved password won't loop, and after the dashboard locks it stays locked until you type.
-  let autoTried="";
-  function tryAutoLogin(){
-    if(authenticated||window.__adminAutoOff||loginPanel.hidden)return;
-    if(document.activeElement===user||document.activeElement===pw)return;
-    const u=user.value.trim(),p=pw.value;
-    if(!u||!p)return;
-    const key=u+"\u0000"+p;
-    if(key===autoTried)return;
-    autoTried=key;
-    document.getElementById("login").click();
-  }
-  [user,pw].forEach(el=>{
-    el.addEventListener("keydown",()=>{window.__adminAutoOff=false;});
-    el.addEventListener("input",e=>{
-      // Autofill fires input events with no typing inputType; typed or pasted text is ignored here.
-      if(!e.inputType||e.inputType==="insertReplacementText")setTimeout(()=>{
-        if(!authenticated&&!window.__adminAutoOff&&user.value.trim()&&pw.value){
-          const key=user.value.trim()+"\u0000"+pw.value;
-          if(key!==autoTried){autoTried=key;document.getElementById("login").click();}
-        }
-      },150);
-    });
-    el.addEventListener("change",()=>setTimeout(tryAutoLogin,150));
-  });
-  let autoPolls=0;
-  const autoPoll=setInterval(()=>{tryAutoLogin();if(authenticated||++autoPolls>25)clearInterval(autoPoll);},300);
   document.getElementById("lock").onclick=()=>lockDashboard("Dashboard locked.");
 
   const cuteText = document.getElementById("cuteText"), addCute = document.getElementById("addCute"),
@@ -821,6 +795,20 @@
   const picsBox=document.getElementById("pics"), picStatus=document.getElementById("picStatus");
 
   let photosVisible=false;
+  // Cloudflare KV can keep listing/serving a deleted photo for a minute or more, so remember
+  // what was deleted from this browser for 15 minutes and hide it even if the server still lists it.
+  const DEL_KEY="adminDeletedPhotos";
+  function deletedPhotos(){
+    try{
+      const o=JSON.parse(sessionStorage.getItem(DEL_KEY)||"{}"),now=Date.now(),out={};
+      for(const k in o)if(now-o[k]<15*60*1000)out[k]=o[k];
+      return out;
+    }catch(e){return {};}
+  }
+  function markPhotoDeleted(id){
+    const o=deletedPhotos();o[id]=Date.now();
+    try{sessionStorage.setItem(DEL_KEY,JSON.stringify(o));}catch(e){}
+  }
   async function loadPics(){
     if(!authenticated)return;
     picStatus.textContent="Loading...";
@@ -833,7 +821,8 @@
       });
       if(r.status===401){picStatus.textContent="Wrong password.";return;}
       if(!r.ok)throw 0;
-      const photos=(await r.json()).photos||[];
+      const gone=deletedPhotos();
+      const photos=((await r.json()).photos||[]).filter(ph=>!gone[ph.id]);
       picStatus.textContent=photos.length ? (photos.length + " photo" + (photos.length === 1 ? "" : "s") + " saved" + (photosVisible ? "" : " · hidden until you press Show photos")) : "No photos yet.";
       if(!photosVisible) return;
       if (!photos.length) {
@@ -859,6 +848,7 @@
               body:JSON.stringify({username:user.value.trim(),password:pw.value,id:ph.id})
             });
             if(!deleted.ok)throw new Error("Delete failed");
+            markPhotoDeleted(ph.id);
             card.remove();
             picStatus.textContent="Photo deleted.";
           } catch(e) {
