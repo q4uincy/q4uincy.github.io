@@ -1165,6 +1165,21 @@ body.auth-locked .pd-alert{display:none}
 .gw-box{position:fixed;inset:0;z-index:20000;background:rgba(5,3,8,.92);display:grid;place-items:center;padding:16px;text-align:center}
 .gw-box img{max-width:94vw;max-height:76vh;border-radius:12px}
 .gw-box p{margin:10px 0;color:#f3e2ec}
+
+.cd-pop{position:fixed;inset:0;z-index:20001;display:grid;place-items:center;padding:20px;background:rgba(5,3,8,.9)}
+.cd-pop-card{position:relative;width:min(340px,100%);padding:30px 22px 24px;text-align:center;border:1px solid rgba(217,141,165,.55);border-radius:18px;background:linear-gradient(#1a0f21,#0d0811);box-shadow:0 0 0 4px rgba(13,8,17,.9),0 0 0 5px rgba(139,41,71,.6),0 0 40px rgba(217,141,165,.22)}
+.cd-pop-card:before,.cd-pop-card:after{content:"\2726";position:absolute;top:10px;color:#d98da5;font-size:.8rem}
+.cd-pop-card:before{left:14px}.cd-pop-card:after{right:14px}
+.cd-pop-kick{font-family:"Courier New",monospace;font-weight:700;letter-spacing:.3em;font-size:.72rem;color:#ffb3d1;text-shadow:0 0 8px #ff5f8f}
+.cd-pop-name{font-family:"Cormorant Garamond",serif;font-size:2.1rem;font-weight:600;line-height:1.15;margin:14px 0 6px;color:#f6e6ef;word-break:break-word}
+.cd-pop-orn{color:#b9899f;letter-spacing:.35em;font-size:.8rem;margin:6px 0}
+.cd-pop-date{font-family:"Courier New",monospace;font-size:.7rem;letter-spacing:.2em;color:#c5b7c1;margin-bottom:16px}
+
+@keyframes cdFloat{0%,100%{transform:translateY(0);text-shadow:0 0 10px rgba(255,95,143,.35)}50%{transform:translateY(-5px);text-shadow:0 0 22px rgba(255,95,143,.8)}}
+@keyframes cdTwinkle{0%,100%{opacity:.35}50%{opacity:1}}
+.cd-pop-name{animation:cdFloat 3s ease-in-out infinite}
+.cd-pop-orn{animation:cdTwinkle 2s ease-in-out infinite}
+.cd-pop-card:before,.cd-pop-card:after{animation:cdTwinkle 2.4s ease-in-out infinite}
 </style>
     <div class="section-head">
       <div><h2>Cycle tracker</h2></div>
@@ -3961,6 +3976,14 @@ $("sendKlipyBtn").addEventListener("click", async () => {
 
 /* countdowns (shared, saved on the worker) */
 (function(){
+  function cdPop(name,ymd,done){
+    var box=document.createElement("div");box.className="cd-pop";
+    var c=document.createElement("div");c.className="cd-pop-card";
+    function el(cls,t){var e=document.createElement("div");e.className=cls;e.textContent=t;c.appendChild(e);return e;}
+    el("cd-pop-kick","\u2605 TODAY \u2605");el("cd-pop-name",name);el("cd-pop-orn","\u263E \u2726 \u2661 \u2726 \u263D");el("cd-pop-date",ymd.replace(/-/g,"."));
+    var b=document.createElement("button");b.type="button";b.className="smallbtn";b.textContent="ok";
+    b.onclick=function(){box.remove();if(done)done();};c.appendChild(b);box.appendChild(c);document.body.appendChild(box);}
+  
   var list=document.getElementById("cdList");if(!list)return;
   var items=[],rows=[],msg=document.getElementById("cdMsg"),loaded=false;
   function target(it){var q=it.date.split("-").map(Number),t=new Date(q[0],q[1]-1,q[2]);
@@ -3974,16 +3997,23 @@ $("sendKlipyBtn").addEventListener("click", async () => {
       var l=document.createElement("div"),b=document.createElement("b"),sm=document.createElement("small");
       b.textContent=it.name;sm.textContent=it.date+(it.yearly?" \u00B7 every year":"");l.appendChild(b);l.appendChild(sm);
       var tm=document.createElement("div");tm.className="cd-time";
-      var x=document.createElement("button");x.className="cd-x";x.type="button";x.textContent="\u2715";x.setAttribute("aria-label","Remove");
-      x.onclick=function(){items=items.filter(function(i){return i.id!==it.id});save();};
+      var x=document.createElement("button");x.className="smallbtn";x.type="button";x.textContent="Remove";x.setAttribute("aria-label","Remove "+it.name);
+      x.onclick=function(){if(!confirm("Remove \""+it.name+"\"?"))return;items=items.filter(function(i){return i.id!==it.id});save();};
       row.appendChild(l);row.appendChild(tm);row.appendChild(x);list.appendChild(row);rows.push({t:target(it),el:tm});});
     if(!items.length)list.innerHTML='<p class="fine">Nothing yet. Add a birthday or a date to count down to.</p>';paint();}
+  function celebrate(){
+    var n=new Date(),ymd=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0"),md=ymd.slice(5);
+    var due=items.filter(function(it){if(!(it.yearly?it.date.slice(5)===md:it.date===ymd))return false;
+      try{if(sessionStorage.getItem("layaCdSeen:"+it.id+":"+ymd))return false;}catch(e){}return true;});
+    (function next(){var it=due.shift();if(!it)return;try{sessionStorage.setItem("layaCdSeen:"+it.id+":"+ymd,"1");}catch(e){}cdPop(it.name,ymd,next);})();
+  }
   async function save(){build();try{var r=await api("/cd/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items:items})});msg.textContent=r.ok?"":"Couldn't save, try again.";}catch(e){msg.textContent="Couldn't save, try again.";}}
-  async function load(){if(loaded||!getToken())return;loaded=true;try{var r=await api("/cd/get",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});var d=await r.json();items=d.items||[];}catch(e){loaded=false;}build();}
+  async function load(){if(loaded||!getToken())return;loaded=true;try{var r=await api("/cd/get",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});var d=await r.json();items=d.items||[];}catch(e){loaded=false;}build();celebrate();}
   document.getElementById("cdAdd").onclick=function(){var n=document.getElementById("cdName").value.trim(),d=document.getElementById("cdDate").value;
     if(!n||!d){msg.textContent="Add a name and a date.";return;}
     items.push({id:Date.now().toString(36),name:n,date:d,yearly:document.getElementById("cdYearly").checked});
     document.getElementById("cdName").value="";document.getElementById("cdDate").value="";msg.textContent="";save();};
+  if(getToken())setTimeout(load,1200);
   setInterval(function(){if(!document.hidden)paint()},1000);
   new IntersectionObserver(function(e,o){if(e[0].isIntersecting){load();}},{rootMargin:"300px"}).observe(document.getElementById("countdowns"));
 })();
