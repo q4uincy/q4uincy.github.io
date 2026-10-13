@@ -6,6 +6,9 @@
 <title> ♡</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0c080f">
+<script>(function(){var l=0;try{l=localStorage.getItem("layaLite")==="1"}catch(e){}if(!l)return;document.documentElement.classList.add("lite");
+try{HTMLMediaElement.prototype.play=function(){return Promise.resolve()}}catch(e){}
+try{var raf=window.requestAnimationFrame.bind(window);window.requestAnimationFrame=function(cb){return setTimeout(function(){raf(cb)},60)}}catch(e){}})();</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Laya">
@@ -444,6 +447,18 @@ body.login-snow .theme-row .smallbtn { border-color: rgba(150,200,240,.25); }
 @media(prefers-reduced-motion:reduce) {
   * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+/* Lite mode: no effects, videos, blur or animations, so the site runs smoothly on slower phones */
+html.lite .rain-layer, html.lite .snow-layer, html.lite .card-snow, html.lite .card-rain, html.lite .starfield,
+html.lite video, html.lite .shade { display: none !important; }
+html.lite *, html.lite *::before, html.lite *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+.lite-pick { position: fixed; inset: 0; z-index: 20000; display: grid; place-items: center; padding: 22px; background: rgba(5,3,8,.86); }
+.lite-pick .box { width: min(380px,100%); padding: 26px 22px; border: 1px solid rgba(217,141,165,.3); border-radius: 20px; background: #130d18; text-align: center; }
+.lite-pick h3 { font-family: "Cormorant Garamond",serif; font-size: 1.6rem; font-weight: 500; margin-bottom: 6px; }
+.lite-pick p { color: var(--muted); font-size: .85rem; line-height: 1.5; margin-bottom: 16px; }
+.lite-pick button { display: block; width: 100%; margin-top: 9px; padding: 12px 14px; border-radius: 13px; border: 1px solid rgba(217,141,165,.4); background: rgba(101,29,53,.35); cursor: pointer; font-size: .9rem; }
+.lite-pick button small { display: block; color: var(--muted); font-size: .72rem; margin-top: 3px; }
+.login-links { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+.login-links a, .login-links button { text-decoration: none; }
 </style>
   <link rel="stylesheet" href="phone.css"><script src="reader-themes.js" defer></script>
   <link rel="stylesheet" href="extras.css"><script src="extras.js" defer></script>
@@ -649,6 +664,8 @@ body.auth-locked .pd-alert{display:none}
       <button class="smallbtn fx-btn" type="button" data-fx="snow">❄ Snow</button>
       <button class="smallbtn fx-btn" type="button" data-fx="rain">🌧 Rain</button>
     </div>
+    <div class="login-links">
+    </div>
   </section>
 </div>
 
@@ -712,6 +729,8 @@ body.auth-locked .pd-alert{display:none}
     <div class="brand">✦ LAYA</div>
     <button class="navbtn" data-go="home">Home</button>
     <button class="navbtn" data-go="us">Us</button>
+    <button class="navbtn" data-go="countdowns">Countdowns</button>
+    <button class="navbtn" data-go="wall">Photo wall</button>
     <button class="navbtn" data-go="quotes">Quotes</button>
     <button class="navbtn" data-go="music">Music</button>
     <button class="navbtn" data-go="plush">Plushies</button>
@@ -749,6 +768,22 @@ body.auth-locked .pd-alert{display:none}
       <div class="together-sub" id="togetherSub"></div>
       <div class="together-actions"><button class="smallbtn" id="togetherSet" type="button">Set our date</button></div>
       <div class="together-form" id="togetherForm" hidden><input type="date" id="togetherDate" aria-label="The day we got together"><button class="smallbtn" id="togetherSave" type="button">Save</button></div>
+    </div>
+    <div class="gclock" id="gclock" aria-label="Clock">
+      <svg viewBox="0 0 200 200" id="gcSvg" role="img" aria-label="Analog clock">
+        <defs><linearGradient id="gcChrome" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e6ef"/><stop offset=".5" stop-color="#b9899f"/><stop offset="1" stop-color="#5b2340"/></linearGradient></defs>
+        <circle cx="100" cy="100" r="96" fill="#0d0811" stroke="url(#gcChrome)" stroke-width="4"/>
+        <circle cx="100" cy="100" r="88" fill="none" stroke="#8b2947" stroke-width="1" stroke-dasharray="2 4"/>
+        <g id="gcTicks"></g><g id="gcNums"></g>
+        <text x="100" y="62" text-anchor="middle" class="gc-orn">✦</text>
+        <text x="100" y="146" text-anchor="middle" class="gc-orn">☾</text>
+        <line id="gcH" x1="100" y1="100" x2="100" y2="58" class="gc-h"/>
+        <line id="gcM" x1="100" y1="100" x2="100" y2="38" class="gc-m"/>
+        <line id="gcS" x1="100" y1="112" x2="100" y2="30" class="gc-s"/>
+        <circle cx="100" cy="100" r="5" fill="#d98da5" stroke="#0d0811" stroke-width="2"/>
+      </svg>
+      <div class="gc-digi" id="gcDigi">--:--:--</div>
+      <div class="gc-date" id="gcDate"></div>
     </div>
     <div class="orn">☾ ✦ ♡ ✦ ☽</div>
   </section>
@@ -841,6 +876,29 @@ body.auth-locked .pd-alert{display:none}
         </details>
       </div>
     </div>
+  </section>
+
+  <section class="section" id="countdowns">
+    <div class="section-head"><div><div class="section-kicker">countdowns</div><h2>Days we're waiting for.</h2></div></div>
+    <div class="cd-list" id="cdList"></div>
+    <div class="cd-form">
+      <input id="cdName" maxlength="60" placeholder="Birthday, trip, anything…" aria-label="Name">
+      <input id="cdDate" type="date" aria-label="Date">
+      <label class="cd-yearly"><input id="cdYearly" type="checkbox"> every year</label>
+      <button class="smallbtn" id="cdAdd" type="button">Add ✦</button>
+    </div>
+    <p class="fine" id="cdMsg"></p>
+  </section>
+
+  <section class="section" id="wall">
+    <div class="section-head"><div><div class="section-kicker">photo wall</div><h2>Our little wall of memories.</h2></div></div>
+    <div class="gw-bar">
+      <input id="gwCap" maxlength="100" placeholder="Caption (optional)" aria-label="Caption">
+      <input id="gwFiles" type="file" accept="image/*" multiple hidden>
+      <button class="smallbtn" id="gwPick" type="button">＋ Add photos</button>
+    </div>
+    <p class="fine" id="gwMsg"></p>
+    <div class="gw-grid" id="gwGrid"></div>
   </section>
 
   <section class="section" id="quotes">
@@ -1081,7 +1139,33 @@ body.auth-locked .pd-alert{display:none}
       .pd-banner .row{display:flex;gap:8px;flex-wrap:wrap}
       body.nav-side .pd-banner{top:16px;left:calc(50% + var(--side-w) / 2)}
       @media(max-width:860px){body.nav-side .pd-banner{top:calc(68px + env(safe-area-inset-top));left:50%}}
-    </style>
+    
+/* gothic y2k clock, countdowns, photo wall */
+.gclock{margin:16px 0 4px;display:flex;flex-direction:column;align-items:center;gap:6px}
+#gcSvg{width:min(210px,60vw);height:auto;filter:drop-shadow(0 0 14px rgba(217,141,165,.28))}
+.gc-orn{fill:#d98da5;font-size:11px}
+.gc-h,.gc-m,.gc-s{stroke-linecap:round;transform-origin:100px 100px}
+.gc-h{stroke:#f6e6ef;stroke-width:4}.gc-m{stroke:#e5a3ba;stroke-width:2.6}.gc-s{stroke:#ff5f8f;stroke-width:1.2}
+.gc-digi{font-family:"Courier New",monospace;font-weight:700;font-size:1.7rem;letter-spacing:.14em;color:#ffb3d1;text-shadow:0 0 8px #ff5f8f,0 0 18px rgba(139,41,71,.9);padding:6px 16px;border:1px solid rgba(217,141,165,.4);border-radius:6px;background:linear-gradient(#120a17,#1b0f20)}
+.gc-date{font-family:"Courier New",monospace;font-size:.72rem;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
+.cd-list{display:grid;gap:10px;margin-bottom:12px}
+.cd-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(19,12,24,.7)}
+.cd-item b{display:block;font-family:"Cormorant Garamond",serif;font-size:1.15rem;font-weight:600}
+.cd-item small{display:block;color:var(--muted);font-size:.72rem}
+.cd-time{margin-left:auto;text-align:right;font-family:"Courier New",monospace;color:#ffb3d1;font-size:.85rem;line-height:1.35}
+.cd-x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1rem}
+.cd-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cd-form input[type=text],.cd-form input:not([type]),.cd-form input[type=date],.gw-bar input[type=text],.gw-bar input:not([type]){flex:1 1 140px;padding:10px 12px;border-radius:11px;background:#100c16;border:1px solid #493044;color:#f6eaf2;font:inherit}
+.cd-yearly{font-size:.78rem;color:var(--muted);display:flex;gap:5px;align-items:center}
+.gw-bar{display:flex;gap:8px;margin-bottom:8px}
+.gw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gw-card{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#100c16;cursor:pointer}
+.gw-card img{width:100%;height:100%;object-fit:cover;display:block}
+.gw-by{position:absolute;left:6px;bottom:6px;font-size:.62rem;padding:2px 7px;border-radius:99px;background:rgba(10,6,14,.75);color:#f3d6e4}
+.gw-box{position:fixed;inset:0;z-index:20000;background:rgba(5,3,8,.92);display:grid;place-items:center;padding:16px;text-align:center}
+.gw-box img{max-width:94vw;max-height:76vh;border-radius:12px}
+.gw-box p{margin:10px 0;color:#f3e2ec}
+</style>
     <div class="section-head">
       <div><h2>Cycle tracker</h2></div>
       <p>Everything here is an estimate, not medical advice or birth control. Your notes stay on this device.</p>
@@ -1219,19 +1303,6 @@ body.auth-locked .pd-alert{display:none}
 
 <script src="notes.js"></script>
 
-<section class="admin-entry" aria-label="Admin login">
-  <button class="admin-open" id="adminOpen" type="button" aria-expanded="false" aria-controls="adminPanel">☾ Admin Login</button>
-  <form class="admin-panel" id="adminPanel" autocomplete="on">
-    <div class="card-title">private little doorway</div>
-    <label for="mainAdminUser">Username</label>
-    <input id="mainAdminUser" name="username" autocomplete="username" required placeholder="Admin username">
-    <label for="mainAdminPassword">Password</label>
-    <input id="mainAdminPassword" name="password" type="password" autocomplete="current-password" required placeholder="Your existing admin password">
-    <button type="submit">Continue to admin ✦</button>
-    <p class="admin-hint">Your details are kept in this browser tab only and used to prefill the existing admin login.</p>
-    <p class="admin-status" id="adminLoginStatus" aria-live="polite"></p>
-  </form>
-</section>
 
 <canvas class="rain-layer" id="rainCanvas" aria-hidden="true"></canvas>
 <canvas class="snow-layer" id="snowCanvas" aria-hidden="true"></canvas>
@@ -1281,6 +1352,7 @@ const CHAT_GREETING = ME === "quincy"
 
   const open = document.getElementById("adminOpen");
   const panel = document.getElementById("adminPanel");
+  if (open && panel) {
   open.addEventListener("click", () => {
     const isOpen = !panel.classList.contains("open");
     panel.classList.toggle("open", isOpen);
@@ -1304,9 +1376,28 @@ const CHAT_GREETING = ME === "quincy"
     status.textContent = "Opening your existing admin page…";
     location.href = "admin.html";
   });
+  }
 })();
 
 const CHAT_URL = "https://laya-site.manilimelight769.workers.dev";
+const CHAT_URL_BACKUP = "https://laya-relay.pages.dev"; // second address for the same worker, e.g. "https://your-domain.com"; leave empty to disable
+let CHAT_BASE = CHAT_URL;
+try { const b = localStorage.getItem("layaBase"); if (b && (b === CHAT_URL || b === CHAT_URL_BACKUP)) CHAT_BASE = b; } catch (e) {}
+async function workerFetch(path, opts) {
+  const bases = [CHAT_BASE].concat([CHAT_URL, CHAT_URL_BACKUP].filter(b => b && b !== CHAT_BASE));
+  let err;
+  for (let i = 0; i < bases.length; i++) {
+    const b = bases[i], last = i === bases.length - 1;
+    const ctl = new AbortController(), timer = last ? null : setTimeout(() => ctl.abort(), 12000);
+    try {
+      const r = await fetch(b.replace(/\/$/, "") + path, { ...opts, signal: last ? opts && opts.signal : ctl.signal });
+      if (timer) clearTimeout(timer);
+      if (b !== CHAT_BASE) { CHAT_BASE = b; try { localStorage.setItem("layaBase", b); } catch (e) {} }
+      return r;
+    } catch (e) { if (timer) clearTimeout(timer); err = e; }
+  }
+  throw err;
+}
 const $ = id => document.getElementById(id);
 
 const AUTH_KEY = "layaSiteToken";
@@ -1417,7 +1508,7 @@ async function api(path, opts = {}) {
   const headers = new Headers(opts.headers || {});
   const token = getToken();
   if (token) headers.set("Authorization", "Bearer " + token);
-  const response = await fetch(CHAT_URL.replace(/\/$/,"") + path, { ...opts, headers });
+  const response = await workerFetch(path, { ...opts, headers });
   if (response.status === 401 && path !== "/login") {
     storeToken("");
     try { sessionStorage.removeItem("layaWelcomeSeen"); } catch (error) {}
@@ -1450,7 +1541,7 @@ async function api(path, opts = {}) {
     status.textContent = "Signing in…";
     submit.disabled = true;
     try {
-      const response = await fetch(CHAT_URL.replace(/\/$/,"") + "/login", {
+      const response = await workerFetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: $("loginEmail").value.trim(), password: $("loginPass").value })
@@ -1476,6 +1567,8 @@ async function api(path, opts = {}) {
         await api("/spotify/callback?code=" + encodeURIComponent(params.get("code")) + "&state=" + encodeURIComponent(params.get("state")), { cache: "no-store" });
         history.replaceState({}, document.title, location.pathname + location.hash);
       }
+      if ($("loginEmail").value.trim().toLowerCase() === "manilimelight769@gmail.com") await askMode();
+      else { try { localStorage.setItem("layaLite", "0"); } catch (e) {} }
       location.reload();
     } catch (error) {
       status.textContent = "Couldn’t connect. Check your internet and try again.";
@@ -1484,6 +1577,35 @@ async function api(path, opts = {}) {
     }
   });
 })();
+
+/* Lite / full mode */
+const LITE_ON = document.documentElement.classList.contains("lite");
+function setLite(on) { try { localStorage.setItem("layaLite", on ? "1" : "0"); } catch (e) {} location.reload(); }
+function liteLabels() {
+  const nav = $("liteNav"), lg = $("liteLogin");
+  if (nav) nav.textContent = LITE_ON ? "Minimal features: on" : "Minimal features";
+  if (lg) lg.textContent = LITE_ON ? "Minimal features: on" : "Minimal features";
+}
+liteLabels();
+if ($("liteNav")) $("liteNav").addEventListener("click", () => setLite(!LITE_ON));
+if ($("liteLogin")) $("liteLogin").addEventListener("click", () => setLite(!LITE_ON));
+function askMode() {
+  return new Promise(resolve => {
+    const wrap = document.createElement("div");
+    wrap.className = "lite-pick";
+    wrap.innerHTML = '<div class="box" role="dialog" aria-modal="true"><h3>How should the site run?</h3><p>All features has the effects, wallpapers and animations. Minimal features is smoother and faster.</p>' +
+      '<button type="button" data-m="0">✦ All features<small>effects, live wallpaper, animations</small></button>' +
+      '<button type="button" data-m="1">Minimal features<small>faster, no effects or videos</small></button></div>';
+    wrap.addEventListener("click", e => {
+      const b = e.target.closest("button[data-m]");
+      if (!b) return;
+      try { localStorage.setItem("layaLite", b.dataset.m); } catch (err) {}
+      wrap.remove();
+      resolve();
+    });
+    document.body.appendChild(wrap);
+  });
+}
 
 /* Show / hide password */
 $("togglePass").addEventListener("click", () => {
@@ -1886,7 +2008,7 @@ async function loadSong() {
     text.textContent = data.kind === "now" ? "Your twin is listening to this right now." : "Nothing playing right now, so here's a random song from the delusions playlist.";
     button.style.display = data.kind === "now" ? "none" : "block";
     if (data.image) {
-      art.src = CHAT_URL.replace(/\/$/,"") + "/spotify-art?url=" + encodeURIComponent(data.image);
+      art.src = CHAT_BASE.replace(/\/$/,"") + "/spotify-art?url=" + encodeURIComponent(data.image);
       art.style.display = "block";
       if (data.image !== lastArt) { lastArt = data.image; }
     }
@@ -2768,17 +2890,17 @@ $("cform").onsubmit = async event => {
     const now = new Date();
     const days = Math.round((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(y, m - 1, d)) / 86400000);
     if (days < 0) { numEl.textContent = String(-days); labelEl.textContent = days === -1 ? "day to go" : "days to go"; sub.textContent = ""; return; }
-    numEl.textContent = days.toLocaleString();
-    labelEl.textContent = days === 1 ? "day together" : "days together";
+    const ms = Math.max(0, now - new Date(y, m - 1, d));
+    const dd = Math.floor(ms / 86400000), hh = Math.floor(ms / 3600000) % 24, mi = Math.floor(ms / 60000) % 60, ss = Math.floor(ms / 1000) % 60;
+    numEl.textContent = dd.toLocaleString();
+    labelEl.textContent = (dd === 1 ? "day " : "days ") + hh + (hh === 1 ? " hr " : " hrs ") + mi + (mi === 1 ? " min " : " mins ") + ss + (ss === 1 ? " sec" : " secs") + " together";
     let yrs = now.getFullYear() - y, mos = now.getMonth() - (m - 1);
     if (now.getDate() < d) mos--;
     if (mos < 0) { yrs--; mos += 12; }
     const bits = [];
     if (yrs > 0) bits.push(yrs + (yrs === 1 ? " year" : " years"));
     if (mos > 0) bits.push(mos + (mos === 1 ? " month" : " months"));
-    const next = (Math.floor(days / 100) + 1) * 100;
-    const milestone = days > 0 && days % 100 === 0 ? "day " + days.toLocaleString() + " is today \u2661" : "day " + next.toLocaleString() + " is in " + (next - days) + (next - days === 1 ? " day" : " days");
-    sub.textContent = (bits.length ? bits.join(", ") + " \u00B7 " : "") + milestone;
+    sub.textContent = bits.join(", ");
   }
   setBtn.addEventListener("click", () => { form.hidden = !form.hidden; if (!form.hidden) { input.value = start(); input.focus(); } });
   save.addEventListener("click", () => {
@@ -2789,6 +2911,7 @@ $("cform").onsubmit = async event => {
   });
   document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
   render();
+  setInterval(() => { if (!document.hidden && form.hidden) render(); }, 1000);
 })();
 
 
@@ -3814,6 +3937,92 @@ $("sendKlipyBtn").addEventListener("click", async () => {
 })();
 
 
+</script>
+<script>
+/* gothic clock */
+(function(){
+  var T=document.getElementById("gcTicks"),N=document.getElementById("gcNums");if(!T)return;
+  var ns="http://www.w3.org/2000/svg",r=["XII","I","II","III","IV","V","VI","VII","VIII","IX","X","XI"];
+  for(var i=0;i<60;i++){var a=i*6*Math.PI/180,big=i%5===0,l=document.createElementNS(ns,"line");
+    l.setAttribute("x1",100+Math.sin(a)*(big?78:82));l.setAttribute("y1",100-Math.cos(a)*(big?78:82));
+    l.setAttribute("x2",100+Math.sin(a)*86);l.setAttribute("y2",100-Math.cos(a)*86);
+    l.setAttribute("stroke",big?"#d98da5":"#6a3b57");l.setAttribute("stroke-width",big?"1.6":".8");T.appendChild(l);}
+  for(var j=0;j<12;j++){var b=j*30*Math.PI/180,t=document.createElementNS(ns,"text");
+    t.setAttribute("x",100+Math.sin(b)*68);t.setAttribute("y",100-Math.cos(b)*68+3);t.setAttribute("text-anchor","middle");
+    t.setAttribute("font-size","9");t.setAttribute("fill","#f0d4e2");t.setAttribute("font-family","Cormorant Garamond,serif");t.textContent=r[j];N.appendChild(t);}
+  var H=document.getElementById("gcH"),M=document.getElementById("gcM"),S=document.getElementById("gcS"),D=document.getElementById("gcDigi"),DT=document.getElementById("gcDate");
+  var p=function(n){return String(n).padStart(2,"0")};
+  function tick(){var n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
+    S.style.transform="rotate("+s*6+"deg)";M.style.transform="rotate("+(m*6+s*.1)+"deg)";H.style.transform="rotate("+((h%12)*30+m*.5)+"deg)";
+    D.textContent=p(h%12||12)+":"+p(m)+":"+p(s)+" "+(h<12?"AM":"PM");
+    DT.textContent="\u2726 "+n.getFullYear()+"."+p(n.getMonth()+1)+"."+p(n.getDate())+" \u2726";}
+  tick();setInterval(function(){if(!document.hidden)tick()},1000);
+})();
+
+/* countdowns (shared, saved on the worker) */
+(function(){
+  var list=document.getElementById("cdList");if(!list)return;
+  var items=[],rows=[],msg=document.getElementById("cdMsg"),loaded=false;
+  function target(it){var q=it.date.split("-").map(Number),t=new Date(q[0],q[1]-1,q[2]);
+    if(it.yearly){var n=new Date();t=new Date(n.getFullYear(),q[1]-1,q[2]);if(t.getTime()+864e5<=n.getTime())t=new Date(n.getFullYear()+1,q[1]-1,q[2]);}return t;}
+  function fmt(ms){var d=Math.floor(ms/864e5),h=Math.floor(ms/36e5)%24,m=Math.floor(ms/6e4)%60,s=Math.floor(ms/1e3)%60;return d+"d "+h+"h "+m+"m "+s+"s";}
+  function paint(){var now=Date.now();rows.forEach(function(r){var ms=r.t.getTime()-now,el;
+    if(ms>0)el=fmt(ms);else if(-ms<864e5)el="today \u2661";else el=Math.floor(-ms/864e5)+" days ago";r.el.textContent=el;});}
+  function build(){list.textContent="";rows=[];
+    items.slice().sort(function(a,b){return target(a)-target(b)}).forEach(function(it){
+      var row=document.createElement("div");row.className="cd-item";
+      var l=document.createElement("div"),b=document.createElement("b"),sm=document.createElement("small");
+      b.textContent=it.name;sm.textContent=it.date+(it.yearly?" \u00B7 every year":"");l.appendChild(b);l.appendChild(sm);
+      var tm=document.createElement("div");tm.className="cd-time";
+      var x=document.createElement("button");x.className="cd-x";x.type="button";x.textContent="\u2715";x.setAttribute("aria-label","Remove");
+      x.onclick=function(){items=items.filter(function(i){return i.id!==it.id});save();};
+      row.appendChild(l);row.appendChild(tm);row.appendChild(x);list.appendChild(row);rows.push({t:target(it),el:tm});});
+    if(!items.length)list.innerHTML='<p class="fine">Nothing yet. Add a birthday or a date to count down to.</p>';paint();}
+  async function save(){build();try{var r=await api("/cd/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({items:items})});msg.textContent=r.ok?"":"Couldn't save, try again.";}catch(e){msg.textContent="Couldn't save, try again.";}}
+  async function load(){if(loaded||!getToken())return;loaded=true;try{var r=await api("/cd/get",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});var d=await r.json();items=d.items||[];}catch(e){loaded=false;}build();}
+  document.getElementById("cdAdd").onclick=function(){var n=document.getElementById("cdName").value.trim(),d=document.getElementById("cdDate").value;
+    if(!n||!d){msg.textContent="Add a name and a date.";return;}
+    items.push({id:Date.now().toString(36),name:n,date:d,yearly:document.getElementById("cdYearly").checked});
+    document.getElementById("cdName").value="";document.getElementById("cdDate").value="";msg.textContent="";save();};
+  setInterval(function(){if(!document.hidden)paint()},1000);
+  new IntersectionObserver(function(e,o){if(e[0].isIntersecting){load();}},{rootMargin:"300px"}).observe(document.getElementById("countdowns"));
+})();
+
+/* shared photo wall */
+(function(){
+  var grid=document.getElementById("gwGrid");if(!grid)return;
+  var msg=document.getElementById("gwMsg"),files=document.getElementById("gwFiles"),loaded=false,urls={};
+  var who=function(b){return b==="laya"?"Laya":"Kimchi"};
+  async function img(id){if(urls[id])return urls[id];var r=await api("/wall/photo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:id})});if(!r.ok)throw 0;return urls[id]=URL.createObjectURL(await r.blob());}
+  var lazy=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;lazy.unobserve(e.target);
+    img(e.target.dataset.id).then(function(u){e.target.src=u}).catch(function(){});});},{rootMargin:"200px"});
+  function open(p){var box=document.createElement("div");box.className="gw-box";
+    var im=document.createElement("img"),c=document.createElement("p"),del=document.createElement("button"),cl=document.createElement("button");
+    img(p.id).then(function(u){im.src=u});c.textContent=(p.caption?p.caption+" \u00B7 ":"")+who(p.by);
+    del.className=cl.className="smallbtn";del.type=cl.type="button";del.textContent="Delete";cl.textContent="Close";
+    cl.onclick=function(){box.remove()};box.onclick=function(e){if(e.target===box)box.remove()};
+    del.onclick=async function(){if(!confirm("Delete this photo?"))return;var r=await api("/wall/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:p.id})});
+      if(r.ok){box.remove();load(true);}else{c.textContent="You can only delete your own photos.";}};
+    box.appendChild(im);box.appendChild(c);box.appendChild(cl);box.appendChild(del);document.body.appendChild(box);}
+  async function load(force){if((loaded&&!force)||!getToken())return;loaded=true;
+    try{var r=await api("/wall/list",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});var d=await r.json();grid.textContent="";
+      (d.photos||[]).forEach(function(p){var c=document.createElement("div"),i=document.createElement("img"),b=document.createElement("span");
+        c.className="gw-card";i.dataset.id=p.id;i.alt=p.caption||"photo";b.className="gw-by";b.textContent=who(p.by);
+        c.appendChild(i);c.appendChild(b);c.onclick=function(){open(p)};grid.appendChild(c);lazy.observe(i);});
+      if(!(d.photos||[]).length)grid.innerHTML='<p class="fine">No photos yet. Add the first one.</p>';
+    }catch(e){loaded=false;}}
+  document.getElementById("gwPick").onclick=function(){files.click()};
+  files.onchange=async function(){var fs=[].slice.call(files.files).slice(0,6);if(!fs.length)return;msg.textContent="Adding "+fs.length+"…";
+    try{var f=new FormData();for(var i=0;i<fs.length;i++)f.append("photos",await shrink(fs[i]),"photo.jpg");f.append("caption",document.getElementById("gwCap").value.trim());
+      var r=await api("/wall/upload",{method:"POST",body:f});if(!r.ok)throw 0;msg.textContent="Added \u2726";document.getElementById("gwCap").value="";load(true);}
+    catch(e){msg.textContent="Couldn't add photos, try again.";}files.value="";};
+  new IntersectionObserver(function(e){if(e[0].isIntersecting)load();},{rootMargin:"300px"}).observe(document.getElementById("wall"));
+})();
+</script>
+<script>
+/* perf: pause videos when tab hidden, async image decode */
+document.addEventListener("visibilitychange",function(){document.querySelectorAll("video").forEach(function(v){try{document.hidden?v.pause():v.play().catch(function(){})}catch(e){}})});
+document.querySelectorAll("img").forEach(function(i){i.decoding="async";if(!i.loading)i.loading="lazy"});
 </script>
 </body>
 </html>
