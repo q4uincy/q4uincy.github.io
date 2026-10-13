@@ -635,7 +635,7 @@ body.auth-locked .pd-alert{display:none}
     <canvas class="card-snow" id="cardSnow" aria-hidden="true"></canvas>
     <canvas class="card-rain" id="cardRain" aria-hidden="true"></canvas>
     <div class="login-symbol">☾ ✦ ♡</div>
-    <h1 id="loginTitle" class="login-title">made by kimchi</h1>
+    <h1 id="loginTitle" class="login-title">made by Quincy</h1>
     <p class="login-sub">Enter your email and password.</p>
     <form id="loginForm" class="login-form" autocomplete="on">
       <label for="loginEmail">Email
@@ -1333,11 +1333,11 @@ const ME = (() => {
 })();
 if (ME === "kimchi") {
   const q = (sel, fn) => { const el = document.querySelector(sel); if (el) fn(el); };
-  q(".welcome-title", el => el.textContent = "welcome kimchi");
+  q(".welcome-title", el => el.textContent = "welcome Quincy");
   q(".welcome-sub", el => el.textContent = "Laya's corner, with you in it");
-  q("#welcomeVeil", el => el.setAttribute("aria-label", "Welcome Kimchi"));
-  q(".brand", el => el.textContent = "✦ QUINCY");
-  q("#home h1", el => el.innerHTML = "Hi <em>Kimchi.</em><br>welcome back.");
+  q("#welcomeVeil", el => el.setAttribute("aria-label", "Welcome Quincy"));
+  q(".brand", el => el.textContent = "✦ Quincy");
+  q("#home h1", el => el.innerHTML = "Hi <em>Quincy.</em><br>welcome back.");
   q("#home .eyebrow", el => el.textContent = "the site you made for Laya");
   q("#home h1 + p", el => el.textContent = "Look around, test things, and ask the AI what Laya has been saying.");
   q('.navbtn[data-go="us"]', el => el.classList.add("hidden"));   // the Us tab is Laya-to-Kimchi only
@@ -1345,7 +1345,7 @@ if (ME === "kimchi") {
   // Cards that are Laya-to-Kimchi only (food pings, photo uploads, his own notes to her)
   ["#foodBox", "#cuteText", "#pics"].forEach(sel => q(sel, el => { const c = el.closest(".card"); if (c) c.classList.add("hidden"); }));
   q("#talk .section-head p", el => el.textContent = "Ask the AI anything. It remembers what you tell it, and it will tell you once, when you start chatting, what Laya said about you or asked it to pass on. It is not Laya and it is not a therapist.");
-  document.title = "Kimchi";
+  document.title = "Quincy";
 }
 const CHAT_GREETING = ME === "kimchi"
   ? "Hey Kimchi. Ask me anything, or ask what Laya has been telling me. Tell me \"tell Laya...\" and I'll pass it on."
