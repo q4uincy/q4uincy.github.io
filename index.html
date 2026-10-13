@@ -4022,7 +4022,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
 (function(){
   var grid=document.getElementById("gwGrid");if(!grid)return;
   var msg=document.getElementById("gwMsg"),files=document.getElementById("gwFiles"),loaded=false,urls={};
-  var who=function(b){return b==="laya"?"Laya":"Kimchi"};
+  var who=function(b){return b==="laya"?"Laya":b==="quincy"?"Kimchi":"Unknown uploader"};
   async function img(id){if(urls[id])return urls[id];var r=await api("/wall/photo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:id})});if(!r.ok)throw 0;return urls[id]=URL.createObjectURL(await r.blob());}
   var lazy=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;lazy.unobserve(e.target);
     img(e.target.dataset.id).then(function(u){e.target.src=u}).catch(function(){});});},{rootMargin:"200px"});
@@ -4032,12 +4032,12 @@ $("sendKlipyBtn").addEventListener("click", async () => {
     del.className=cl.className="smallbtn";del.type=cl.type="button";del.textContent="Delete";cl.textContent="Close";
     cl.onclick=function(){box.remove()};box.onclick=function(e){if(e.target===box)box.remove()};
     del.onclick=async function(){if(!confirm("Delete this photo?"))return;var r=await api("/wall/delete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:p.id})});
-      if(r.ok){box.remove();load(true);}else{c.textContent="You can only delete your own photos.";}};
+      if(r.ok){box.remove();load(true);}else{var detail="";try{var problem=await r.json();detail=problem&&problem.error?" ("+problem.error+")":"";}catch(e){}c.textContent=r.status===403?"You can only delete your own photos."+detail:"Couldn't delete this photo. Please try again."+detail;}};
     box.appendChild(im);box.appendChild(c);box.appendChild(cl);box.appendChild(del);document.body.appendChild(box);}
   async function load(force){if((loaded&&!force)||!getToken())return;loaded=true;
     try{var r=await api("/wall/list",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});var d=await r.json();grid.textContent="";
       (d.photos||[]).forEach(function(p){var c=document.createElement("div"),i=document.createElement("img"),b=document.createElement("span");
-        c.className="gw-card";i.dataset.id=p.id;i.alt=p.caption||"photo";b.className="gw-by";b.textContent=who(p.by);
+        c.className="gw-card";i.dataset.id=p.id;i.alt=p.caption||"photo";b.className="gw-by";b.textContent=(p.caption? p.caption+" · ":"")+who(p.by);
         c.appendChild(i);c.appendChild(b);c.onclick=function(){open(p)};grid.appendChild(c);lazy.observe(i);});
       if(!(d.photos||[]).length)grid.innerHTML='<p class="fine">No photos yet. Add the first one.</p>';
     }catch(e){loaded=false;}}
