@@ -1164,6 +1164,24 @@ body.auth-locked .pd-alert{display:none}
 .gw-box{position:fixed;inset:0;z-index:20000;background:rgba(5,3,8,.92);display:grid;place-items:center;padding:16px;text-align:center}
 .gw-box img{max-width:94vw;max-height:76vh;border-radius:12px}
 .gw-box p{margin:10px 0;color:#f3e2ec}
+/* gothic y2k wall */
+#wall{content-visibility:auto;contain-intrinsic-size:auto 520px}
+#wall .section-kicker::before{content:"✦ † ";letter-spacing:.2em}
+#wall .section-kicker::after{content:" † ✦";letter-spacing:.2em}
+#wall h2{text-shadow:0 0 12px rgba(139,41,71,.7),1px 1px 0 #2a0f3a}
+.gw-bar{padding:8px 10px;border:1px solid #6b3a66;border-radius:4px;background:linear-gradient(180deg,#2a1636,#120a1a);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.gw-bar .smallbtn{border-radius:3px;border:1px solid #c9a7d6;background:linear-gradient(180deg,#e9d7f2 0%,#8e6aa6 48%,#3b1d4d 52%,#6a3a78 100%);color:#fff;text-shadow:0 1px 0 #2a0f3a;letter-spacing:.06em;text-transform:lowercase}
+.gw-grid{gap:14px 12px;padding:6px 2px}
+.gw-card{border-radius:3px;border:1px solid #c9a7d6;background:#0c0711;padding:5px 5px 18px;aspect-ratio:auto;box-shadow:0 0 0 1px #3b1d4d,0 4px 12px rgba(0,0,0,.6),0 0 10px rgba(139,41,71,.3);transform:rotate(-1.2deg);transition:transform .15s}
+.gw-card:nth-child(even){transform:rotate(1.4deg)}
+.gw-card:nth-child(3n){transform:rotate(-.4deg)}
+.gw-card:hover{transform:rotate(0) scale(1.03)}
+.gw-card img{aspect-ratio:1;border-radius:1px;filter:contrast(1.05) saturate(.85)}
+.gw-card::after{content:"† ✦ †";position:absolute;left:0;right:0;bottom:2px;text-align:center;font-size:.6rem;letter-spacing:.3em;color:#c9a7d6;opacity:.8}
+.gw-by{left:auto;right:8px;bottom:20px;border-radius:2px;background:rgba(18,10,26,.85);border:1px solid #6b3a66;text-transform:lowercase}
+.gw-box img{border-radius:3px;border:2px solid #c9a7d6;box-shadow:0 0 24px rgba(139,41,71,.6)}
+html.lite .gw-card,html.lite .gw-card:nth-child(n){transform:none;transition:none;box-shadow:none}
+@media (prefers-reduced-motion:reduce){.gw-card{transition:none}}
 
 .cd-pop{position:fixed;inset:0;z-index:20001;display:grid;place-items:center;padding:20px;background:rgba(5,3,8,.9)}
 .cd-pop-card{position:relative;width:min(340px,100%);padding:30px 22px 24px;text-align:center;border:1px solid rgba(217,141,165,.55);border-radius:18px;background:linear-gradient(#1a0f21,#0d0811);box-shadow:0 0 0 4px rgba(13,8,17,.9),0 0 0 5px rgba(139,41,71,.6),0 0 40px rgba(217,141,165,.22)}
@@ -1416,7 +1434,7 @@ const $ = id => document.getElementById(id);
 
 const AUTH_KEY = "layaSiteToken";
 const LAST_ACTIVITY_KEY = "layaSiteLastActivity";
-const IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+const IDLE_TIMEOUT_MS = 3 * 60 * 1000;
 
 let memoryToken = "";
 let idleTimer = null;
@@ -1435,13 +1453,13 @@ function storeToken(value, remember) {
   try {
     if (value) {
       sessionStorage.setItem(AUTH_KEY, value);
-      sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
+      writeLastActivity(Date.now());
       if (remember) { localStorage.setItem(AUTH_KEY, value); localStorage.setItem(REMEMBER_KEY, "1"); }
       else if (remember === false) { localStorage.removeItem(AUTH_KEY); localStorage.removeItem(REMEMBER_KEY); localStorage.removeItem("layaPeriod"); }
     } else {
       sessionStorage.removeItem(AUTH_KEY);
       sessionStorage.removeItem("layaPeriod");
-      sessionStorage.removeItem(LAST_ACTIVITY_KEY);
+      sessionStorage.removeItem(LAST_ACTIVITY_KEY); localStorage.removeItem(LAST_ACTIVITY_KEY);
       localStorage.removeItem(AUTH_KEY); localStorage.removeItem(REMEMBER_KEY); localStorage.removeItem("layaPeriod"); localStorage.removeItem("layaWelcomeSeen");
     }
   } catch (error) {}
@@ -1471,7 +1489,11 @@ function hideLogin() {
 }
 
 function readLastActivity() {
-  try { return Number(sessionStorage.getItem(LAST_ACTIVITY_KEY) || 0); } catch (error) { return 0; }
+  try { return Math.max(Number(localStorage.getItem(LAST_ACTIVITY_KEY) || 0), Number(sessionStorage.getItem(LAST_ACTIVITY_KEY) || 0)); } catch (error) { return 0; }
+}
+function writeLastActivity(t) {
+  try { localStorage.setItem(LAST_ACTIVITY_KEY, String(t)); } catch (error) {}
+  try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(t)); } catch (error) {}
 }
 
 function recordActivity() {
@@ -1479,24 +1501,21 @@ function recordActivity() {
   const now = Date.now();
   if (now - lastActivityWrite < 1000) return;
   lastActivityWrite = now;
-  try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(now)); } catch (error) {}
+  writeLastActivity(now);
   scheduleIdleLogout();
 }
 
 function lockForInactivity() {
   storeToken("");
   try { sessionStorage.removeItem("layaWelcomeSeen"); } catch (error) {}
-  showLogin("You’ve been signed out after 15 minutes of inactivity. Please sign in again.");
+  showLogin("You’ve been signed out after 3 minutes of inactivity. Please sign in again.");
 }
 
 function scheduleIdleLogout() {
   clearTimeout(idleTimer);
-  if (!getToken() || remembered()) return;
+  if (!getToken()) return;
   let last = readLastActivity();
-  if (!last) {
-    last = Date.now();
-    try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(last)); } catch (error) {}
-  }
+  if (!last) { last = Date.now(); writeLastActivity(last); }
   const remaining = IDLE_TIMEOUT_MS - (Date.now() - last);
   if (remaining <= 0) { lockForInactivity(); return; }
   idleTimer = setTimeout(() => {
@@ -1507,7 +1526,7 @@ function scheduleIdleLogout() {
 }
 
 function checkIdleOnReturn() {
-  if (!getToken() || remembered()) return;
+  if (!getToken()) return;
   const last = readLastActivity();
   if (last && Date.now() - last >= IDLE_TIMEOUT_MS) lockForInactivity(); else scheduleIdleLogout();
 }
@@ -1517,6 +1536,9 @@ function checkIdleOnReturn() {
 });
 document.addEventListener("pointermove", recordActivity, { passive: true });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) checkIdleOnReturn(); });
+window.addEventListener("focus", checkIdleOnReturn);
+window.addEventListener("pageshow", checkIdleOnReturn);
+setInterval(() => { if (getToken() && Date.now() - readLastActivity() >= IDLE_TIMEOUT_MS) lockForInactivity(); }, 15000);
 
 async function api(path, opts = {}) {
   const headers = new Headers(opts.headers || {});
@@ -1539,10 +1561,9 @@ async function api(path, opts = {}) {
 
   if (getToken()) {
     const last = readLastActivity();
-    if (last && !remembered() && Date.now() - last >= IDLE_TIMEOUT_MS) {
+    if (!last || Date.now() - last >= IDLE_TIMEOUT_MS) {
       lockForInactivity();
     } else {
-      if (!last) { try { sessionStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now())); } catch (error) {} }
       scheduleIdleLogout();
       hideLogin();
     }
