@@ -149,13 +149,19 @@ textarea { min-height: 92px; resize: vertical; }
 .plush .name { position: absolute; bottom: 9px; font-size: .78rem; color: var(--muted); }
 .plush-msg { text-align: center; min-height: 28px; margin: 13px 0 0; color: #e7d6de; }
 
-.chat-log { display: grid; gap: 7px; max-height: 300px; overflow: auto; padding: 3px; margin-bottom: 11px; }
-.msg { padding: 11px 14px; border-radius: 16px; max-width: 86%; white-space: pre-wrap; line-height: 1.45; }
-.msg.ai { justify-self: start; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
-.msg.me { justify-self: end; background: rgba(101,29,53,.65); }
-.chat-form { display: flex; gap: 8px; }
-.chat-form input { flex: 1; }
+.chat-head { display: flex; align-items: center; gap: 9px; padding: 0 2px 11px; margin-bottom: 10px; border-bottom: 1px solid var(--line); font-size: .88rem; color: #f0dce5; }
+.chat-head .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 10px var(--glow); flex: 0 0 auto; }
+.chat-head small { margin-left: auto; color: var(--muted); font-size: .72rem; text-align: right; }
+.chat-log { display: grid; gap: 8px; align-content: start; height: min(52vh,420px); overflow: auto; padding: 4px; margin-bottom: 12px; overscroll-behavior: contain; }
+.msg { padding: 10px 14px; border-radius: 18px; max-width: 84%; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; font-size: .93rem; }
+.msg.ai { justify-self: start; border-bottom-left-radius: 6px; background: rgba(255,255,255,.05); border: 1px solid var(--line); }
+.msg.me { justify-self: end; border-bottom-right-radius: 6px; background: rgba(101,29,53,.65); }
+.msg.typing { color: var(--muted); letter-spacing: .2em; animation: msgPulse 1.1s ease-in-out infinite; }
+@keyframes msgPulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+.chat-form { display: flex; gap: 8px; align-items: center; }
+.chat-form input { flex: 1; min-width: 0; }
 .chat-form .action { width: auto; margin: 0; }
+@media (max-width: 560px) { .chat-log { height: 46vh; } .msg { max-width: 90%; } .chat-head small { display: none; } }
 
 .thumbs { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; margin-top: 13px; }
 .thumbs div { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 12px; border: 1px solid var(--line); }
@@ -1170,12 +1176,13 @@ body.auth-locked .pd-alert{display:none}
   <section class="section" id="talk">
     <div class="section-head">
       <div><div class="section-kicker">quiet corner</div><h2>I'm here.</h2></div>
-      <p>Ask the AI anything, or just talk. It remembers things you tell it. It is not Kimchi and it is not a therapist.</p>
+      <p>Ask the AI anything, or just talk. It remembers things you tell it, and if Kimchi left something for you it will pass it on once when you start chatting. It is not Kimchi and it is not a therapist.</p>
     </div>
     <div class="card">
+      <div class="chat-head"><span class="dot" aria-hidden="true"></span><span>Private chat</span><small>remembers what you tell it</small></div>
       <div class="chat-log" id="log"></div>
       <form class="chat-form" id="cform">
-        <input id="cin" autocomplete="off" placeholder="Ask me anything, or tell me what's on your mind..." aria-label="Your message">
+        <input id="cin" autocomplete="off" placeholder="Say something…" aria-label="Your message">
         <button class="action" type="submit">Send</button>
       </form>
       <div class="fine">If you ever feel unsafe or want to hurt yourself, please contact local emergency services or someone you trust in person right now.</div>
@@ -1229,6 +1236,36 @@ body.auth-locked .pd-alert{display:none}
 <canvas class="rain-layer" id="rainCanvas" aria-hidden="true"></canvas>
 <canvas class="snow-layer" id="snowCanvas" aria-hidden="true"></canvas>
 
+<script>
+/* Who is signed in: read from the login token (laya or quincy). */
+const ME = (() => {
+  try {
+    const t = sessionStorage.getItem("layaSiteToken") || localStorage.getItem("layaSiteToken") || "";
+    const p = t.split(".")[1];
+    if (!p) return "laya";
+    return JSON.parse(atob(p.replace(/-/g, "+").replace(/_/g, "/"))).sub === "quincy" ? "quincy" : "laya";
+  } catch (error) { return "laya"; }
+})();
+if (ME === "quincy") {
+  const q = (sel, fn) => { const el = document.querySelector(sel); if (el) fn(el); };
+  q(".welcome-title", el => el.textContent = "welcome quincy");
+  q(".welcome-sub", el => el.textContent = "Laya's corner, with you in it");
+  q("#welcomeVeil", el => el.setAttribute("aria-label", "Welcome Quincy"));
+  q(".brand", el => el.textContent = "✦ QUINCY");
+  q("#home h1", el => el.innerHTML = "Hi <em>Quincy.</em><br>welcome back.");
+  q("#home .eyebrow", el => el.textContent = "the site you made for Laya");
+  q("#home h1 + p", el => el.textContent = "Look around, test things, and ask the AI what Laya has been saying.");
+  q('.navbtn[data-go="us"]', el => el.classList.add("hidden"));   // the Us tab is Laya-to-Kimchi only
+  q("#us", el => el.classList.add("hidden"));
+  // Cards that are Laya-to-Kimchi only (food pings, photo uploads, his own notes to her)
+  ["#foodBox", "#cuteText", "#pics"].forEach(sel => q(sel, el => { const c = el.closest(".card"); if (c) c.classList.add("hidden"); }));
+  q("#talk .section-head p", el => el.textContent = "Ask the AI anything. It remembers what you tell it, and it will tell you once, when you start chatting, what Laya said about you or asked it to pass on. It is not Laya and it is not a therapist.");
+  document.title = "Quincy";
+}
+const CHAT_GREETING = ME === "quincy"
+  ? "Hey Quincy. Ask me anything, or ask what Laya has been telling me. Tell me \"tell Laya...\" and I'll pass it on."
+  : "Hey Laya. Ask me anything, or just tell me what's on your mind. I'll remember the important stuff for next time.";
+</script>
 <script>
 /* Welcome screen: NO timer; user must click the button */
 (() => {
@@ -1467,6 +1504,7 @@ function toast(message) {
 }
 
 function notify(event, extra = {}) {
+  if (typeof ME !== "undefined" && ME === "quincy") return;   // never ping Kimchi about his own visits
   api("/notify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ event, ...extra }) }).catch(() => {});
 }
 
@@ -2673,25 +2711,39 @@ function addMsg(who, text) {
   chatLog.scrollTop = chatLog.scrollHeight;
   return element;
 }
-addMsg("ai","Hey Laya. Ask me anything, or just tell me what's on your mind. I'll remember the important stuff for next time.");
+addMsg("ai", CHAT_GREETING);
+let chatBusy = false;
 $("cform").onsubmit = async event => {
   event.preventDefault();
+  if (chatBusy) return;                       // one message at a time, so replies never get out of order
   const input = $("cin");
+  const button = $("cform").querySelector("button[type=submit]");
   const text = input.value.trim();
   if (!text) return;
+  chatBusy = true;
+  if (button) button.disabled = true;
   input.value = "";
   addMsg("me",text);
   chatHistory.push({ role: "user", content: text });
   const waiting = addMsg("ai","...");
+  waiting.classList.add("typing");
   try {
     const response = await api("", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: chatHistory.slice(-20) }) });
     if (!response.ok) throw new Error("Chat request failed");
     const data = await response.json();
+    waiting.classList.remove("typing");
     waiting.textContent = data.reply || "I'm here.";
     chatHistory.push({ role: "assistant", content: data.reply || "" });
   } catch (error) {
     chatHistory.pop();
-    waiting.textContent = "I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you.";
+    waiting.classList.remove("typing");
+    waiting.textContent = ME === "quincy" ? "I can't connect right now. Try again in a bit." : "I can't connect right now. Try again in a bit, or message Kimchi — he'd want to hear from you.";
+    if (!input.value) input.value = text;     // keep what she typed so nothing is lost
+  } finally {
+    chatBusy = false;
+    if (button) button.disabled = false;
+    chatLog.scrollTop = chatLog.scrollHeight;
+    input.focus({ preventScroll: true });
   }
 };
 
@@ -2861,29 +2913,59 @@ $("cform").onsubmit = async event => {
 })();
 
 
-/* Bring back her earlier conversation */
+/* New chat each time Talk opens, with the last 10 exchanges shown above it as read-only history */
 (() => {
-  let done = false;
-  async function loadHistory() {
-    if (done || !getToken()) return;
-    done = true;
+  const talk = $("talk");
+  const GREETING = CHAT_GREETING;
+  let loading = false;
+  async function startNewChat() {
+    if (loading || !getToken()) return;
+    loading = true;
+    chatHistory.length = 0;              // fresh context: old messages are never sent to the AI
+    chatLog.innerHTML = "";
     try {
-      const response = await api("/history", { cache: "no-store" });
-      if (!response.ok) throw new Error("history failed");
-      const data = await response.json();
-      const past = Array.isArray(data.history) ? data.history : [];
-      if (!past.length || chatHistory.length) return;
-      chatLog.innerHTML = "";
-      past.forEach(item => {
-        addMsg("me", item.user);
-        addMsg("ai", item.reply);
-        chatHistory.push({ role: "user", content: item.user }, { role: "assistant", content: item.reply });
-      });
-    } catch (error) { done = false; }
+      const response = await api("/history?limit=10", { cache: "no-store" });
+      if (response.ok) {
+        const data = await response.json();
+        const past = Array.isArray(data.history) ? data.history : [];
+        let lastDay = "";
+        past.forEach(item => {
+          const day = item.ts ? new Date(item.ts).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "";
+          if (day && day !== lastDay) {
+            const label = document.createElement("div");
+            label.className = "fine";
+            label.style.cssText = "text-align:center;opacity:.6";
+            label.textContent = day;
+            chatLog.appendChild(label);
+            lastDay = day;
+          }
+          addMsg("me", item.user).style.opacity = ".55";
+          addMsg("ai", item.reply).style.opacity = ".55";
+        });
+        if (past.length) {
+          const rule = document.createElement("div");
+          rule.className = "fine";
+          rule.style.cssText = "text-align:center;opacity:.6;border-top:1px solid var(--line);padding-top:8px";
+          rule.textContent = "new chat";
+          chatLog.appendChild(rule);
+        }
+      }
+    } catch (error) {}
+    addMsg("ai", GREETING);
+    chatLog.scrollTop = chatLog.scrollHeight;
+    loading = false;
   }
-  loadHistory();
-  const poll = setInterval(() => { loadHistory(); if (done) clearInterval(poll); }, 500);
-  setTimeout(() => clearInterval(poll), 30000);
+  if (talk) {
+    let wasHidden = talk.classList.contains("view-off");
+    new MutationObserver(() => {
+      const hidden = talk.classList.contains("view-off");
+      if (wasHidden && !hidden) startNewChat();
+      wasHidden = hidden;
+    }).observe(talk, { attributes: true, attributeFilter: ["class"] });
+  }
+  // first load, once she is signed in
+  let tries = 0;
+  const first = setInterval(() => { if (getToken() || ++tries > 60) { clearInterval(first); startNewChat(); } }, 500);
 })();
 
 /* Photo uploads */
