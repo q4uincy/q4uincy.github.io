@@ -137,6 +137,23 @@
   .chatpair .cuser{color:var(--note-text)}
   .chatpair .creply{color:var(--muted);padding-left:12px;border-left:2px solid var(--line-strong)}
   .chatpair .ctime{font-size:.7rem;color:var(--muted)}
+  #chatsSection [hidden]{display:none!important}
+  .ai-tabs{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:14px;background:var(--note-bg);margin:6px 0 8px;width:fit-content;max-width:100%;overflow-x:auto}
+  .ai-tabs button{border:0;background:transparent;color:var(--muted);padding:8px 16px;border-radius:10px;font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap;width:auto;margin:0}
+  .ai-tabs button.on{background:var(--accent-soft);color:var(--text);font-weight:650;box-shadow:inset 0 0 0 1px var(--line-strong)}
+  .ai-email{font-size:.74rem;color:var(--muted);margin:0 0 12px 4px;min-height:1em}
+  .ai-views{display:flex;gap:18px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  .ai-views button{border:0;background:transparent;color:var(--muted);padding:8px 2px;font:inherit;font-size:.84rem;cursor:pointer;border-bottom:2px solid transparent;margin:0 0 -1px;width:auto;border-radius:0}
+  .ai-views button.on{color:var(--text);font-weight:650;border-bottom-color:var(--pink)}
+  .ai-views .n{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:var(--accent-soft);font-size:.68rem;color:var(--text)}
+  #chatsSection .status:empty{display:none}
+  .ai-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin:0 0 10px}
+  .ai-toolbar .section-description{margin:0;flex:1}
+  .ai-toolbar button{width:auto;flex:0 0 auto;padding:7px 12px;font-size:.78rem;white-space:nowrap}
+  #memoryList .trow button.secondary{width:auto;padding:6px 12px;font-size:.74rem;align-self:center}
+  .ai-day{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 2px 2px}
+  .ai-who{font-size:.74rem;font-weight:700;color:var(--text);margin:12px 2px 4px}
+  .chatpair .cwho .tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:var(--accent-soft);color:var(--text);letter-spacing:0;text-transform:none;font-weight:600}
   .photo-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.photo-toolbar .section-description{max-width:56ch}.photo-toolbar button{width:auto;min-width:130px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:13px}
   .pic{padding:10px;display:grid;gap:9px;min-width:0;background:var(--note-bg);border:1px solid var(--line);border-radius:16px}
@@ -178,7 +195,7 @@
 <main>
   <section id="loginPanel" class="panel">
     <div class="section-head"><span class="snow-icon" aria-hidden="true">☾</span><div class="section-title-group"><p class="eyebrow">ADMIN PAGE LOGIN</p><h1>Welcome quincy <span>♡</span></h1></div></div>
-    <p class="muted login-description">Enter your usename and password.</p>
+    <p class="muted login-description">Enter your username and password.</p>
     <div class="fields">
       <input id="user" type="text" placeholder="Admin username" autocomplete="username" aria-label="Admin username" required>
 
@@ -303,15 +320,25 @@
       </section>
 
       <section class="section" id="chatsSection">
-        <div class="section-head"><span class="snow-icon" aria-hidden="true">💬</span><div class="section-title-group"><p class="section-kicker">THE QUIET CORNER</p><h2>AI chats</h2></div></div>
-        <div class="photo-toolbar"><p class="section-description">What she's said to the AI, and how it replied.</p><button id="loadChats" class="secondary" type="button">↻ Refresh</button></div>
+        <div class="section-head"><span class="snow-icon" aria-hidden="true">💬</span><div class="section-title-group"><p class="section-kicker">THE QUIET CORNER</p><h2>AI chats &amp; memory</h2></div></div>
+        <div class="ai-tabs" id="aiPeople" role="tablist" aria-label="Whose AI chats">
+          <button type="button" role="tab" data-who="laya" class="on" aria-selected="true">Laya</button>
+          <button type="button" role="tab" data-who="quincy" aria-selected="false">You</button>
+          <button type="button" role="tab" data-who="all" aria-selected="false">Everyone</button>
+        </div>
+        <p class="ai-email" id="aiEmail"></p>
+        <div class="ai-views" id="aiViews" role="tablist" aria-label="Chats or memories">
+          <button type="button" role="tab" data-view="chats" class="on" aria-selected="true">Chats<span class="n" id="aiChatCount">–</span></button>
+          <button type="button" role="tab" data-view="memory" aria-selected="false">Memories<span class="n" id="aiMemCount">–</span></button>
+        </div>
+        <div class="ai-toolbar"><p class="section-description" id="aiDesc"></p><button id="aiRefresh" class="secondary" type="button" aria-label="Refresh chats and memories">↻ Refresh</button></div>
         <p class="status" id="chatsStatus" aria-live="polite"></p>
         <div id="chatsList" class="timeline" aria-live="polite"></div>
-        <div class="photo-toolbar" style="margin-top:18px"><p class="section-description">What the AI has learned to remember about each of you. Delete anything you don't want kept.</p><button id="loadMemory" class="secondary" type="button">↻ Refresh</button></div>
         <p class="status" id="memoryStatus" aria-live="polite"></p>
-        <div id="memoryList" class="timeline" aria-live="polite"></div>
+        <div id="memoryList" class="timeline" aria-live="polite" hidden></div>
         <div class="cute-list-actions">
           <button id="chatsClear" class="secondary" type="button">Clear chat history</button>
+          <button id="memClear" class="secondary" type="button" hidden>Forget all memories</button>
         </div>
       </section>
     </div>
@@ -487,6 +514,7 @@
     try{setPhotosVisible(false);}catch(e){}
     try{notesOpen=false;cutesOpen=false;render();renderCutes(cuteItems);}catch(e){}
     clearTimeout(idleTimer);
+    window.__adminAutoOff=true;
     document.body.classList.remove("dashboard-open");
     dashboard.hidden=true;
     loginPanel.hidden=false;
@@ -561,6 +589,7 @@
       loginPanel.hidden=true;
       dashboard.hidden=false;
       loginStatus.textContent="";
+      notesOpen=true;cutesOpen=true;setPhotosVisible(true);   // lists stay open so you can edit them
       load();
       loadCutes();
       loadPics();
@@ -574,6 +603,36 @@
   };
 
   pw.addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("login").click();});
+
+  // Auto sign-in when the browser fills in a saved username + password (no click needed).
+  // Typing by hand never triggers it; you still press Enter or Continue. Each combination is tried once,
+  // so a wrong saved password won't loop, and after the dashboard locks it stays locked until you type.
+  let autoTried="";
+  function tryAutoLogin(){
+    if(authenticated||window.__adminAutoOff||loginPanel.hidden)return;
+    if(document.activeElement===user||document.activeElement===pw)return;
+    const u=user.value.trim(),p=pw.value;
+    if(!u||!p)return;
+    const key=u+"\u0000"+p;
+    if(key===autoTried)return;
+    autoTried=key;
+    document.getElementById("login").click();
+  }
+  [user,pw].forEach(el=>{
+    el.addEventListener("keydown",()=>{window.__adminAutoOff=false;});
+    el.addEventListener("input",e=>{
+      // Autofill fires input events with no typing inputType; typed or pasted text is ignored here.
+      if(!e.inputType||e.inputType==="insertReplacementText")setTimeout(()=>{
+        if(!authenticated&&!window.__adminAutoOff&&user.value.trim()&&pw.value){
+          const key=user.value.trim()+"\u0000"+pw.value;
+          if(key!==autoTried){autoTried=key;document.getElementById("login").click();}
+        }
+      },150);
+    });
+    el.addEventListener("change",()=>setTimeout(tryAutoLogin,150));
+  });
+  let autoPolls=0;
+  const autoPoll=setInterval(()=>{tryAutoLogin();if(authenticated||++autoPolls>25)clearInterval(autoPoll);},300);
   document.getElementById("lock").onclick=()=>lockDashboard("Dashboard locked.");
 
   const cuteText = document.getElementById("cuteText"), addCute = document.getElementById("addCute"),
@@ -836,8 +895,8 @@
     if(!v)picsBox.innerHTML="";
   }
   picsToggle.onclick=()=>{setPhotosVisible(!photosVisible);loadPics();};
-  // Photos hide again whenever the dashboard locks or the tab is left.
-  document.addEventListener("visibilitychange",()=>{if(document.hidden&&photosVisible){setPhotosVisible(false);loadPics();}});
+  // Photos stay visible until you press Hide or the dashboard locks.
+
 
   document.getElementById("forgot").onclick=async()=>{
     loginStatus.textContent="Requesting a reset link for "+RECOVERY_EMAIL+"…";
@@ -951,7 +1010,8 @@
   document.getElementById("loadMood").onclick=()=>loadActivity();
 
   let activityView="main",lastActivity={events:[],stats:{}};
-  document.getElementById("activityWho").addEventListener("change",()=>renderActivity(lastActivity));
+  const whoSel=()=>document.getElementById("activityWho").value||"laya";
+  document.getElementById("activityWho").addEventListener("change",()=>{renderActivity(lastActivity);});
   document.getElementById("activityFilter").addEventListener("click",ev=>{
     const btn=ev.target.closest("button[data-f]");if(!btn)return;
     activityView=btn.dataset.f;
@@ -961,7 +1021,6 @@
   function renderActivity(data){
     lastActivity=data;
     const allEvents=Array.isArray(data.events)?data.events:[];
-    renderMood(allEvents);
 
     // Only two people use the site: Laya and you.
     const who=document.getElementById("activityWho");
@@ -972,6 +1031,7 @@
       who.value="laya";
     }
     const sel=who.value||"all";
+    renderMood(sel==="quincy"?[]:allEvents);   // mood is only ever logged by Laya
     const events=sel==="all"?allEvents:allEvents.filter(e=>e.account===sel);
     const loginsSel=events.filter(e=>e.type==="login");
     const stats={totalLogins:loginsSel.length,lastLogin:loginsSel[0]||null};
@@ -1102,60 +1162,89 @@
     }
   };
 
-  // ---- AI chats: what she's told the AI, and its replies ----
-  const chatsStatus=document.getElementById("chatsStatus"),
-        chatsList=document.getElementById("chatsList");
+  // ---- AI chats & memory: one tab per person, then Chats / Memories ----
+  const chatsStatus=document.getElementById("chatsStatus"),chatsList=document.getElementById("chatsList"),
+        memoryList=document.getElementById("memoryList"),memoryStatus=document.getElementById("memoryStatus"),
+        aiDesc=document.getElementById("aiDesc"),aiEmail=document.getElementById("aiEmail"),
+        chatsClearBtn=document.getElementById("chatsClear"),memClearBtn=document.getElementById("memClear");
+  const AI_PEOPLE={laya:{name:"Laya",email:"lululemon181@gmail.com",own:"Laya's"},quincy:{name:"You",email:"manilimelight769@gmail.com",own:"your"}};
+  let aiWho="laya",aiView="chats",lastMemory=null,lastChatCount=null;
+  const aiAccounts=()=>aiWho==="all"?["laya","quincy"]:[aiWho];
+  const aiPossessive=()=>aiWho==="all"?"everyone's":AI_PEOPLE[aiWho].own;
+  function memCreds(extra){return JSON.stringify(Object.assign({username:user.value.trim(),password:pw.value},extra||{}));}
 
+  function aiSync(){
+    document.querySelectorAll("#aiPeople button").forEach(b=>{const on=b.dataset.who===aiWho;b.classList.toggle("on",on);b.setAttribute("aria-selected",on);});
+    document.querySelectorAll("#aiViews button").forEach(b=>{const on=b.dataset.view===aiView;b.classList.toggle("on",on);b.setAttribute("aria-selected",on);});
+    aiEmail.textContent=aiWho==="all"?"Laya · "+AI_PEOPLE.laya.email+"  ·  You · "+AI_PEOPLE.quincy.email:AI_PEOPLE[aiWho].name+" · "+AI_PEOPLE[aiWho].email;
+    const chats=aiView==="chats";
+    chatsList.hidden=!chats;chatsStatus.hidden=!chats;
+    memoryList.hidden=chats;memoryStatus.hidden=chats;
+    chatsClearBtn.hidden=!chats;memClearBtn.hidden=chats;
+    aiDesc.textContent=chats
+      ?"What "+(aiWho==="all"?"both of you have":aiWho==="quincy"?"you have":"Laya has")+" said to the AI, and how it replied. Newest first."
+      :"What the AI saved from "+aiPossessive()+" chat"+(aiWho==="all"?"s":"")+". The AI uses everything saved here in both chats. Press Forget to delete a line.";
+    updateAiCounts();
+  }
+  function updateAiCounts(){
+    document.getElementById("aiChatCount").textContent=lastChatCount===null?"–":lastChatCount;
+    const m=lastMemory?aiAccounts().reduce((n,id)=>n+(Array.isArray(lastMemory[id])?lastMemory[id].length:0),0):null;
+    document.getElementById("aiMemCount").textContent=m===null?"–":m;
+  }
+  document.getElementById("aiPeople").addEventListener("click",ev=>{
+    const btn=ev.target.closest("button[data-who]");if(!btn||btn.dataset.who===aiWho)return;
+    aiWho=btn.dataset.who;lastChatCount=null;aiSync();loadChats();if(lastMemory)renderMemory(lastMemory);
+  });
+  document.getElementById("aiViews").addEventListener("click",ev=>{
+    const btn=ev.target.closest("button[data-view]");if(!btn)return;
+    aiView=btn.dataset.view;aiSync();
+  });
+  document.getElementById("aiRefresh").onclick=()=>{loadChats();loadMemory();};
+
+  const personName=a=>a==="laya"?"Laya":a==="quincy"?"You":"Someone";
   function renderChats(chats){
     chatsList.innerHTML="";
+    lastChatCount=chats.length;updateAiCounts();
     if(!chats.length){
-      const empty=document.createElement("div");
-      empty.className="empty-state";
-      empty.textContent="No AI conversations yet.";
-      chatsList.appendChild(empty);
-      return;
+      const empty=document.createElement("div");empty.className="empty-state";
+      empty.textContent=aiWho==="quincy"?"No AI conversations from you yet.":aiWho==="laya"?"No AI conversations from Laya yet.":"No AI conversations yet.";
+      chatsList.appendChild(empty);return;
     }
+    let lastDay="";
     chats.slice(0,150).forEach(c=>{
+      const day=new Date(c.ts).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});
+      if(day!==lastDay){const d=document.createElement("div");d.className="ai-day";d.textContent=day;chatsList.appendChild(d);lastDay=day;}
       const card=document.createElement("div");card.className="chatpair";
       const who=document.createElement("div");who.className="cwho";
-      who.textContent=(c.account==="laya"?"Laya":c.account==="quincy"?"Quincy":"Someone")+" · "+fmt(new Date(c.ts).toISOString());
+      who.textContent=new Date(c.ts).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});
+      if(aiWho==="all"){const t=document.createElement("span");t.className="tag";t.textContent=personName(c.account);who.appendChild(t);}
       const u=document.createElement("div");u.className="cuser";u.textContent=c.user||"";
       const r=document.createElement("div");r.className="creply";r.textContent=c.reply||"";
-      card.append(who,u,r);
-      chatsList.appendChild(card);
+      card.append(who,u,r);chatsList.appendChild(card);
     });
   }
-
   async function loadChats(){
     if(!authenticated)return;
     chatsStatus.textContent="Loading...";
     try{
-      const r=await fetch(api("/admin/chats"),{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:user.value.trim(),password:pw.value})
-      });
+      const r=await fetch(api("/admin/chats"),{method:"POST",headers:{"Content-Type":"application/json"},body:memCreds({account:aiWho})});
       if(r.status===401){chatsStatus.textContent="Wrong password.";return;}
       if(!r.ok)throw 0;
       renderChats((await r.json()).chats||[]);
       chatsStatus.textContent="";
-    }catch(e){
-      chatsStatus.textContent="Couldn't load chats. Try again.";
-    }
+    }catch(e){chatsStatus.textContent="Couldn't load chats. Try again.";}
   }
-  document.getElementById("loadChats").onclick=loadChats;
-  // ---- AI memory: facts the assistant keeps about each account ----
-  const memoryList=document.getElementById("memoryList"),memoryStatus=document.getElementById("memoryStatus");
-  function memCreds(extra){return JSON.stringify(Object.assign({username:user.value.trim(),password:pw.value},extra||{}));}
+
   function renderMemory(data){
+    lastMemory=data;
     memoryList.innerHTML="";
+    updateAiCounts();
     let any=false;
-    [["laya","Laya"],["quincy","Quincy"]].forEach(([id,name])=>{
+    aiAccounts().forEach(id=>{
       const facts=Array.isArray(data[id])?data[id]:[];
       if(!facts.length)return;
       any=true;
-      const head=document.createElement("div");head.className="tmeta";head.style.fontWeight="700";head.textContent=name+" · "+facts.length+" remembered";
-      memoryList.appendChild(head);
+      if(aiWho==="all"){const h=document.createElement("div");h.className="ai-who";h.textContent="Saved from "+(id==="quincy"?"your":"Laya's")+" chat · "+facts.length;memoryList.appendChild(h);}
       facts.forEach((fact,i)=>{
         const row=document.createElement("div");row.className="trow";
         const icon=document.createElement("div");icon.className="ticon";icon.textContent="🧠";
@@ -1164,18 +1253,17 @@
         const del=document.createElement("button");del.type="button";del.className="secondary";del.textContent="Forget";
         del.onclick=async()=>{
           try{
-            const r=await fetch(api("/admin/memory-delete"),{method:"POST",headers:{"Content-Type":"application/json"},body:memCreds({account:id,index:i})});
+            const r=await fetch(api("/admin/memory-delete"),{method:"POST",headers:{"Content-Type":"application/json"},body:memCreds({account:id,index:i,fact:fact})});
             if(!r.ok)throw 0;
             loadMemory();
           }catch(e){memoryStatus.textContent="Couldn't delete that. Try again.";}
         };
-        row.append(icon,body,del);
-        memoryList.appendChild(row);
+        row.append(icon,body,del);memoryList.appendChild(row);
       });
     });
     if(!any){
       const empty=document.createElement("div");empty.className="empty-state";
-      empty.textContent="Nothing remembered yet. It fills in as she chats.";
+      empty.textContent=aiWho==="quincy"?"Nothing saved from your chats yet.":aiWho==="laya"?"Nothing saved from Laya's chats yet.":"Nothing saved yet. It fills in as you both chat.";
       memoryList.appendChild(empty);
     }
   }
@@ -1190,23 +1278,28 @@
       memoryStatus.textContent="";
     }catch(e){memoryStatus.textContent="Couldn't load memory. Try again.";}
   }
-  document.getElementById("loadMemory").onclick=loadMemory;
 
-  document.getElementById("chatsClear").onclick=async()=>{
-    if(!confirm("Clear the whole chat history? This can't be undone."))return;
+  chatsClearBtn.onclick=async()=>{
+    if(!confirm("Clear "+aiPossessive()+" chat history? This can't be undone."))return;
     try{
-      const r=await fetch(api("/admin/chats-clear"),{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:user.value.trim(),password:pw.value})
-      });
+      const r=await fetch(api("/admin/chats-clear"),{method:"POST",headers:{"Content-Type":"application/json"},body:memCreds({account:aiWho})});
       if(!r.ok)throw 0;
       chatsStatus.textContent="Chat history cleared.";
       loadChats();
-    }catch(e){
-      chatsStatus.textContent="Couldn't clear chats. Try again.";
-    }
+    }catch(e){chatsStatus.textContent="Couldn't clear chats. Try again.";}
   };
+  memClearBtn.onclick=async()=>{
+    if(!confirm("Forget everything saved from "+aiPossessive()+" chat"+(aiWho==="all"?"s":"")+"? This can't be undone."))return;
+    try{
+      for(const id of aiAccounts()){
+        const r=await fetch(api("/admin/memory-delete"),{method:"POST",headers:{"Content-Type":"application/json"},body:memCreds({account:id})});
+        if(!r.ok)throw 0;
+      }
+      memoryStatus.textContent="Memories cleared.";
+      loadMemory();
+    }catch(e){memoryStatus.textContent="Couldn't clear memories. Try again.";}
+  };
+  aiSync();
 
   // ---- Scheduled surprises ----
   const SINCE = "2026-07-02";   // same "day we met" as the main site, so day numbers match the counter Laya sees
