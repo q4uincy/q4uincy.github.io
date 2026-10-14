@@ -944,58 +944,66 @@ body.auth-locked .pd-alert{display:none}
     <div class="dt-win"><div class="dt-bar"><span>† date_night.exe</span><span class="dt-ctl"><button type="button" id="dtTrayBtn" aria-label="food and flowers" title="food and flowers">🍽</button><button type="button" id="dtMin" aria-label="minimize" title="minimize">_</button><button type="button" id="dtFs" aria-label="fullscreen" title="fullscreen">□</button><button type="button" id="dtX" aria-label="close" title="close">×</button></span></div><div class="dt-sc">
 <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two cats at a candlelit table">
 <defs>
-<linearGradient id="dtWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d0f2b"/><stop offset="1" stop-color="#0c0711"/></linearGradient>
-<radialGradient id="dtGlow" cx=".5" cy=".7" r=".5"><stop offset="0" stop-color="#ff9ab8" stop-opacity=".28"/><stop offset="1" stop-color="#ff9ab8" stop-opacity="0"/></radialGradient>
+<linearGradient id="dtWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--dw1,#1d0f2b)"/><stop offset="1" style="stop-color:var(--dw2,#0c0711)"/></linearGradient>
+<radialGradient id="dtGlow" cx=".5" cy=".7" r=".5"><stop offset="0" style="stop-color:var(--dg,#ff9ab8)" stop-opacity=".28"/><stop offset="1" style="stop-color:var(--dg,#ff9ab8)" stop-opacity="0"/></radialGradient>
 <symbol id="gcat" viewBox="0 0 100 100">
 <path d="M72 92Q99 90 92 58Q90 50 84 56" fill="none" stroke="var(--cb)" stroke-width="9" stroke-linecap="round"/>
-<ellipse cx="50" cy="74" rx="27" ry="24" fill="var(--cb)" stroke="#c9a7d6" stroke-width=".8"/>
-<polygon points="29,30 32,5 49,21" fill="var(--cb)" stroke="#c9a7d6" stroke-width=".8"/>
-<polygon points="71,30 68,5 51,21" fill="var(--cb)" stroke="#c9a7d6" stroke-width=".8"/>
-<polygon points="33,25 34,13 43,22" fill="#8b2947"/><polygon points="67,25 66,13 57,22" fill="#8b2947"/>
-<circle cx="50" cy="40" r="21" fill="var(--cb)" stroke="#c9a7d6" stroke-width=".8"/>
+<ellipse cx="50" cy="74" rx="27" ry="24" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="29,30 32,5 49,21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="71,30 68,5 51,21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="33,25 34,13 43,22" fill="var(--co,#8b2947)"/><polygon points="67,25 66,13 57,22" fill="var(--co,#8b2947)"/>
+<circle cx="50" cy="40" r="21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
 <ellipse cx="41" cy="38" rx="4.2" ry="5.5" style="fill:var(--eye)"/><ellipse cx="59" cy="38" rx="4.2" ry="5.5" style="fill:var(--eye)"/>
 <rect x="40.2" y="33" width="1.6" height="10" fill="#000"/><rect x="58.2" y="33" width="1.6" height="10" fill="#000"/>
 <polygon points="47,46 53,46 50,50" fill="#ff8fb3"/>
-<path d="M50 50Q46 55 43 52M50 50Q54 55 57 52" fill="none" stroke="#c9a7d6" stroke-width=".9"/>
-<path d="M34 48L20 45M34 51L20 53M66 48L80 45M66 51L80 53" stroke="#c9a7d6" stroke-width=".6"/>
-<path d="M34 58Q50 69 66 58" fill="none" stroke="#8b2947" stroke-width="4"/>
+<path d="M50 50Q46 55 43 52M50 50Q54 55 57 52" fill="none" stroke="var(--dl,#c9a7d6)" stroke-width=".9"/>
+<path d="M34 48L20 45M34 51L20 53M66 48L80 45M66 51L80 53" stroke="var(--dl,#c9a7d6)" stroke-width=".6"/>
+<path d="M34 58Q50 69 66 58" fill="none" stroke="var(--co,#8b2947)" stroke-width="4"/>
 <text x="50" y="70" text-anchor="middle" font-size="9" fill="#fff">✦</text>
 </symbol>
 </defs>
 <rect width="640" height="360" fill="url(#dtWall)"/>
-<path d="M250 150V62Q250 24 320 10Q390 24 390 62V150Z" fill="#0a0612" stroke="#c9a7d6" stroke-width="3"/>
-<circle cx="320" cy="72" r="24" fill="#e9d7f2"/><circle cx="332" cy="64" r="21" fill="#0a0612"/>
-<path d="M320 10V150M250 100H390" stroke="#c9a7d6" stroke-width="2" fill="none"/>
-<g class="dt-tw" fill="#fff"><text x="60" y="50">✦</text><text x="540" y="70">✦</text><text x="120" y="110">†</text><text x="500" y="125">†</text><text x="590" y="30">✦</text><text x="30" y="160">✦</text></g>
+<path d="M250 150V62Q250 24 320 10Q390 24 390 62V150Z" fill="var(--dwin,#0a0612)" stroke="var(--dl,#c9a7d6)" stroke-width="3"/>
+<circle cx="320" cy="72" r="24" fill="var(--dpl,#e9d7f2)"/><circle cx="332" cy="64" r="21" fill="var(--dwin,#0a0612)"/>
+<path d="M320 10V150M250 100H390" stroke="var(--dl,#c9a7d6)" stroke-width="2" fill="none"/>
+<g class="dt-tw" fill="var(--dstar,#fff)"><text x="60" y="50">✦</text><text x="540" y="70">✦</text><text x="120" y="110">†</text><text x="500" y="125">†</text><text x="590" y="30">✦</text><text x="30" y="160">✦</text></g>
 <text class="dt-bat" x="420" y="60" font-size="18">🦇</text>
-<rect y="300" width="640" height="60" fill="#120a1a"/>
+<rect y="300" width="640" height="60" fill="var(--dfl,#120a1a)"/>
 <rect width="640" height="360" fill="url(#dtGlow)"/>
 <g transform="translate(70,105)"><g class="dt-cw away" id="dtCatL" style="--cb:#1a1224;--eye:#ff7fa8"><use href="#gcat" width="150" height="150"/></g></g>
 <g transform="translate(420,105)"><g class="dt-cw away" id="dtCatR" style="--cb:#5b4a73;--eye:#9fe0ff"><use href="#gcat" width="150" height="150"/></g></g>
-<rect x="75" y="265" width="490" height="70" fill="#5a1830"/>
-<ellipse cx="320" cy="335" rx="245" ry="18" fill="#5a1830"/>
-<ellipse cx="320" cy="335" rx="245" ry="18" fill="none" stroke="#e9d7f2" stroke-dasharray="3 5" stroke-opacity=".6"/>
-<ellipse cx="320" cy="265" rx="245" ry="40" fill="#7a1f3d" stroke="#e9d7f2" stroke-width="1.5" stroke-dasharray="4 4"/>
-<ellipse id="dtPlL" class="dt-plate" cx="150" cy="268" rx="46" ry="11" fill="#e9d7f2" stroke="#8e6aa6"/>
-<ellipse id="dtPlR" class="dt-plate" cx="490" cy="268" rx="46" ry="11" fill="#e9d7f2" stroke="#8e6aa6"/>
+<rect x="75" y="265" width="490" height="70" fill="var(--ds,#5a1830)"/>
+<ellipse cx="320" cy="335" rx="245" ry="18" fill="var(--ds,#5a1830)"/>
+<ellipse cx="320" cy="335" rx="245" ry="18" fill="none" stroke="var(--dpl,#e9d7f2)" stroke-dasharray="3 5" stroke-opacity=".6"/>
+<ellipse cx="320" cy="265" rx="245" ry="40" fill="var(--dt,#7a1f3d)" stroke="var(--dpl,#e9d7f2)" stroke-width="1.5" stroke-dasharray="4 4"/>
+<ellipse id="dtPlL" class="dt-plate" cx="150" cy="268" rx="46" ry="11" fill="var(--dpl,#e9d7f2)" stroke="var(--dpls,#8e6aa6)"/>
+<ellipse id="dtPlR" class="dt-plate" cx="490" cy="268" rx="46" ry="11" fill="var(--dpl,#e9d7f2)" stroke="var(--dpls,#8e6aa6)"/>
 <g id="dtPL" pointer-events="none" text-anchor="middle" font-size="22"></g>
 <g id="dtPR" pointer-events="none" text-anchor="middle" font-size="22"></g>
 <circle cx="320" cy="215" r="34" fill="#ffb86b" opacity=".12"/>
-<rect x="314" y="228" width="12" height="30" fill="#e9d7f2" stroke="#8e6aa6" stroke-width=".8"/>
+<rect x="314" y="228" width="12" height="30" fill="var(--dpl,#e9d7f2)" stroke="var(--dpls,#8e6aa6)" stroke-width=".8"/>
 <ellipse class="dt-fl" cx="320" cy="220" rx="5" ry="9" fill="#ffd27a"/>
-<text id="dtLabL" x="150" y="298" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#f3d6e4"></text>
-<text id="dtLabR" x="490" y="298" text-anchor="middle" font-family="Courier New,monospace" font-size="11" fill="#f3d6e4"></text>
-<path d="M243 270h24l-3-15h-18z" fill="#c9a7d6" fill-opacity=".55" stroke="#e9d7f2" stroke-width=".8"/>
-<path d="M373 270h24l-3-15h-18z" fill="#c9a7d6" fill-opacity=".55" stroke="#e9d7f2" stroke-width=".8"/>
+<text id="dtLabL" x="150" y="298" text-anchor="middle" font-family="Courier New,monospace" font-size="13" font-weight="bold" fill="var(--dlab,#f3d6e4)"></text>
+<text id="dtLabR" x="490" y="298" text-anchor="middle" font-family="Courier New,monospace" font-size="13" font-weight="bold" fill="var(--dlab,#f3d6e4)"></text>
+<path d="M243 270h24l-3-15h-18z" fill="var(--dl,#c9a7d6)" fill-opacity=".55" stroke="var(--dpl,#e9d7f2)" stroke-width=".8"/>
+<path d="M373 270h24l-3-15h-18z" fill="var(--dl,#c9a7d6)" fill-opacity=".55" stroke="var(--dpl,#e9d7f2)" stroke-width=".8"/>
 <g id="dtGL" pointer-events="none" text-anchor="middle" font-size="20"></g>
 <g id="dtGR" pointer-events="none" text-anchor="middle" font-size="20"></g>
 <g id="dtFx" pointer-events="none" text-anchor="middle"></g>
 </svg></div></div>
-    <div id="dtTray">
-    <div class="dt-menu" id="dtMenu"></div>
-    <div class="gm-row" style="margin:12px 0 0"><span>† give her flowers</span></div>
-    <div class="dt-menu" id="dtFlow" style="margin-top:6px"></div>
-    <div class="dt-menu" id="dtEmo"></div>
+    <div class="dt-dock" id="dtDock" role="toolbar" aria-label="date options">
+      <button type="button" class="dt-db" data-p="food" aria-expanded="false">🍽 food</button>
+      <button type="button" class="dt-db" data-p="flow" aria-expanded="false">🌹 flowers</button>
+      <button type="button" class="dt-db" data-p="cats" aria-expanded="false">🐱 my cat</button>
+      <button type="button" class="dt-db" data-p="look" aria-expanded="false">🎨 colors</button>
+      <button type="button" class="dt-db" data-p="music" aria-expanded="false">♪ music</button>
+    </div>
+    <div id="dtPanels">
+      <div class="dt-pn" data-p="food"><div class="dt-h">tap a food to put it on your plate, then tap your plate to eat it</div><div class="dt-menu" id="dtMenu"></div></div>
+      <div class="dt-pn" data-p="flow"><div class="dt-h">† give her flowers</div><div class="dt-menu" id="dtFlow"></div><div class="dt-h" style="margin-top:12px">say something</div><div class="dt-menu" id="dtEmo"></div></div>
+      <div class="dt-pn" data-p="cats"><div class="dt-h">fur</div><div class="dt-sw" id="dtFur"></div><div class="dt-h">eyes</div><div class="dt-sw" id="dtEye"></div><div class="dt-h">collar</div><div class="dt-sw" id="dtCol"></div><button type="button" class="dt-chip" id="dtCatReset">reset my cat</button><div class="dt-h" style="margin-top:10px;opacity:.75">they see your cat in these colors too ✦</div></div>
+      <div class="dt-pn" data-p="look"><div class="dt-h">mood</div><div class="dt-sw" id="dtTh"></div><div class="dt-h">brightness <span id="dtBrV"></span></div><input type="range" class="dt-rng" id="dtBr" min="60" max="120" value="100" aria-label="brightness"><div class="dt-sw" style="margin-top:12px"><button type="button" class="dt-chip" id="dtScan">scanlines</button><button type="button" class="dt-chip" id="dtCalm">calm (no animation)</button></div></div>
+      <div class="dt-pn" data-p="music"><div class="dt-h">built-in songs ♪</div><div class="dt-sw" id="dtTr"></div><div class="dt-h">my songs</div><div class="dt-sw" id="dtMy"></div><div class="dt-sw"><button type="button" class="dt-chip" id="dtPrev">⏮ prev</button><button type="button" class="dt-chip" id="dtNext">next ⏭</button><button type="button" class="dt-chip" id="dtAuto" aria-pressed="true">play next automatically</button></div><div class="dt-sw"><button type="button" class="dt-chip" id="dtStop">■ stop</button><span class="dt-h" style="margin:0">volume</span><input type="range" class="dt-rng" id="dtVol" min="0" max="100" value="50" aria-label="volume"></div><div class="dt-h" id="dtNow">nothing playing</div></div>
     </div>
     <p class="fine">Tap a food to put it on your plate, tap your plate to eat it. Tap a flower to put it in their vase. You both need to be on this page at the same time.</p>
   </section>
@@ -1407,14 +1415,40 @@ html.lite .dt-fl,html.lite .dt-tw text,html.lite .dt-bat{animation:none}
 .dt-min .dt-sc{display:none}
 #date.dt-fs{position:fixed;inset:0;z-index:99999;overflow:auto;padding:14px 16px 28px;background:radial-gradient(900px 500px at 15% -10%,#26152f 0,transparent 62%),#0c080f}
 #date.dt-fs .dt-win{max-width:min(1100px,100%);margin-left:auto;margin-right:auto}
-#date.dt-fs .dt-sc svg{max-height:82vh}
-#dtTrayBtn{display:none}
-#date.dt-fs #dtTrayBtn{display:inline}
-#date.dt-fs #dtTray{display:none;position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(1100px,96vw);max-height:44vh;overflow:auto;background:rgba(12,8,15,.95);border:1px solid #8b2947;padding:10px;z-index:5;box-shadow:0 0 24px rgba(0,0,0,.6)}
-#date.dt-fs.dt-tray #dtTray{display:block}
+#date.dt-fs .dt-sc svg{max-height:calc(100vh - 120px)}
 #date.dt-fs .fine{display:none}
 #date:fullscreen{overflow:auto;padding:14px 16px 28px;background:#0c080f}
 html.dt-fsmode .rain-layer,html.dt-fsmode .snow-layer,html.dt-fsmode .card-snow,html.dt-fsmode .card-rain,html.dt-fsmode .starfield,html.dt-fsmode .wall,html.dt-fsmode video{display:none!important}
+
+/* date: themes, dock, panels */
+#date{--dw1:#1d0f2b;--dw2:#0c0711;--dg:#ff9ab8;--dl:#c9a7d6;--ds:#5a1830;--dt:#7a1f3d;--dfl:#120a1a;--dwin:#0a0612;--dstar:#fff;--dlab:#f3d6e4;--dpl:#e9d7f2;--dpls:#8e6aa6;--db1:#3b1d4d;--db2:#1a0d24;--dpage:#0c080f}
+#date .dt-win{border-color:var(--dl);background:var(--dw2)}
+#date .dt-bar{background:linear-gradient(180deg,var(--db1),var(--db2))}
+#date .dt-sc svg{filter:brightness(var(--dbr,1))}
+#date.dt-fs,#date:fullscreen{background:var(--dpage)}
+#date.dt-noscan .dt-sc::after{display:none}
+#date.dt-calm .dt-fl,#date.dt-calm .dt-tw text,#date.dt-calm .dt-bat{animation:none}
+.dt-dock{display:flex;flex-wrap:wrap;gap:8px;max-width:680px;margin-top:10px}
+.dt-db{min-height:44px;padding:9px 15px;border:1px solid #8b2947;border-radius:10px;background:linear-gradient(#25122f,#150b1d);color:#fbeef4;font:600 .86rem/1 Manrope,system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.dt-db:hover{border-color:#e9b8cc}
+.dt-db[aria-expanded=true]{background:#651d35;border-color:#f0c4d5;box-shadow:0 0 12px rgba(217,141,165,.45)}
+#dtPanels{max-width:680px}
+.dt-pn{display:none;margin-top:8px;padding:12px;border:1px solid #6b3a66;border-radius:10px;background:rgba(12,8,15,.96)}
+.dt-pn.open{display:block}
+.dt-h{font:600 .74rem/1.3 Manrope,system-ui,sans-serif;color:#e6cfdc;margin:2px 0 6px}
+.dt-sw{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}
+.dt-swb{width:36px;height:36px;border-radius:50%;border:2px solid #6b3a66;cursor:pointer;padding:0}
+.dt-swb[aria-pressed=true]{border-color:#fff;box-shadow:0 0 0 2px #8b2947}
+.dt-chip{min-height:38px;padding:7px 13px;border:1px solid #6b3a66;border-radius:10px;background:#150b1d;color:#f6e6ef;font:600 .78rem/1 Manrope,system-ui,sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.dt-chip:hover{border-color:#c9a7d6}
+.dt-chip[aria-pressed=true]{background:#651d35;border-color:#f0c4d5}
+.dt-chip i{width:16px;height:16px;border-radius:50%;border:1px solid rgba(255,255,255,.5);display:inline-block}
+.dt-rng{width:min(220px,60vw);padding:0;border:0;background:none;accent-color:#d98da5}
+.dt-win.dt-min ~ .dt-dock,.dt-win.dt-min ~ #dtPanels{display:none}
+#date.dt-fs .dt-dock{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:6;max-width:96vw;justify-content:center;margin:0;padding:7px;background:rgba(12,8,15,.92);border:1px solid #6b3a66;border-radius:14px}
+#date.dt-fs #dtPanels{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);width:min(720px,96vw);max-width:none;max-height:50vh;overflow:auto;z-index:6}
+#date.dt-fs .dt-pn{margin-top:0;box-shadow:0 0 24px rgba(0,0,0,.6)}
+@media (prefers-reduced-motion:reduce){.dt-db,.dt-chip{transition:none}}
 </style>
     <div class="section-head">
       <div><h2>Cycle tracker</h2></div>
@@ -4364,6 +4398,7 @@ setTimeout(pull,1500);setInterval(pull,20000);document.addEventListener("visibil
 var F=["🍕","🍝","🍔","🍚","🍜","🧁","🍰","🥐","🍓","🍣","🍪","☕","🍷","🍫","🍩","🍟"],FL=["🌷","🌹","🪻","🌸","💐","🌺","🌻","🌼","🪷","🥀"],G={L:[],R:[]},E=["♥","🦇","✦","👋"],
  NS="http://www.w3.org/2000/svg",P={L:[],R:[]},my="L",peer=null,conn=null,pend=null,PX={L:150,R:490},role=null,code=null,retry=0,rt=0,hb=0,lastPong=0,wl=null;
 function oth(){return my=="L"?"R":"L"}
+window.DTX=window.DTX||{};DTX.me=function(){return my};DTX.send=function(o){send(o)};
 function status(t){$("dtStat").textContent=t}
 function ui(){$("dtStart").hidden=!!role;$("dtJoin").hidden=!(pend&&!role);$("dtLeave").hidden=!role}
 function away(a){$("dtCat"+oth()).classList.toggle("away",a);$("dtCat"+my).classList.remove("away")}
@@ -4375,6 +4410,7 @@ function sendPlate(){send({t:"plate",items:P[my]})}
 function onData(d){if(!d||typeof d!="object")return;lastPong=Date.now();if(d.t=="p"){send({t:"q"});return}if(d.t=="q")return;var s=oth();
  if(d.t=="gs"&&role=="guest"&&d.G){["L","R"].forEach(function(k){if(Array.isArray(d.G[k]))G[k]=d.G[k].filter(function(x){return FL.indexOf(x)>-1}).slice(-5)});draw();return}
  if(d.t=="plate"&&Array.isArray(d.items)){P[s]=d.items.filter(function(x){return F.indexOf(x)>-1}).slice(0,3);draw()}
+ else if(d.t=="cat"&&window.DTX&&DTX.on)DTX.on(d)
  else if(d.t=="eat"){bob(s);pop(s,"♥")}
  else if(d.t=="emo"&&E.indexOf(d.e)>-1)pop(s,d.e)
  else if(d.t=="gift"&&FL.indexOf(d.f)>-1){G[my].push(d.f);if(G[my].length>5)G[my].shift();draw();pop(my,d.f);status("they gave you "+d.f+" ♥")}}
@@ -4395,7 +4431,7 @@ function dead(){var c=conn;conn=null;stopHB();try{c&&c.close()}catch(e){}lost()}
 function lost(){if(!role)return;away(true);if(role=="guest"){status("connection dropped, reconnecting...");later(retryGuest,1500)}else{status("they stepped away, your table is still open †");if(peer&&peer.disconnected)try{peer.reconnect()}catch(e){}}}
 function setConn(c){var old=conn;if(old&&old!==c){if(old.open&&Date.now()-lastPong<25000){c.close();return}try{old.close()}catch(e){}}
  conn=c;
- c.on("open",function(){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(role=="host")send({t:"gs",G:G});startHB();lock()});
+ c.on("open",function(){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role=="host")send({t:"gs",G:G});startHB();lock()});
  c.on("data",onData);
  c.on("close",function(){if(conn===c){conn=null;stopHB();lost()}});
  c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}})}
@@ -4419,7 +4455,7 @@ function check(){if(!role)return;lock();
  if(conn&&conn.open){var t0=Date.now();send({t:"p"});setTimeout(function(){if(conn&&conn.open&&lastPong<t0)dead()},5000);return}
  if(role=="host"){if(!peer||peer.destroyed)mkHost();else if(peer.disconnected)try{peer.reconnect()}catch(e){}}
  else retryGuest()}
-function reset(){P={L:[],R:[]};G={L:[],R:[]};draw();away(true)}
+function reset(){P={L:[],R:[]};G={L:[],R:[]};draw();away(true);if(window.DTX&&DTX.rs)DTX.rs()}
 function leave(){role=null;code=null;clearTimeout(rt);stopHB();unlock();try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}conn=peer=null;pend=null;store();my="L";reset();$("dtLinkRow").hidden=true;status("not on a date yet");try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}ui()}
 function host(){role="host";code=Math.random().toString(36).slice(2,8);my="L";retry=0;reset();store();ui();lock();status("setting the table...");mkHost()}
 function join(c){role="guest";code=c;pend=null;my="R";retry=0;reset();store();ui();lock();status("knocking...");mkGuest()}
@@ -4524,12 +4560,118 @@ function vids(p){document.querySelectorAll("video").forEach(function(v){if(p){if
 function enter(){vids(1);document.documentElement.classList.add("dt-fsmode");D.classList.add("dt-fs");$("dtFs").title="exit fullscreen";try{D.requestFullscreen&&D.requestFullscreen().catch(function(){})}catch(e){}D.scrollTop=0}
 function exit(){document.documentElement.classList.remove("dt-fsmode");vids(0);D.classList.remove("dt-fs","dt-tray");$("dtFs").title="fullscreen";try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}
 $("dtFs").onclick=function(){fsOn()?exit():enter()};
-$("dtTrayBtn").onclick=function(){D.classList.toggle("dt-tray")};
+$("dtTrayBtn").onclick=function(){window.dtOpen&&dtOpen("food")};
 $("dtMin").onclick=function(){W.classList.toggle("dt-min");$("dtMin").textContent=W.classList.contains("dt-min")?"▭":"_"};
 $("dtX").onclick=function(){if(fsOn()){exit();return}var l=$("dtLeave");if(l&&!l.hidden&&confirm("leave the date?"))l.click()};
 document.addEventListener("fullscreenchange",function(){if(!document.fullscreenElement&&fsOn())exit()});
 document.addEventListener("keydown",function(e){if(e.key=="Escape"&&fsOn())exit()});
 try{new IntersectionObserver(function(a){D.classList.toggle("dt-off",!a[0].isIntersecting)}).observe(W)}catch(e){}
+})();
+</script>
+<script>
+/* date: themes, cat colors, panels, music */
+(function(){
+var $=function(i){return document.getElementById(i)},D=$("date");
+if(!D||!$("dtDock"))return;
+var DX=window.DTX||(window.DTX={});
+var PR={th:"rose",scan:1,calm:0,br:100,vol:50,cat:null};
+try{var sv=JSON.parse(localStorage.getItem("dtPrefs")||"null");if(sv&&typeof sv=="object")for(var k in PR)if(k in sv)PR[k]=sv[k]}catch(e){}
+function save(){try{localStorage.setItem("dtPrefs",JSON.stringify(PR))}catch(e){}}
+function el(tag,cls,txt){var n=document.createElement(tag);if(cls)n.className=cls;if(txt)n.textContent=txt;return n}
+var HEX=/^#[0-9a-f]{6}$/i;
+
+/* ---- panels ---- */
+var openP=null,btns=document.querySelectorAll(".dt-db"),pns=document.querySelectorAll(".dt-pn");
+function show(){btns.forEach(function(b){b.setAttribute("aria-expanded",b.dataset.p==openP?"true":"false")});pns.forEach(function(p){p.classList.toggle("open",p.dataset.p==openP)})}
+window.dtOpen=function(p){openP=openP==p?null:p;show()};
+btns.forEach(function(b){b.onclick=function(){dtOpen(b.dataset.p)}});
+document.addEventListener("keydown",function(e){if(e.key=="Escape"&&openP&&!D.classList.contains("dt-fs")){openP=null;show()}});
+
+/* ---- themes ---- */
+var KEYS=["dw1","dw2","dg","dl","ds","dt","dfl","dwin","dstar","dlab","dpl","dpls","db1","db2","dpage"];
+var TH=[
+["rose","midnight rose",["#1d0f2b","#0c0711","#ff9ab8","#c9a7d6","#5a1830","#7a1f3d","#120a1a","#0a0612","#ffffff","#f3d6e4","#e9d7f2","#8e6aa6","#3b1d4d","#1a0d24","#0c080f"]],
+["dusk","soft dusk",["#3a2c52","#2a1f3d","#ffc2d4","#e6d4f2","#7a3a52","#a14d6b","#241a33","#1c1430","#f4eaff","#fff3f8","#f4ecf8","#a98bc0","#5a4577","#3a2c52","#2a1f3d"]],
+["moon","moonlit blue",["#16284a","#0b1426","#8fc4ff","#b6d3f5","#1f3a63","#2f5a94","#0a1222","#08101e","#ffffff","#e6f1ff","#e8f1fb","#6f94bd","#1f3b66","#0f1f38","#070d18"]],
+["blood","vampire red",["#2a0a14","#12040a","#ff4d6d","#e8b4c0","#4a0f1f","#7d1330","#14050a","#0d0207","#ffd9e0","#ffe1e8","#f1dfe2","#a06070","#5a1226","#2a0a14","#0e0407"]],
+["y2k","y2k candy",["#3b2169","#1c1040","#6ff0ff","#9ff3ff","#a82a78","#e0489a","#1a0f3a","#120a2e","#fffb9e","#ffffff","#ffffff","#b58cff","#7a3fd0","#3b2169","#150b33"]],
+["cream","daylight cream",["#f3e6ee","#dcc6d6","#ffd6a0","#8a68a0","#a34a68","#c4607f","#c7aebf","#2b2040","#8b5a9e","#ffffff","#fffafc","#8e6aa6","#7a5496","#553a70","#e9dbe4"]]
+];
+function applyTheme(){var t=TH.filter(function(x){return x[0]==PR.th})[0]||TH[0];KEYS.forEach(function(k,i){D.style.setProperty("--"+k,t[2][i])});
+ document.querySelectorAll("#dtTh .dt-chip").forEach(function(c){c.setAttribute("aria-pressed",c.dataset.t==t[0])})}
+function applyLook(){D.classList.toggle("dt-noscan",!PR.scan);D.classList.toggle("dt-calm",!!PR.calm);D.style.setProperty("--dbr",PR.br/100);$("dtBr").value=PR.br;$("dtBrV").textContent=PR.br+"%";$("dtScan").setAttribute("aria-pressed",!!PR.scan);$("dtCalm").setAttribute("aria-pressed",!!PR.calm)}
+TH.forEach(function(t){var c=el("button","dt-chip");c.type="button";c.dataset.t=t[0];var i=el("i");i.style.background="linear-gradient(135deg,"+t[2][0]+" 50%,"+t[2][5]+" 50%)";c.appendChild(i);c.appendChild(document.createTextNode(t[1]));c.onclick=function(){PR.th=t[0];save();applyTheme()};$("dtTh").appendChild(c)});
+$("dtBr").oninput=function(){PR.br=+this.value;save();applyLook()};
+$("dtScan").onclick=function(){PR.scan=PR.scan?0:1;save();applyLook()};
+$("dtCalm").onclick=function(){PR.calm=PR.calm?0:1;save();applyLook()};
+
+/* ---- cat colors ---- */
+var FUR=[["midnight","#1a1224"],["snow","#efe6f2"],["ginger","#c9722f"],["smoke","#6b6577"],["lilac","#b9a0d8"],["cocoa","#5a3a2e"],["rose","#d98da5"],["cream","#e8d5b0"]];
+var EYE=[["pink","#ff7fa8"],["ice","#9fe0ff"],["green","#7dff9b"],["gold","#ffd75e"],["red","#ff4d5e"],["violet","#c58bff"]];
+var COL=[["burgundy","#8b2947"],["rose","#ff8fb3"],["blue","#4d7cff"],["gold","#d4a72c"],["black","#2b1b33"],["purple","#8a4dd0"]];
+var DEF={L:{f:"#1a1224",e:"#ff7fa8",c:"#8b2947"},R:{f:"#5b4a73",e:"#9fe0ff",c:"#8b2947"}},them=null;
+function mine(){var c=PR.cat;return c&&HEX.test(c.f)&&HEX.test(c.e)&&HEX.test(c.c)?c:DEF[DX.me?DX.me():"L"]}
+function paint(side,c){var g=$("dtCat"+side);if(!g)return;g.style.setProperty("--cb",c.f);g.style.setProperty("--eye",c.e);g.style.setProperty("--co",c.c)}
+function applyCats(){var me=DX.me?DX.me():"L",o=me=="L"?"R":"L";paint(me,mine());paint(o,them||DEF[o]);
+ var c=mine();[["dtFur","f"],["dtEye","e"],["dtCol","c"]].forEach(function(r){document.querySelectorAll("#"+r[0]+" .dt-swb").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v==c[r[1]])})})}
+function swatches(id,list,key){list.forEach(function(it){var b=el("button","dt-swb");b.type="button";b.style.background=it[1];b.title=it[0];b.setAttribute("aria-label",it[0]);b.dataset.v=it[1];
+ b.onclick=function(){var c=mine(),n={f:c.f,e:c.e,c:c.c};n[key]=it[1];PR.cat=n;save();applyCats();DX.hi()};$(id).appendChild(b)})}
+swatches("dtFur",FUR,"f");swatches("dtEye",EYE,"e");swatches("dtCol",COL,"c");
+$("dtCatReset").onclick=function(){PR.cat=null;save();applyCats();DX.hi()};
+DX.rs=function(){them=null;applyCats()};
+DX.on=function(d){if(HEX.test(d.f)&&HEX.test(d.e)&&HEX.test(d.c)){them={f:d.f,e:d.e,c:d.c};applyCats()}};
+DX.hi=function(){var c=mine();DX.send({t:"cat",f:c.f,e:c.e,c:c.c})};
+
+/* ---- music: generated in the browser, no files ---- */
+var AC=null,master=null,dry=null,verb=null,bus=null,rain=null,cur=null,nT=0,bi=0,tm=0;
+function fq(m){return 440*Math.pow(2,(m-69)/12)}
+function boot(){var C=window.AudioContext||window.webkitAudioContext;if(!C)return false;
+ if(!AC){AC=new C();master=AC.createGain();dry=AC.createGain();dry.gain.value=.85;var vg=AC.createGain();vg.gain.value=.6;verb=AC.createConvolver();
+  var n=Math.floor(AC.sampleRate*2.8),ir=AC.createBuffer(2,n,AC.sampleRate);for(var c=0;c<2;c++){var d=ir.getChannelData(c);for(var i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.6)}
+  verb.buffer=ir;dry.connect(master);verb.connect(vg);vg.connect(master);master.connect(AC.destination)}
+ master.gain.value=PR.vol/100*.7;if(AC.state=="suspended")AC.resume();return true}
+function tone(f,t,d,ty,g){var o=AC.createOscillator(),e=AC.createGain();o.type=ty;o.frequency.value=f;e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+.012);e.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(e);e.connect(bus);o.start(t);o.stop(t+d+.05)}
+function pad(ms,t,d,g,cut){ms.forEach(function(m){[-7,7].forEach(function(dt){var o=AC.createOscillator(),fl=AC.createBiquadFilter(),e=AC.createGain();o.type="sawtooth";o.frequency.value=fq(m);o.detune.value=dt;fl.type="lowpass";fl.frequency.value=cut||650;e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+d*.4);e.gain.linearRampToValueAtTime(0,t+d);o.connect(fl);fl.connect(e);e.connect(bus);o.start(t);o.stop(t+d+.1)})})}
+function rnd(a){return a[(Math.random()*a.length)|0]}
+var T=[
+{id:"waltz",n:"candlelit waltz",bpm:86,beats:3,prog:[{r:45,c:[57,60,64]},{r:50,c:[57,62,65]},{r:52,c:[56,59,64]},{r:45,c:[57,60,64]},{r:41,c:[57,60,65]},{r:50,c:[57,62,65]},{r:52,c:[56,59,64]},{r:45,c:[57,60,64]}],
+ bar:function(h,t,s){tone(fq(h.r),t,s*2.4,"triangle",.2);[1,2].forEach(function(b){h.c.forEach(function(m){tone(fq(m+12),t+b*s,s*.8,"triangle",.035)})});tone(fq(rnd(h.c)+24),t+(Math.random()<.5?0:s),s*2,"sine",.07);if(Math.random()<.5)tone(fq(rnd(h.c)+24),t+2*s,s*1.4,"sine",.06);pad(h.c,t,s*3,.01)}},
+{id:"nocturne",n:"velvet nocturne",bpm:58,beats:4,prog:[{r:45,c:[57,60,64,71]},{r:41,c:[53,57,60,64]},{r:48,c:[55,60,64,67]},{r:52,c:[56,59,62,64]}],
+ bar:function(h,t,s){tone(fq(h.r),t,s*3.6,"sine",.2);[0,1,2,3,2,1,2,3].forEach(function(ix,i){tone(fq(h.c[ix]+12),t+i*s/2,s*1.8,"triangle",.06);tone(fq(h.c[ix]+24),t+i*s/2,s*1.2,"sine",.015)});pad(h.c,t,s*4,.009)}},
+{id:"y2k",n:"y2k slow dance",bpm:72,beats:4,prog:[{r:48,c:[60,64,67,71]},{r:45,c:[57,60,64,67]},{r:41,c:[53,57,60,64]},{r:43,c:[59,62,64,67]}],
+ bar:function(h,t,s){tone(fq(h.r),t,s*1.4,"sine",.22);tone(fq(h.r),t+s*2.5,s*1.2,"sine",.16);[0,1.5,2,3].forEach(function(b){if(Math.random()<.75)tone(fq(rnd(h.c)+24),t+b*s,s*2.6,"sine",.07)});pad(h.c,t,s*4,.011,950)}},
+{id:"rain",n:"midnight rain",bpm:48,beats:4,rain:1,prog:[{r:38,c:[50,53,57,60,64]},{r:46,c:[58,62,65,69]},{r:43,c:[55,58,62,65]},{r:36,c:[55,60,64]}],
+ bar:function(h,t,s){pad(h.c,t,s*4,.012);tone(fq(h.r),t,s*4,"sine",.12);if(Math.random()<.6)tone(fq(rnd(h.c)+24),t+s*(1+Math.random()*2),s*3,"sine",.05)}}
+];
+function sched(){if(!cur)return;var tr=cur,s=60/tr.bpm;while(nT<AC.currentTime+1.5){tr.bar(tr.prog[bi%tr.prog.length],nT,s);nT+=s*tr.beats;bi++}tm=setTimeout(sched,300)}
+function now(txt){$("dtNow").textContent=txt;document.querySelectorAll("#dtTr .dt-chip").forEach(function(c){c.setAttribute("aria-pressed",!!cur&&c.dataset.t==cur.id)})}
+function stop(){clearTimeout(tm);cur=null;if(bus){var b=bus,n=AC.currentTime;try{b.gain.cancelScheduledValues(n);b.gain.setValueAtTime(b.gain.value,n);b.gain.linearRampToValueAtTime(0,n+.5)}catch(e){}setTimeout(function(){try{b.disconnect()}catch(e){}},700);bus=null}
+ if(rain){var r=rain;try{r.stop(AC.currentTime+.6)}catch(e){}rain=null}now("nothing playing")}
+function play(tr){if(cur&&cur.id==tr.id){stop();return}if(!boot()){now("this browser can't play sound");return}
+ myStop();if(cur)stop();bus=AC.createGain();bus.gain.value=1;bus.connect(dry);bus.connect(verb);cur=tr;bi=0;nT=AC.currentTime+.15;
+ if(tr.rain){var len=AC.sampleRate*3,buf=AC.createBuffer(1,len,AC.sampleRate),d=buf.getChannelData(0);for(var i=0;i<len;i++)d[i]=Math.random()*2-1;rain=AC.createBufferSource();rain.buffer=buf;rain.loop=true;var f=AC.createBiquadFilter();f.type="bandpass";f.frequency.value=2600;f.Q.value=.35;var g=AC.createGain();g.gain.value=.05;rain.connect(f);f.connect(g);g.connect(bus);rain.start()}
+ sched();now("now playing: "+tr.n+" ♪")}
+T.forEach(function(tr){var c=el("button","dt-chip","♪ "+tr.n);c.type="button";c.dataset.t=tr.id;c.onclick=function(){play(tr)};$("dtTr").appendChild(c)});
+$("dtStop").onclick=function(){stop();myStop();now("nothing playing")};
+$("dtVol").value=PR.vol;$("dtVol").oninput=function(){PR.vol=+this.value;save();if(master)master.gain.value=PR.vol/100*.7;au.volume=PR.vol/100};
+
+/* ---- my songs: mp3 files in the music/ folder ---- */
+var MY=[["autumn leaves","Autumn leaves.mp3"],["clouds behind the curtain","Clouds behind the curtain.mp3"],["decision","Decision.mp3"],["hope","Hope.mp3"],["moth","Moth.mp3"],["october","October.mp3"],["sorrow","Sorrow.mp3"],["touching her hand","Touching her hand.mp3"],["watching the grey sea","Watching the grey sea.mp3"],["wet sand","Wet Sand.mp3"]];
+var au=new Audio(),myI=-1,auto=true;au.preload="none";au.volume=PR.vol/100;
+function markMy(){document.querySelectorAll("#dtMy .dt-chip").forEach(function(c){c.setAttribute("aria-pressed",+c.dataset.i==myI)})}
+function myStop(){try{au.pause()}catch(e){}myI=-1;markMy()}
+function myPlay(i){if(myI==i){myStop();now("nothing playing");return}
+ if(cur)stop();myI=i;markMy();au.src="music/"+encodeURIComponent(MY[i][1]);au.volume=PR.vol/100;
+ var r=au.play();if(r&&r.catch)r.catch(function(){if(myI==i)now("couldn't play "+MY[i][0]+", check the file is in the music folder")});
+ now("now playing: "+MY[i][0]+" ♪");markMy()}
+au.onended=function(){if(auto&&myI>-1)myPlay((myI+1)%MY.length);else{myStop();now("nothing playing")}};
+au.onerror=function(){if(myI>-1)now("couldn't find music/"+MY[myI][1])};
+MY.forEach(function(m,i){var c=el("button","dt-chip","♪ "+m[0]);c.type="button";c.dataset.i=i;c.onclick=function(){myPlay(i)};$("dtMy").appendChild(c)});
+$("dtNext").onclick=function(){myPlay(myI<0?0:(myI+1)%MY.length)};
+$("dtPrev").onclick=function(){myPlay(myI<=0?MY.length-1:myI-1)};
+$("dtAuto").onclick=function(){auto=!auto;this.setAttribute("aria-pressed",auto)};
+
+applyTheme();applyLook();applyCats();
 })();
 </script>
 <script src="wall-swipe.js"></script>
