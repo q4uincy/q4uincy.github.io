@@ -1356,6 +1356,8 @@ html.lite .gw-card img{transition:none}
 .gm-t{color:#ffb3d1;text-shadow:0 0 8px #ff5f8f}
 .gm-row{display:flex;gap:12px;align-items:center;margin-top:10px;font-family:"Courier New",monospace;font-size:.72rem;color:#e9d7f2}
 .gm-row .smallbtn{padding:4px 10px;font-size:.68rem;border-radius:2px;border:1px solid #c9a7d6;text-transform:lowercase}
+/* perf: pause animations that are off-screen or in a hidden tab */
+.section.is-off *,html.tab-hidden *{animation-play-state:paused!important}
 /* gothic y2k study */
 .st-clock{display:inline-block;font-family:"Courier New",monospace;font-weight:700;font-size:2.4rem;letter-spacing:.14em;color:#ffb3d1;text-shadow:0 0 8px #ff5f8f,0 0 18px rgba(139,41,71,.9);padding:6px 18px;border:1px solid rgba(217,141,165,.4);border-radius:6px;background:linear-gradient(#120a17,#1b0f20)}
 .st-b{background:linear-gradient(180deg,#e9d7f2 0%,#8e6aa6 48%,#3b1d4d 52%,#6a3a78 100%)!important;color:#fff;text-shadow:0 1px 0 #2a0f3a}
@@ -4560,6 +4562,24 @@ $("lcSave").addEventListener("click",function(){
   var n=$("stNotes"),t=$("lcOut").textContent;if(!n||!t)return;
   n.value=(n.value+"\n\n— lecture —\n"+t).slice(0,5000);
   n.dispatchEvent(new Event("input",{bubbles:true}));$("lcMsg").textContent="added to your notes ✦";
+});
+})();
+</script>
+<script>
+(function(){
+var root=document.documentElement,paused=[];
+if("IntersectionObserver" in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle("is-off",!e.isIntersecting)})},{rootMargin:"250px 0px"});
+  document.querySelectorAll("section.section").forEach(function(s){io.observe(s)});
+}
+document.addEventListener("visibilitychange",function(){
+  if(document.hidden){
+    root.classList.add("tab-hidden");paused=[];
+    document.querySelectorAll("video").forEach(function(v){if(!v.paused){paused.push(v);v.pause()}});
+  }else{
+    root.classList.remove("tab-hidden");
+    paused.forEach(function(v){var p=v.play();if(p&&p.catch)p.catch(function(){})});paused=[];
+  }
 });
 })();
 </script>
