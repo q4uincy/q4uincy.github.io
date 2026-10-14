@@ -905,6 +905,8 @@ body.auth-locked .pd-alert{display:none}
 
   <section class="section" id="study">
     <div class="section-head"><div><div class="section-kicker">study room</div><h2>Study with me.</h2></div></div>
+    <div class="dt-sw" id="stTabs" role="tablist"><button type="button" class="dt-chip" data-t="alone" aria-pressed="true">† study alone</button><button type="button" class="dt-chip" data-t="together" aria-pressed="false">† study together</button></div>
+    <div id="stAlone">
     <div class="st-clock" id="stClock">25:00</div>
     <div class="gm-row" style="flex-wrap:wrap"><button class="smallbtn st-b" id="stGo" type="button">start</button><button class="smallbtn st-b" id="stRst" type="button">reset</button><button class="smallbtn st-b" id="stP25" type="button">25/5</button><button class="smallbtn st-b" id="stP50" type="button">50/10</button><span id="stInfo"></span></div>
     <div class="gm-row" style="margin-top:16px"><input class="st-in" id="stIn" maxlength="80" placeholder="add a task..."><button class="smallbtn st-b" id="stAdd" type="button">add</button></div>
@@ -926,13 +928,16 @@ body.auth-locked .pd-alert{display:none}
     </div>
     <div class="gm-row" style="margin-top:8px"><input class="st-in" id="lcQ" maxlength="500" placeholder="ask a question about the lecture..." autocomplete="off"><button class="smallbtn st-b" id="lcAsk" type="button">ask</button></div>
 
-    <div class="gm-row" style="margin-top:26px"><span>† study together</span><span id="rmStat">not in a room yet</span></div>
+    </div>
+    <div id="stTogether" hidden>
+    <div class="gm-row" style="margin-top:6px"><span>† study together</span><span id="rmStat">not in a room yet</span></div>
     <div class="gm-row" style="flex-wrap:wrap"><button class="smallbtn st-b" id="rmStart" type="button">open a study room</button><button class="smallbtn st-b" id="rmJoin" type="button" hidden>join the room</button><button class="smallbtn st-b" id="rmLeave" type="button" hidden>leave</button></div>
     <div class="gm-row" id="rmLinkRow" hidden><input class="st-in" id="rmLink" readonly><button class="smallbtn st-b" id="rmCopy" type="button">copy link</button></div>
     <div class="gm-row" style="flex-wrap:wrap"><input class="st-in" id="rmName" maxlength="16" placeholder="your name" style="max-width:130px"><input class="st-in" id="rmFocus" maxlength="40" placeholder="what are you studying now?"></div>
     <div class="dt-win" style="margin-top:10px"><div class="dt-bar"><span>† study_room.exe</span><span id="rmThem">nobody here yet</span></div>
       <div id="rmLog" class="rm-log"></div>
       <div class="gm-row rm-send" style="margin:0"><input class="st-in" id="rmMsg" maxlength="300" placeholder="say something..." autocomplete="off"><button class="smallbtn st-b" id="rmSend" type="button">send</button></div>
+    </div>
     </div>
     <div class="gm-row" style="flex-wrap:wrap;margin-top:12px"><span>ambient:</span><button class="smallbtn st-b rm-snd" data-s="rain" type="button">rain</button><button class="smallbtn st-b rm-snd" data-s="brown" type="button">brown noise</button><button class="smallbtn st-b rm-snd" data-s="off" type="button">off</button></div>
   </section>
@@ -1449,6 +1454,18 @@ html.dt-fsmode .rain-layer,html.dt-fsmode .snow-layer,html.dt-fsmode .card-snow,
 #date.dt-fs #dtPanels{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);width:min(720px,96vw);max-width:none;max-height:50vh;overflow:auto;z-index:6}
 #date.dt-fs .dt-pn{margin-top:0;box-shadow:0 0 24px rgba(0,0,0,.6)}
 @media (prefers-reduced-motion:reduce){.dt-db,.dt-chip{transition:none}}
+/* readability: study room + shared retro controls */
+.gm-row{font-size:.88rem;color:#f6eaf2;gap:10px}
+.gm-row .smallbtn{padding:7px 13px;font-size:.8rem}
+.st-in{font-size:.92rem;padding:9px 12px;background:#17101f;border-color:#a77fb3;max-width:340px}
+.st-in::placeholder,.st-notes::placeholder{color:#cbb9c8;opacity:1}
+.st-notes{font-size:.95rem;line-height:1.5;background:#17101f;border-color:#a77fb3;max-width:560px}
+.st-t{font-size:.95rem;border-color:#a77fb3}
+.rm-log{font-size:.86rem;background:#0f0916}
+#lcMsg,#rmStat,#stNoteMsg,#stInfo{color:#ffd2e2;font-weight:700}
+#lcOut{font-size:15px!important}
+#study{padding:18px;border:1px solid rgba(201,167,214,.3);border-radius:3px;background:rgba(10,6,14,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+
 /* y2k polish: square retro buttons that follow the chosen mood */
 .dt-db,.dt-chip,.dt-pn{border-radius:3px}
 .dt-db,.dt-chip{font-family:"Courier New",monospace;font-weight:700;letter-spacing:.03em;box-shadow:inset 0 1px rgba(255,255,255,.12),0 0 0 1px rgba(59,29,77,.9)}
@@ -4689,6 +4706,20 @@ function names(){$("dtFlowH").textContent="† give "+(who()=="kimchi"?"Laya":"K
 applyTheme();applyLook();applyCats();names();
 })();
 </script>
+<script>
+/* study: alone / together tabs */
+(function(){
+var A=document.getElementById("stAlone"),T=document.getElementById("stTogether"),tabs=document.querySelectorAll("#stTabs .dt-chip");
+if(!A||!T)return;
+function set(t,keep){A.hidden=t!="alone";T.hidden=t!="together";tabs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t==t)});if(!keep)try{localStorage.setItem("stTab",t)}catch(e){}}
+tabs.forEach(function(b){b.onclick=function(){set(b.dataset.t)}});
+var t="alone";try{t=localStorage.getItem("stTab")||"alone"}catch(e){}
+var h=null;try{h=JSON.parse(localStorage.getItem("rmHost")||"null")}catch(e){}
+if(/study=[a-z0-9]{6}/.test(location.hash)||(h&&h.c&&Date.now()-h.t<43200000))t="together";
+set(t==="together"?"together":"alone",true);
+window.addEventListener("hashchange",function(){if(/study=[a-z0-9]{6}/.test(location.hash))set("together",true)});
+})();
+</script>
 <script src="wall-swipe.js"></script>
 <script>
 (function(){
@@ -4697,8 +4728,8 @@ function vid(u){var m=/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([\w-]{11})/.ex
 function out(t,add){$("lcWin").hidden=false;var o=$("lcOut");o.textContent=add?o.textContent+"\n\n"+t:t;o.scrollTop=add?o.scrollHeight:0}
 function run(mode,q){
   var u=$("lcUrl").value.trim();
-  if(busy)return;
-  if(!vid(u)){$("lcMsg").textContent="paste a youtube link first";return}
+  if(busy){$("lcMsg").textContent="still reading the lecture, give it a moment...";return}
+  if(!vid(u)){$("lcMsg").textContent="paste a youtube link first";out("\u2191 paste a youtube lecture link in the box above first, then tap a button or ask your question.",!!$("lcOut").textContent);$("lcUrl").focus();return}
   busy=1;$("lcMsg").textContent="reading the lecture... (can take up to a minute)";
   api("/study/lecture",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,mode:mode,question:q||"",history:hist})})
   .then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok||!d.text)throw d.error||"something went wrong";return d})})
@@ -4707,12 +4738,12 @@ function run(mode,q){
     else{hist=[];out(d.text)}
     $("lcMsg").textContent=d.cached?"ready (instant, saved) ✦":"ready ✦";
   })
-  .catch(function(e){$("lcMsg").textContent=typeof e=="string"?e:"couldn't reach the server"})
+  .catch(function(e){var t=typeof e=="string"?e:"couldn't reach the server, check your internet and try again";$("lcMsg").textContent=t;out(t,!!$("lcOut").textContent)})
   .then(function(){busy=0});
 }
 $("lcUrl").addEventListener("input",function(){var v=vid(this.value),i=$("lcImg");if(v){i.src="https://img.youtube.com/vi/"+v+"/mqdefault.jpg";i.hidden=false}else i.hidden=true});
 document.querySelectorAll(".lc-b").forEach(function(b){b.addEventListener("click",function(){run(b.dataset.m)})});
-function ask(){var q=$("lcQ").value.trim();if(q){$("lcQ").value="";run("ask",q)}}
+function ask(){var q=$("lcQ").value.trim();if(!q){$("lcMsg").textContent="type a question first";$("lcQ").focus();return}if(!vid($("lcUrl").value.trim())){run("ask",q);return}$("lcQ").value="";run("ask",q)}
 $("lcAsk").addEventListener("click",ask);
 $("lcQ").addEventListener("keydown",function(e){if(e.key=="Enter")ask()});
 $("lcSave").addEventListener("click",function(){
