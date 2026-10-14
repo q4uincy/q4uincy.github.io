@@ -1000,7 +1000,7 @@ body.auth-locked .pd-alert{display:none}
     </div>
     <div id="dtPanels">
       <div class="dt-pn" data-p="food"><div class="dt-h">tap a food to put it on your plate, then tap your plate to eat it</div><div class="dt-menu" id="dtMenu"></div></div>
-      <div class="dt-pn" data-p="flow"><div class="dt-h">† give her flowers</div><div class="dt-menu" id="dtFlow"></div><div class="dt-h" style="margin-top:12px">say something</div><div class="dt-menu" id="dtEmo"></div></div>
+      <div class="dt-pn" data-p="flow"><div class="dt-h" id="dtFlowH">† give Laya flowers</div><div class="dt-menu" id="dtFlow"></div><div class="dt-h" style="margin-top:12px">say something</div><div class="dt-menu" id="dtEmo"></div><div class="dt-h" style="margin-top:14px">on this device you are</div><div class="dt-sw"><button type="button" class="dt-chip" id="dtWK">Kimchi</button><button type="button" class="dt-chip" id="dtWL">Laya</button></div></div>
       <div class="dt-pn" data-p="cats"><div class="dt-h">fur</div><div class="dt-sw" id="dtFur"></div><div class="dt-h">eyes</div><div class="dt-sw" id="dtEye"></div><div class="dt-h">collar</div><div class="dt-sw" id="dtCol"></div><button type="button" class="dt-chip" id="dtCatReset">reset my cat</button><div class="dt-h" style="margin-top:10px;opacity:.75">they see your cat in these colors too ✦</div></div>
       <div class="dt-pn" data-p="look"><div class="dt-h">mood</div><div class="dt-sw" id="dtTh"></div><div class="dt-h">brightness <span id="dtBrV"></span></div><input type="range" class="dt-rng" id="dtBr" min="60" max="120" value="100" aria-label="brightness"><div class="dt-sw" style="margin-top:12px"><button type="button" class="dt-chip" id="dtScan">scanlines</button><button type="button" class="dt-chip" id="dtCalm">calm (no animation)</button></div></div>
       <div class="dt-pn" data-p="music"><div class="dt-h">built-in songs ♪</div><div class="dt-sw" id="dtTr"></div><div class="dt-h">my songs</div><div class="dt-sw" id="dtMy"></div><div class="dt-sw"><button type="button" class="dt-chip" id="dtPrev">⏮ prev</button><button type="button" class="dt-chip" id="dtNext">next ⏭</button><button type="button" class="dt-chip" id="dtAuto" aria-pressed="true">play next automatically</button></div><div class="dt-sw"><button type="button" class="dt-chip" id="dtStop">■ stop</button><span class="dt-h" style="margin:0">volume</span><input type="range" class="dt-rng" id="dtVol" min="0" max="100" value="50" aria-label="volume"></div><div class="dt-h" id="dtNow">nothing playing</div></div>
@@ -4574,7 +4574,7 @@ try{new IntersectionObserver(function(a){D.classList.toggle("dt-off",!a[0].isInt
 var $=function(i){return document.getElementById(i)},D=$("date");
 if(!D||!$("dtDock"))return;
 var DX=window.DTX||(window.DTX={});
-var PR={th:"rose",scan:1,calm:0,br:100,vol:50,cat:null};
+var PR={th:"rose",scan:1,calm:0,br:100,vol:50,cat:null,who:null};
 try{var sv=JSON.parse(localStorage.getItem("dtPrefs")||"null");if(sv&&typeof sv=="object")for(var k in PR)if(k in sv)PR[k]=sv[k]}catch(e){}
 function save(){try{localStorage.setItem("dtPrefs",JSON.stringify(PR))}catch(e){}}
 function el(tag,cls,txt){var n=document.createElement(tag);if(cls)n.className=cls;if(txt)n.textContent=txt;return n}
@@ -4618,7 +4618,7 @@ function swatches(id,list,key){list.forEach(function(it){var b=el("button","dt-s
  b.onclick=function(){var c=mine(),n={f:c.f,e:c.e,c:c.c};n[key]=it[1];PR.cat=n;save();applyCats();DX.hi()};$(id).appendChild(b)})}
 swatches("dtFur",FUR,"f");swatches("dtEye",EYE,"e");swatches("dtCol",COL,"c");
 $("dtCatReset").onclick=function(){PR.cat=null;save();applyCats();DX.hi()};
-DX.rs=function(){them=null;applyCats()};
+DX.rs=function(){them=null;applyCats();names()};
 DX.on=function(d){if(HEX.test(d.f)&&HEX.test(d.e)&&HEX.test(d.c)){them={f:d.f,e:d.e,c:d.c};applyCats()}};
 DX.hi=function(){var c=mine();DX.send({t:"cat",f:c.f,e:c.e,c:c.c})};
 
@@ -4671,7 +4671,13 @@ $("dtNext").onclick=function(){myPlay(myI<0?0:(myI+1)%MY.length)};
 $("dtPrev").onclick=function(){myPlay(myI<=0?MY.length-1:myI-1)};
 $("dtAuto").onclick=function(){auto=!auto;this.setAttribute("aria-pressed",auto)};
 
-applyTheme();applyLook();applyCats();
+/* ---- names on the flowers panel ---- */
+function who(){return PR.who=="kimchi"||PR.who=="laya"?PR.who:(DX.me&&DX.me()=="R"?"laya":"kimchi")}
+function names(){var w=who();$("dtFlowH").textContent="† give "+(w=="kimchi"?"Laya":"Kimchi")+" flowers";$("dtWK").setAttribute("aria-pressed",w=="kimchi");$("dtWL").setAttribute("aria-pressed",w=="laya")}
+$("dtWK").onclick=function(){PR.who="kimchi";save();names()};
+$("dtWL").onclick=function(){PR.who="laya";save();names()};
+
+applyTheme();applyLook();applyCats();names();
 })();
 </script>
 <script src="wall-swipe.js"></script>
