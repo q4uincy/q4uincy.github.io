@@ -920,7 +920,12 @@ body.auth-locked .pd-alert{display:none}
       <div id="rmLog" class="rm-log"></div>
       <div class="gm-row rm-send" style="margin:0"><input class="st-in" id="rmMsg" maxlength="300" placeholder="say something..." autocomplete="off"><button class="smallbtn st-b" id="rmSend" type="button">send</button></div>
     </div>
-    <div class="gm-row" style="flex-wrap:wrap;margin-top:12px"><span>ambient:</span><button class="smallbtn st-b rm-snd" data-s="rain" type="button">rain</button><button class="smallbtn st-b rm-snd" data-s="brown" type="button">brown noise</button><button class="smallbtn st-b rm-snd" data-s="off" type="button">off</button></div>
+    <div class="rm-mix">
+      <div class="rm-mixhead">† ambient sounds</div>
+      <div class="rm-ch"><button class="smallbtn st-b rm-snd" data-s="rain" type="button">rain</button><input class="rm-vol" data-s="rain" type="range" min="0" max="100" value="40" aria-label="Rain volume"><span class="rm-pct" data-p="rain">40%</span></div>
+      <div class="rm-ch"><button class="smallbtn st-b rm-snd" data-s="brown" type="button">brown noise</button><input class="rm-vol" data-s="brown" type="range" min="0" max="100" value="50" aria-label="Brown noise volume"><span class="rm-pct" data-p="brown">50%</span></div>
+      <div class="rm-ch"><button class="smallbtn st-b rm-snd" data-s="off" type="button">all off</button></div>
+    </div>
   </section>
 
   <section class="section" id="date">
@@ -4266,7 +4271,7 @@ $("sendKlipyBtn").addEventListener("click", async () => {
 </script>
 <script>
 /* perf: pause videos when tab hidden, async image decode */
-document.addEventListener("visibilitychange",function(){document.querySelectorAll("video").forEach(function(v){try{document.hidden?v.pause():v.play().catch(function(){})}catch(e){}})});
+document.addEventListener("visibilitychange",function(){var fs=document.documentElement.classList.contains("dt-fsmode");document.querySelectorAll("video").forEach(function(v){try{if(document.hidden||fs)v.pause();else v.play().catch(function(){})}catch(e){}})});
 document.querySelectorAll("img").forEach(function(i){i.decoding="async";if(!i.loading)i.loading="lazy"});
 </script>
 <script>
@@ -4475,16 +4480,22 @@ $("rmStart").onclick=host;$("rmLeave").onclick=leave;$("rmJoin").onclick=functio
 $("rmCopy").onclick=function(){var i=$("rmLink");i.select();try{navigator.clipboard.writeText(i.value)}catch(e){try{document.execCommand("copy")}catch(x){}}$("rmCopy").textContent="copied ✦"};
 document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});
 window.addEventListener("online",check);window.addEventListener("pageshow",check);window.addEventListener("focus",check);
-/* ambient sound, generated in-browser (no files) */
-var AC=null,src=null,btns=document.querySelectorAll(".rm-snd");
-function snd(k){try{src&&src.stop()}catch(e){}src=null;btns.forEach(function(b){b.classList.toggle("on",b.dataset.s==k)});if(k=="off")return;
- AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=="suspended")AC.resume();
+/* ambient sound mixer, generated in-browser (no files): each sound toggles on its own and has its own volume */
+var AC=null,CH={rain:null,brown:null},VOL={rain:40,brown:50},btns=document.querySelectorAll(".rm-snd");
+try{var sv0=JSON.parse(localStorage.getItem("rmVol")||"{}");["rain","brown"].forEach(function(k){if(typeof sv0[k]=="number"&&sv0[k]>=0&&sv0[k]<=100)VOL[k]=sv0[k]})}catch(e){}
+function paintVol(){document.querySelectorAll(".rm-vol").forEach(function(r){r.value=VOL[r.dataset.s];var p=document.querySelector('.rm-pct[data-p="'+r.dataset.s+'"]');if(p)p.textContent=VOL[r.dataset.s]+"%"})}
+function paintOn(){btns.forEach(function(x){if(x.dataset.s!="off")x.classList.toggle("on",!!CH[x.dataset.s])})}
+function stopCh(k){var c=CH[k];if(!c)return;try{c.g.gain.setTargetAtTime(0,AC.currentTime,.05);var s=c.s;setTimeout(function(){try{s.stop()}catch(e){}},300)}catch(e){}CH[k]=null}
+function startCh(k){AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=="suspended")AC.resume();
  var len=AC.sampleRate*3,buf=AC.createBuffer(1,len,AC.sampleRate),d=buf.getChannelData(0),last=0;
  for(var i=0;i<len;i++){var w=Math.random()*2-1;if(k=="brown"){last=(last+.02*w)/1.02;d[i]=last*3.5}else d[i]=w*.5}
- src=AC.createBufferSource();src.buffer=buf;src.loop=true;var f=AC.createBiquadFilter();
+ var s=AC.createBufferSource();s.buffer=buf;s.loop=true;var f=AC.createBiquadFilter();
  if(k=="rain"){f.type="bandpass";f.frequency.value=2800;f.Q.value=.35}else{f.type="lowpass";f.frequency.value=600}
- var g=AC.createGain();g.gain.value=k=="rain"?.35:.6;src.connect(f);f.connect(g);g.connect(AC.destination);src.start()}
+ var g=AC.createGain();g.gain.value=VOL[k]/100;s.connect(f);f.connect(g);g.connect(AC.destination);s.start();CH[k]={s:s,g:g}}
+function snd(k){if(k=="off"){stopCh("rain");stopCh("brown")}else if(CH[k])stopCh(k);else startCh(k);paintOn()}
 btns.forEach(function(b){b.onclick=function(){snd(b.dataset.s)}});
+document.querySelectorAll(".rm-vol").forEach(function(r){r.oninput=function(){var k=r.dataset.s;VOL[k]=+r.value;var p=document.querySelector('.rm-pct[data-p="'+k+'"]');if(p)p.textContent=VOL[k]+"%";if(CH[k]&&AC)CH[k].g.gain.setTargetAtTime(VOL[k]/100,AC.currentTime,.03);try{localStorage.setItem("rmVol",JSON.stringify(VOL))}catch(e){}}});
+paintVol();
 function ready(fn,n){n=n||0;try{if(typeof getToken=="function"&&getToken())return fn()}catch(e){}if(n<60)setTimeout(function(){ready(fn,n+1)},1500)}
 var m=/study=([a-z0-9]{6})/.exec(location.hash),sv=null;try{sv=JSON.parse(localStorage.getItem("rmHost")||"null")}catch(e){}
 if(m){pend=m[1];status("a study invite is waiting ✦");ready(function(){if(!role){$("study").scrollIntoView();join(pend)}})}
@@ -4497,9 +4508,18 @@ ui();
 (function(){
 var $=function(i){return document.getElementById(i)},D=$("date"),W=D.querySelector(".dt-win");
 var fsOn=function(){return D.classList.contains("dt-fs")};
+/* food / flowers / emotes live in one tray; in fullscreen it hides and a button brings it up */
+var tray=document.createElement("div");tray.id="dtTray";
+var fm=$("dtMenu");fm.parentNode.insertBefore(tray,fm);
+[fm,$("dtFlow").previousElementSibling,$("dtFlow"),$("dtEmo")].forEach(function(x){tray.appendChild(x)});
+var trayBtn=document.createElement("button");trayBtn.type="button";trayBtn.id="dtTrayBtn";trayBtn.textContent="\u2630 food & flowers";
+trayBtn.onclick=function(){var o=D.classList.toggle("dt-tray-open");trayBtn.textContent=o?"\u2715 close":"\u2630 food & flowers"};
+D.appendChild(trayBtn);
+/* live wallpaper: fully paused (and kept paused) while fullscreen to save CPU/GPU */
+function stopWall(on){document.querySelectorAll("video").forEach(function(v){try{if(on){if(!v.paused)v.dataset.dtp=1;v.pause()}else if(v.dataset.dtp){delete v.dataset.dtp;v.play().catch(function(){})}}catch(e){}})}
 function vids(p){document.querySelectorAll("video").forEach(function(v){if(p){if(!v.paused){v.dataset.dtp=1;v.pause()}}else if(v.dataset.dtp){delete v.dataset.dtp;v.play().catch(function(){})}})}
-function enter(){vids(1);document.documentElement.classList.add("dt-fsmode");D.classList.add("dt-fs");$("dtFs").title="exit fullscreen";try{D.requestFullscreen&&D.requestFullscreen().catch(function(){})}catch(e){}D.scrollTop=0}
-function exit(){document.documentElement.classList.remove("dt-fsmode");vids(0);D.classList.remove("dt-fs");$("dtFs").title="fullscreen";try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}
+function enter(){vids(1);stopWall(true);document.documentElement.classList.add("dt-fsmode");D.classList.add("dt-fs");D.classList.remove("dt-tray-open");trayBtn.textContent="\u2630 food & flowers";$("dtFs").title="exit fullscreen";try{D.requestFullscreen&&D.requestFullscreen().catch(function(){})}catch(e){}D.scrollTop=0}
+function exit(){document.documentElement.classList.remove("dt-fsmode");vids(0);stopWall(false);D.classList.remove("dt-fs");D.classList.remove("dt-tray-open");$("dtFs").title="fullscreen";try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}
 $("dtFs").onclick=function(){fsOn()?exit():enter()};
 $("dtMin").onclick=function(){W.classList.toggle("dt-min");$("dtMin").textContent=W.classList.contains("dt-min")?"▭":"_"};
 $("dtX").onclick=function(){if(fsOn()){exit();return}var l=$("dtLeave");if(l&&!l.hidden&&confirm("leave the date?"))l.click()};
@@ -4508,6 +4528,42 @@ document.addEventListener("keydown",function(e){if(e.key=="Escape"&&fsOn())exit(
 try{new IntersectionObserver(function(a){D.classList.toggle("dt-off",!a[0].isIntersecting)}).observe(W)}catch(e){}
 })();
 </script>
+<style id="tweaks">
+/* ===== photo wall: keep the arch-in-a-square frame, make text easier to see ===== */
+#wall .section-kicker{font-size:.8rem;color:#ffd0e2}
+.gw-bar::before{font-size:.8rem;color:#fff;text-shadow:0 0 8px #ff5f8f,0 0 2px #000}
+.gw-bar .smallbtn{font-size:.82rem;padding:6px 14px;color:#fff}
+#wall .fine{font-size:.88rem;color:#f0dce8;margin:8px 0}
+#wall .gw-grid{grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:22px 16px;padding:14px 10px 10px}
+@media (min-width:900px){#wall{max-width:760px}#wall .gw-grid{grid-template-columns:repeat(auto-fill,minmax(112px,116px));max-height:520px}}
+#wall .gw-card{padding:7px 7px 26px}
+#wall .gw-card img{aspect-ratio:4/5;object-fit:cover;border-radius:999px 999px 4px 4px;border:2px solid rgba(233,215,242,.85)}
+#wall .gw-card::after{font-size:.85rem;letter-spacing:.3em;bottom:5px;color:#fff;opacity:1;text-shadow:0 0 6px #ff5f8f,0 0 2px #000}
+#wall .gw-card::before{font-size:1.1rem}
+#wall .gw-by{font-size:.74rem;padding:2px 8px;color:#fff;bottom:28px}
+#wall::after{font-size:.85rem;color:#e9d7f2}
+
+/* ===== study: ambient mixer ===== */
+.rm-mix{margin-top:14px;max-width:420px;padding:10px 12px;border:1px solid #6b3a66;border-radius:3px;background:rgba(18,10,26,.8)}
+.rm-mixhead{font-family:"Courier New",monospace;font-size:.82rem;color:#fff;letter-spacing:.1em;margin-bottom:8px}
+.rm-ch{display:flex;align-items:center;gap:10px;margin:8px 0;flex-wrap:wrap}
+.rm-ch .smallbtn{min-width:104px;font-size:.8rem;font-family:"Courier New",monospace}
+.rm-vol{flex:1 1 120px;min-width:90px;padding:0;accent-color:#e5a3ba;background:transparent;border:0}
+.rm-pct{font-family:"Courier New",monospace;font-size:.78rem;color:#f6e6ef;min-width:36px;text-align:right}
+
+/* ===== date: bigger, clearer menus + fullscreen tray ===== */
+#date .dt-menu{gap:8px;max-width:760px}
+#date .dt-menu button{width:auto;min-width:76px;height:auto;padding:8px 8px 6px;font-size:1.8rem;border:1px solid #c9a7d6;background:linear-gradient(#1d1027,#0f0816)}
+#date .dt-n{font:.76rem "Courier New",monospace;opacity:1;color:#fff;text-shadow:0 0 4px #000;margin-top:2px}
+#date .gm-row span{font-size:.85rem;color:#fff}
+#date .fine{font-size:.88rem;color:#ecdbe6}
+#dtTrayBtn{display:none}
+#date.dt-fs #dtTrayBtn{display:block;position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:100002;padding:10px 20px;border-radius:999px;border:1px solid #e9d7f2;background:linear-gradient(180deg,#e9d7f2 0%,#8e6aa6 48%,#3b1d4d 52%,#6a3a78 100%);color:#fff;font:700 .9rem "Courier New",monospace;text-shadow:0 1px 0 #2a0f3a;cursor:pointer;box-shadow:0 0 18px rgba(139,41,71,.7)}
+#date.dt-fs #dtTray{display:none}
+#date.dt-fs.dt-tray-open #dtTray{display:block;position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:100001;width:min(780px,94vw);max-height:58vh;overflow-y:auto;padding:12px 14px 16px;border:1px solid #c9a7d6;border-radius:12px;background:rgba(12,6,18,.97);box-shadow:0 0 30px rgba(0,0,0,.8),0 0 20px rgba(139,41,71,.5)}
+#date.dt-fs .dt-sc svg{max-height:calc(100vh - 120px)}
+#date.dt-fs>.fine{display:none}
+</style>
 <script src="wall-swipe.js"></script>
 </body>
 </html>
