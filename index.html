@@ -941,7 +941,7 @@ body.auth-locked .pd-alert{display:none}
     <div class="section-head"><div><div class="section-kicker">virtual date</div><h2>A table for two.</h2></div></div>
     <div class="gm-row" style="margin:0 0 10px"><button class="smallbtn st-b" id="dtStart" type="button">start a date</button><button class="smallbtn st-b" id="dtJoin" type="button" hidden>join the date</button><button class="smallbtn st-b" id="dtLeave" type="button" hidden>leave</button><span id="dtStat">not on a date yet</span></div>
     <div class="gm-row" id="dtLinkRow" hidden style="margin:0 0 10px"><input class="st-in" id="dtLink" readonly><button class="smallbtn st-b" id="dtCopy" type="button">copy link</button></div>
-    <div class="dt-win"><div class="dt-bar"><span>† date_night.exe</span><span class="dt-ctl"><button type="button" id="dtMin" aria-label="minimize" title="minimize">_</button><button type="button" id="dtFs" aria-label="fullscreen" title="fullscreen">□</button><button type="button" id="dtX" aria-label="close" title="close">×</button></span></div><div class="dt-sc">
+    <div class="dt-win"><div class="dt-bar"><span>† date_night.exe</span><span class="dt-ctl"><button type="button" id="dtTrayBtn" aria-label="food and flowers" title="food and flowers">🍽</button><button type="button" id="dtMin" aria-label="minimize" title="minimize">_</button><button type="button" id="dtFs" aria-label="fullscreen" title="fullscreen">□</button><button type="button" id="dtX" aria-label="close" title="close">×</button></span></div><div class="dt-sc">
 <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two cats at a candlelit table">
 <defs>
 <linearGradient id="dtWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d0f2b"/><stop offset="1" stop-color="#0c0711"/></linearGradient>
@@ -991,10 +991,12 @@ body.auth-locked .pd-alert{display:none}
 <g id="dtGR" pointer-events="none" text-anchor="middle" font-size="20"></g>
 <g id="dtFx" pointer-events="none" text-anchor="middle"></g>
 </svg></div></div>
+    <div id="dtTray">
     <div class="dt-menu" id="dtMenu"></div>
     <div class="gm-row" style="margin:12px 0 0"><span>† give her flowers</span></div>
     <div class="dt-menu" id="dtFlow" style="margin-top:6px"></div>
     <div class="dt-menu" id="dtEmo"></div>
+    </div>
     <p class="fine">Tap a food to put it on your plate, tap your plate to eat it. Tap a flower to put it in their vase. You both need to be on this page at the same time.</p>
   </section>
 
@@ -1403,7 +1405,12 @@ html.lite .dt-fl,html.lite .dt-tw text,html.lite .dt-bat{animation:none}
 .dt-min .dt-sc{display:none}
 #date.dt-fs{position:fixed;inset:0;z-index:99999;overflow:auto;padding:14px 16px 28px;background:radial-gradient(900px 500px at 15% -10%,#26152f 0,transparent 62%),#0c080f}
 #date.dt-fs .dt-win{max-width:min(1100px,100%);margin-left:auto;margin-right:auto}
-#date.dt-fs .dt-sc svg{max-height:64vh}
+#date.dt-fs .dt-sc svg{max-height:82vh}
+#dtTrayBtn{display:none}
+#date.dt-fs #dtTrayBtn{display:inline}
+#date.dt-fs #dtTray{display:none;position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(1100px,96vw);max-height:44vh;overflow:auto;background:rgba(12,8,15,.95);border:1px solid #8b2947;padding:10px;z-index:5;box-shadow:0 0 24px rgba(0,0,0,.6)}
+#date.dt-fs.dt-tray #dtTray{display:block}
+#date.dt-fs .fine{display:none}
 #date:fullscreen{overflow:auto;padding:14px 16px 28px;background:#0c080f}
 html.dt-fsmode .rain-layer,html.dt-fsmode .snow-layer,html.dt-fsmode .card-snow,html.dt-fsmode .card-rain,html.dt-fsmode .starfield,html.dt-fsmode .wall,html.dt-fsmode video{display:none!important}
 </style>
@@ -4513,8 +4520,9 @@ var $=function(i){return document.getElementById(i)},D=$("date"),W=D.querySelect
 var fsOn=function(){return D.classList.contains("dt-fs")};
 function vids(p){document.querySelectorAll("video").forEach(function(v){if(p){if(!v.paused){v.dataset.dtp=1;v.pause()}}else if(v.dataset.dtp){delete v.dataset.dtp;v.play().catch(function(){})}})}
 function enter(){vids(1);document.documentElement.classList.add("dt-fsmode");D.classList.add("dt-fs");$("dtFs").title="exit fullscreen";try{D.requestFullscreen&&D.requestFullscreen().catch(function(){})}catch(e){}D.scrollTop=0}
-function exit(){document.documentElement.classList.remove("dt-fsmode");vids(0);D.classList.remove("dt-fs");$("dtFs").title="fullscreen";try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}
+function exit(){document.documentElement.classList.remove("dt-fsmode");vids(0);D.classList.remove("dt-fs","dt-tray");$("dtFs").title="fullscreen";try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}}
 $("dtFs").onclick=function(){fsOn()?exit():enter()};
+$("dtTrayBtn").onclick=function(){D.classList.toggle("dt-tray")};
 $("dtMin").onclick=function(){W.classList.toggle("dt-min");$("dtMin").textContent=W.classList.contains("dt-min")?"▭":"_"};
 $("dtX").onclick=function(){if(fsOn()){exit();return}var l=$("dtLeave");if(l&&!l.hidden&&confirm("leave the date?"))l.click()};
 document.addEventListener("fullscreenchange",function(){if(!document.fullscreenElement&&fsOn())exit()});
