@@ -735,6 +735,7 @@ body.auth-locked .pd-alert{display:none}
     <button class="navbtn" data-go="wall">Photo wall</button>
     <button class="navbtn" data-go="games">Games</button>
     <button class="navbtn" data-go="study">Study</button>
+    <button class="navbtn" data-go="gemini">Gemini</button>
     <button class="navbtn" data-go="date">Date</button>
     <button class="navbtn" data-go="quotes">Quotes</button>
     <button class="navbtn" data-go="music">Music</button>
@@ -942,6 +943,21 @@ body.auth-locked .pd-alert{display:none}
     </div>
     </div>
     <div class="gm-row" style="flex-wrap:wrap;margin-top:12px"><span>ambient:</span><button class="smallbtn st-b rm-snd" data-s="rain" type="button">rain</button><button class="smallbtn st-b rm-snd" data-s="brown" type="button">brown noise</button><button class="smallbtn st-b rm-snd" data-s="off" type="button">off</button></div>
+  </section>
+
+  <section class="section" id="gemini">
+    <div class="section-head">
+      <div><div class="section-kicker">ask anything</div><h2>Ask Gemini.</h2></div>
+      <p>A different AI from the one in Talk. Ask it anything: homework, ideas, random questions. It doesn't know you or share memory with the Talk chat.</p>
+    </div>
+    <div class="card">
+      <div class="chat-head"><span class="dot" aria-hidden="true"></span><span>Gemini</span><button class="smallbtn" id="gmClear" type="button" style="margin-left:auto;padding:4px 10px">clear chat</button></div>
+      <div class="chat-log" id="gmLog"></div>
+      <form class="chat-form" id="gmForm">
+        <input id="gmIn" autocomplete="off" maxlength="2000" placeholder="Ask Gemini anything…" aria-label="Your question">
+        <button class="action" type="submit">Send</button>
+      </form>
+    </div>
   </section>
 
   <section class="section" id="date">
@@ -4726,10 +4742,19 @@ window.addEventListener("hashchange",function(){if(/study=[a-z0-9]{6}/.test(loca
 </script>
 <script src="wall-swipe.js"></script>
 <script>
+window.miniMd=function(t){
+  var e=String(t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return e.split("\n").map(function(l){
+    l=l.replace(/^(\s*)[*-]\s+/,"$1\u2022 ").replace(/^\s*#{1,6}\s+(.*)$/,"<b>$1</b>");
+    return l.replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+  }).join("\n");
+};
+</script>
+<script>
 (function(){
 var $=function(i){return document.getElementById(i)},busy=0,hist=[];
 function vid(u){var m=/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([\w-]{11})/.exec(u);return m&&m[1]}
-function out(t,add){$("lcWin").hidden=false;var o=$("lcOut");o.textContent=add?o.textContent+"\n\n"+t:t;o.scrollTop=add?o.scrollHeight:0}
+var raw="";function out(t,add){$("lcWin").hidden=false;var o=$("lcOut");raw=add&&raw?raw+"\n\n"+t:t;o.innerHTML=window.miniMd(raw);o.scrollTop=add?o.scrollHeight:0}
 function run(mode,q){
   var u=$("lcUrl").value.trim();
   if(busy){$("lcMsg").textContent="still reading the lecture, give it a moment...";return}
@@ -4775,6 +4800,29 @@ document.addEventListener("visibilitychange",function(){
 });
 })();
 </script>
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)},log=$("gmLog"),inp=$("gmIn"),form=$("gmForm"),busy=0,hist=[],KEY="layaGeminiChat";
+try{var sv=JSON.parse(localStorage.getItem(KEY)||"[]");if(Array.isArray(sv))hist=sv.filter(function(m){return m&&(m.role=="user"||m.role=="assistant")&&typeof m.content=="string"}).slice(-20)}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(hist.slice(-20)))}catch(e){}}
+function add(role,text,cls){var d=document.createElement("div");d.className="msg "+(role=="user"?"me":"ai")+(cls?" "+cls:"");if(role!="user"&&!cls)d.innerHTML=window.miniMd(text);else d.textContent=text;log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+function draw(){log.textContent="";if(!hist.length)add("assistant","Hi! Ask me anything.");hist.forEach(function(m){add(m.role,m.content)})}
+draw();
+form.addEventListener("submit",function(e){
+  e.preventDefault();var q=inp.value.trim();if(!q||busy)return;
+  busy=1;inp.value="";
+  if(!hist.length)log.textContent="";
+  hist.push({role:"user",content:q});add("user",q);
+  var t=add("assistant","···","typing");
+  api("/gemini/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:hist.slice(-16)}),long:true,signal:(window.AbortSignal&&AbortSignal.timeout?AbortSignal.timeout(90000):undefined)})
+  .then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok||!d.text)throw d.error||"something went wrong";return d})})
+  .then(function(d){t.remove();hist.push({role:"assistant",content:d.text});add("assistant",d.text);save()})
+  .catch(function(err){t.remove();hist.pop();add("assistant",typeof err=="string"?err:"couldn't reach the server, check your internet and try again")})
+  .then(function(){busy=0;inp.focus()});
+});
+$("gmClear").addEventListener("click",function(){if(busy)return;hist=[];save();draw()});
+})();
+</script>
 <style id="palettes">
 /* ===== Colour palettes (switch with the 🎨 button). Midnight = original look, no overrides. ===== */
 html[data-pal="clear"]{--p-bg:#0a0a0d;--p-glow:#1c1c26;--p-surface:#14141a;--p-raised:#1b1b23;--p-inset:#0e0e13;--p-acc:#ffd6e6;--p-acc2:#b4416a;--p-text:#ffffff;--p-muted:#d6d6df;--p-line:rgba(255,255,255,.18);--p-line2:#9a9aaa;--p-btn:#f4ecff;--p-btntxt:#16101f}
@@ -4815,6 +4863,9 @@ html[data-pal] .dt-pn{background:var(--p-surface);border-color:var(--p-line2);bo
 html[data-pal] .dt-h{color:var(--p-text)}
 html[data-pal] .st-x{color:var(--p-muted)}
 
+html[data-pal] .msg.me{background:color-mix(in srgb,var(--p-acc2) 80%,transparent);color:#fff}
+
+.msg code,#lcOut code{background:rgba(255,255,255,.12);padding:1px 5px;border-radius:4px;font-family:"Courier New",monospace;font-size:.92em}
 /* the colour picker itself */
 .pal-fab{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:185;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(14,10,18,.9);color:#fff;font-size:1.15rem;cursor:pointer;backdrop-filter:blur(10px);display:grid;place-items:center;padding:0}
 .pal-fab:hover{border-color:var(--pink)}
