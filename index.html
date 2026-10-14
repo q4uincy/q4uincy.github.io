@@ -1449,6 +1449,17 @@ html.dt-fsmode .rain-layer,html.dt-fsmode .snow-layer,html.dt-fsmode .card-snow,
 #date.dt-fs #dtPanels{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);width:min(720px,96vw);max-width:none;max-height:50vh;overflow:auto;z-index:6}
 #date.dt-fs .dt-pn{margin-top:0;box-shadow:0 0 24px rgba(0,0,0,.6)}
 @media (prefers-reduced-motion:reduce){.dt-db,.dt-chip{transition:none}}
+/* y2k polish: square retro buttons that follow the chosen mood */
+.dt-db,.dt-chip,.dt-pn{border-radius:3px}
+.dt-db,.dt-chip{font-family:"Courier New",monospace;font-weight:700;letter-spacing:.03em;box-shadow:inset 0 1px rgba(255,255,255,.12),0 0 0 1px rgba(59,29,77,.9)}
+.dt-db{font-size:.82rem}
+.dt-chip{font-size:.74rem}
+.dt-h{font-family:"Courier New",monospace;font-weight:700;letter-spacing:.04em;color:var(--dpl,#e6cfdc)}
+.dt-db:hover,.dt-chip:hover{border-color:var(--dpl,#f0c4d5)}
+.dt-db[aria-expanded=true],.dt-chip[aria-pressed=true]{background:var(--dt,#651d35);border-color:var(--dpl,#f0c4d5);box-shadow:inset 0 1px rgba(255,255,255,.2),0 0 12px var(--dt,#651d35)}
+.dt-pn{border-color:var(--dl,#6b3a66);box-shadow:0 0 0 1px #3b1d4d,0 0 18px rgba(139,41,71,.35)}
+.dt-swb[aria-pressed=true]{box-shadow:0 0 0 2px var(--dt,#8b2947)}
+
 </style>
     <div class="section-head">
       <div><h2>Cycle tracker</h2></div>
