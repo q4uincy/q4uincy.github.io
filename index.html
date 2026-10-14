@@ -4298,9 +4298,14 @@ $("stAdd").onclick=add;$("stIn").onkeydown=function(e){if(e.key=="Enter")add()};
 /* notes + virtual date (PeerJS, direct browser-to-browser) */
 (function(){
 var $=function(i){return document.getElementById(i)};
-var N=$("stNotes"),nt;
+var N=$("stNotes"),nt,M=$("stNoteMsg"),ts=0;try{ts=+localStorage.getItem("stNotesTs")||0}catch(e){}
 try{N.value=localStorage.getItem("stNotes")||""}catch(e){}
-N.oninput=function(){clearTimeout(nt);nt=setTimeout(function(){try{localStorage.setItem("stNotes",N.value);$("stNoteMsg").textContent="saved ✦"}catch(e){}},400)};
+function post(p,b){return api(p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b||{})}).then(function(r){if(!r.ok)throw 0;return r.json()})}
+function loc(){try{localStorage.setItem("stNotes",N.value);localStorage.setItem("stNotesTs",ts)}catch(e){}}
+function push(){ts=Date.now();loc();M.textContent="saving...";post("/study/save",{text:N.value}).then(function(d){ts=d.ts||ts;loc();M.textContent="synced ✦"}).catch(function(){M.textContent="saved on this device, will sync later"})}
+function pull(){if(document.activeElement===N)return;try{if(typeof getToken!="function"||!getToken())return}catch(e){return}if(!ts&&N.value)ts=1;post("/study/get").then(function(d){if(d.ts>ts){N.value=d.text;ts=d.ts;loc();M.textContent="synced ✦"}else if(ts>d.ts&&N.value!=d.text)push()}).catch(function(){})}
+N.oninput=function(){ts=Date.now();loc();M.textContent="typing...";clearTimeout(nt);nt=setTimeout(push,800)};
+setTimeout(pull,1500);setInterval(pull,20000);document.addEventListener("visibilitychange",function(){if(!document.hidden)pull()});
 var F=["🍕","🍝","🍔","🍚","🍜","🧁","🍰","🥐","🍓","🍣","🍪","☕","🍷","🍫","🍩","🍟"],FL=["🌷","🌹","🪻","🌸","💐","🌺","🌻","🌼","🪷","🥀"],G={L:[],R:[]},E=["♥","🦇","✦","👋"],
  NS="http://www.w3.org/2000/svg",P={L:[],R:[]},my="L",peer=null,conn=null,pend=null,PX={L:150,R:490},role=null,code=null,retry=0,rt=0,hb=0,lastPong=0,wl=null;
 function oth(){return my=="L"?"R":"L"}
