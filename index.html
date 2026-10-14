@@ -896,21 +896,6 @@ img{max-width:100%;height:auto}
     <div id="stList"></div>
     <div class="gm-row" style="margin-top:16px"><span>† notes</span><span id="stNoteMsg"></span></div>
     <textarea class="st-notes" id="stNotes" maxlength="5000" placeholder="write anything here..."></textarea>
-
-    <div class="gm-row" style="margin-top:26px"><span>† lecture helper</span><span id="lcMsg"></span></div>
-    <div class="gm-row"><input class="st-in" id="lcUrl" placeholder="paste a youtube lecture link..." autocomplete="off"></div>
-    <img id="lcImg" alt="" hidden loading="lazy" style="max-width:220px;border-radius:8px;margin:4px 0 8px">
-    <div class="gm-row" style="flex-wrap:wrap">
-      <button class="smallbtn st-b lc-b" data-m="summary" type="button">summary</button>
-      <button class="smallbtn st-b lc-b" data-m="notes" type="button">study notes</button>
-      <button class="smallbtn st-b lc-b" data-m="quiz" type="button">quiz me</button>
-      <button class="smallbtn st-b lc-b" data-m="terms" type="button">key terms</button>
-    </div>
-    <div class="dt-win" id="lcWin" hidden style="margin-top:8px"><div class="dt-bar"><span>† lecture.exe</span><button class="smallbtn st-b" id="lcSave" type="button">save to notes</button></div>
-      <div id="lcOut" style="padding:12px;white-space:pre-wrap;max-height:380px;overflow:auto;font-size:14px;line-height:1.55"></div>
-    </div>
-    <div class="gm-row" style="margin-top:8px"><input class="st-in" id="lcQ" maxlength="500" placeholder="ask a question about the lecture..." autocomplete="off"><button class="smallbtn st-b" id="lcAsk" type="button">ask</button></div>
-
     </div>
     <div id="stTogether" hidden>
     <div class="gm-row" style="margin-top:6px"><span>† study together</span><span id="rmStat">not in a room yet</span></div>
@@ -1495,8 +1480,7 @@ html.dt-fsmode .rain-layer,html.dt-fsmode .snow-layer,html.dt-fsmode .card-snow,
 .st-notes{font-size:.95rem;line-height:1.5;background:#17101f;border-color:#a77fb3;max-width:560px}
 .st-t{font-size:.95rem;border-color:#a77fb3}
 .rm-log{font-size:.86rem;background:#0f0916}
-#lcMsg,#rmStat,#stNoteMsg,#stInfo{color:#ffd2e2;font-weight:700}
-#lcOut{font-size:15px!important}
+#rmStat,#stNoteMsg,#stInfo{color:#ffd2e2;font-weight:700}
 #study{padding:18px;border:1px solid rgba(201,167,214,.3);border-radius:3px;background:rgba(10,6,14,.8);}
 .dt-db,.dt-chip,.dt-pn{border-radius:3px}
 .dt-db,.dt-chip{font-family:"Courier New",monospace;font-weight:700;letter-spacing:.03em;box-shadow:inset 0 1px rgba(255,255,255,.12),0 0 0 1px rgba(59,29,77,.9)}
@@ -1842,9 +1826,10 @@ function checkIdleOnReturn() {
   if (last && Date.now() - last >= IDLE_TIMEOUT_MS) lockForInactivity(); else scheduleIdleLogout();
 }
 
-["pointerdown","keydown","touchstart","scroll","wheel","click"].forEach(type => {
+["pointerdown","keydown","touchstart","touchmove","wheel","click","input"].forEach(type => {
   document.addEventListener(type, recordActivity, { passive: true });
 });
+document.addEventListener("scroll", recordActivity, { passive: true, capture: true });
 document.addEventListener("pointermove", recordActivity, { passive: true });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) checkIdleOnReturn(); });
 window.addEventListener("focus", checkIdleOnReturn);
@@ -4725,37 +4710,6 @@ window.miniMd=function(t){
 };
 </script>
 <script>(function(){
-var $=function(i){return document.getElementById(i)},busy=0,hist=[];
-function vid(u){var m=/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([\w-]{11})/.exec(u);return m&&m[1]}
-var raw="";function out(t,add){$("lcWin").hidden=false;var o=$("lcOut");raw=add&&raw?raw+"\n\n"+t:t;o.innerHTML=window.miniMd(raw);o.scrollTop=add?o.scrollHeight:0}
-function run(mode,q){
-var u=$("lcUrl").value.trim();
-if(busy){$("lcMsg").textContent="still reading the lecture, give it a moment...";return}
-if(!vid(u)){$("lcMsg").textContent="paste a youtube link first";out("\u2191 paste a youtube lecture link in the box above first, then tap a button or ask your question.",!!$("lcOut").textContent);$("lcUrl").focus();return}
-busy=1;$("lcMsg").textContent="reading the lecture... (can take up to a minute)";
-api("/study/lecture",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,mode:mode,question:q||"",history:hist}),long:true,signal:(window.AbortSignal&&AbortSignal.timeout?AbortSignal.timeout(150000):undefined)})
-.then(function(r){return r.json().catch(function(){return{}}).then(function(d){if(!r.ok||!d.text)throw d.error||"something went wrong";return d})})
-.then(function(d){
-if(mode=="ask"){hist.push("Q: "+q,"A: "+d.text.slice(0,500));hist=hist.slice(-6);out("Q: "+q+"\n"+d.text,1)}
-else{hist=[];out(d.text)}
-$("lcMsg").textContent=d.cached?"ready (instant, saved) ✦":"ready ✦";
-})
-.catch(function(e){var t=typeof e=="string"?e:"couldn't reach the server, check your internet and try again";$("lcMsg").textContent=t;out(t,!!$("lcOut").textContent)})
-.then(function(){busy=0});
-}
-$("lcUrl").addEventListener("input",function(){var v=vid(this.value),i=$("lcImg");if(v){i.src="https://img.youtube.com/vi/"+v+"/mqdefault.jpg";i.hidden=false}else i.hidden=true});
-document.querySelectorAll(".lc-b").forEach(function(b){b.addEventListener("click",function(){run(b.dataset.m)})});
-function ask(){var q=$("lcQ").value.trim();if(!q){$("lcMsg").textContent="type a question first";$("lcQ").focus();return}if(!vid($("lcUrl").value.trim())){run("ask",q);return}$("lcQ").value="";run("ask",q)}
-$("lcAsk").addEventListener("click",ask);
-$("lcQ").addEventListener("keydown",function(e){if(e.key=="Enter")ask()});
-$("lcSave").addEventListener("click",function(){
-var n=$("stNotes"),t=$("lcOut").textContent;if(!n||!t)return;
-n.value=(n.value+"\n\n— lecture —\n"+t).slice(0,5000);
-n.dispatchEvent(new Event("input",{bubbles:true}));$("lcMsg").textContent="added to your notes ✦";
-});
-})();
-</script>
-<script>(function(){
 var root=document.documentElement,paused=[];
 if("IntersectionObserver" in window){
 var io=new IntersectionObserver(function(es){es.forEach(function(e){e.target.classList.toggle("is-off",!e.isIntersecting)})},{rootMargin:"250px 0px"});
@@ -4895,7 +4849,7 @@ html[data-pal] .st-t::before{color:var(--p-acc)}
 html[data-pal] .st-notes:focus{border-color:var(--p-acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--p-acc) 25%,transparent)}
 html[data-pal] .gm-row{color:var(--p-text)}
 html[data-pal] .st-clock{color:var(--p-acc);text-shadow:none;border-color:var(--p-line2);background:var(--p-inset)}
-html[data-pal] #lcMsg,html[data-pal] #rmStat,html[data-pal] #stNoteMsg,html[data-pal] #stInfo{color:var(--p-acc)}
+html[data-pal] #rmStat,html[data-pal] #stNoteMsg,html[data-pal] #stInfo{color:var(--p-acc)}
 html[data-pal] #study{background:color-mix(in srgb,var(--p-bg) 92%,transparent);border-color:var(--p-line2);border-radius:14px}
 html[data-pal] .dt-win{background:var(--p-inset);border-color:var(--p-line2);box-shadow:none}
 html[data-pal] .dt-bar{background:var(--p-raised);color:var(--p-text);text-shadow:none;border-bottom-color:var(--p-line2)}
@@ -4910,7 +4864,7 @@ html[data-pal] .st-x{color:var(--p-muted)}
 
 html[data-pal] .msg.me{background:color-mix(in srgb,var(--p-acc2) 80%,transparent);color:#fff}
 
-.msg code,#lcOut code{background:rgba(255,255,255,.12);padding:1px 5px;border-radius:4px;font-family:"Courier New",monospace;font-size:.92em}
+.msg code{background:rgba(255,255,255,.12);padding:1px 5px;border-radius:4px;font-family:"Courier New",monospace;font-size:.92em}
 .sn-b.on{outline:2px solid #fff;outline-offset:1px;box-shadow:0 0 10px rgba(255,255,255,.35)}
 #snBtns .st-x{font-size:1.1rem;padding:0 4px;color:inherit;opacity:.8}
 
@@ -5107,6 +5061,7 @@ ym(d.cached?"ready (instant, saved) ✦":"ready ✦");
 .catch(function(e){var t=typeof e=="string"?e:"couldn't reach the server, check your internet and try again";ym(t);yout(t,!!yraw)})
 .then(function(){yb=0});
 }
+setInterval(function(){if(!document.hidden&&!$("lxPw").hidden&&!$("lxYt").hidden&&!$("lectures").classList.contains("view-off")&&typeof recordActivity=="function")recordActivity()},30000);
 $("lxLoad").onclick=yload;
 $("lxUrl").addEventListener("keydown",function(e){if(e.key=="Enter")yload()});
 $("lxUrl").addEventListener("paste",function(){setTimeout(function(){if(vid($("lxUrl").value))yload()},0)});
@@ -5117,5 +5072,6 @@ $("lxYQ").addEventListener("keydown",function(e){if(e.key=="Enter")yask()});
 $("lxYSave").onclick=function(){var n=$("stNotes"),t=$("lxYOut").textContent;if(!n||!t)return;n.value=(n.value+"\n\n— lecture —\n"+t).slice(0,5000);n.dispatchEvent(new Event("input",{bubbles:true}));ym("added to your study notes ✦")};
 })();
 </script>
+<script>if("serviceWorker"in navigator&&/^https?:/.test(location.protocol))addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});</script>
 </body>
 </html>
