@@ -1,4 +1,4 @@
-/* More mini games: snake, 2048, hangman, simon, connect four.
+/* More mini games: snake, 2048, connect four.
    Plugs into the existing Games section (#games) and its tab row (.gm-tabs). */
 (function(){
 var $=function(i){return document.getElementById(i)};
@@ -10,15 +10,8 @@ st.textContent=
 ".gx-cv{display:block;max-width:100%;height:auto;border:1px solid #c9a7d6;border-radius:3px;background:#0c0711;touch-action:none;box-shadow:0 0 12px rgba(139,41,71,.4)}"+
 ".gx-g{display:grid;gap:6px;justify-content:start;touch-action:none}"+
 ".gx-t{display:grid;place-items:center;width:min(70px,19vw);height:min(70px,19vw);border-radius:3px;font:700 1.15rem 'Courier New',monospace;color:#fff;background:#150b1d;border:1px solid #3b1d4d}"+
-".gx-k{min-width:34px;padding:7px 8px;font-size:.8rem;border-radius:3px;text-transform:lowercase}"+
-".gx-k:disabled{opacity:.35;cursor:not-allowed}"+
-".gx-keys{display:flex;flex-wrap:wrap;gap:6px;max-width:420px;margin-top:10px}"+
-".gx-word{font:700 1.7rem 'Courier New',monospace;letter-spacing:.3em;color:#ffb3d1;text-shadow:0 0 8px #ff5f8f;margin:12px 0;min-height:2rem;word-break:break-all}"+
 ".gx-pad{display:grid;grid-template-columns:repeat(3,48px);gap:6px;margin-top:10px}"+
 ".gx-pad button{height:44px}"+
-".gx-simon{display:grid;grid-template-columns:repeat(2,min(110px,30vw));gap:10px;justify-content:start}"+
-".gx-sb{height:min(110px,30vw);border-radius:12px;border:2px solid rgba(255,255,255,.25);opacity:.45;cursor:pointer;transition:opacity .1s,box-shadow .1s}"+
-".gx-sb.lit{opacity:1;box-shadow:0 0 22px currentColor}"+
 ".gx-c4{display:grid;grid-template-columns:repeat(7,min(40px,11vw));gap:6px;justify-content:start}"+
 ".gx-c{height:min(40px,11vw);border-radius:50%;border:1px solid #3b1d4d;background:#0c0711;cursor:pointer;padding:0;font-size:1.1rem;color:#fff}"+
 ".gx-c.p1{background:#ff5f8f;border-color:#fff}.gx-c.p2{background:#8e6aa6;border-color:#fff}.gx-c.w{box-shadow:0 0 12px #fff}";
@@ -125,60 +118,6 @@ mk("g2048","2048",function(p){
   keyFns.g2048=move;swipe(b,move);
   stops.g2048=function(){};
   reset();
-});
-
-/* ---------- HANGMAN ---------- */
-mk("hang","hangman",function(p){
-  var W=["cathedral","gargoyle","candlelight","midnight","graveyard","vampire","raven","moonlight","labyrinth","cobweb","mausoleum","lantern","abbey","phantom","crypt","shadow","velvet","nocturne","castle","skeleton","wardrobe","tombstone","twilight","enchanted"];
-  var word,got,wrong,over;
-  var wd=el("div","gx-word"),inf=el("div","gm-row"),keys=el("div","gx-keys");
-  var nb=sbtn("new word",reset);
-  p.appendChild(wd);p.appendChild(inf);p.appendChild(keys);var r=row();r.appendChild(nb);p.appendChild(r);
-  var btns={};
-  "abcdefghijklmnopqrstuvwxyz".split("").forEach(function(l){var b=sbtn(l,function(){guess(l)});b.classList.add("gx-k");btns[l]=b;keys.appendChild(b)});
-  function draw(){
-    wd.textContent=word.split("").map(function(c){return got[c]?c:"_"}).join(" ");
-    var lives=6-wrong;inf.textContent="lives: "+"\u2665 ".repeat(lives)+"\u2661 ".repeat(wrong);
-  }
-  function finish(win){over=true;for(var l in btns)btns[l].disabled=true;
-    if(win){inf.textContent="you found it \u2726";}else{wd.textContent=word.split("").join(" ");inf.textContent="the word was \""+word+"\" \u2020"}}
-  function guess(l){
-    if(over||got[l]||btns[l].disabled)return;btns[l].disabled=true;
-    if(word.indexOf(l)>-1){got[l]=1;draw();if(word.split("").every(function(c){return got[c]}))finish(true)}
-    else{wrong++;draw();if(wrong>=6)finish(false)}
-  }
-  function reset(){word=W[Math.floor(Math.random()*W.length)];got={};wrong=0;over=false;for(var l in btns)btns[l].disabled=false;draw()}
-  document.addEventListener("keydown",function(e){
-    var t=e.target&&e.target.tagName;if(t=="INPUT"||t=="TEXTAREA"||e.ctrlKey||e.metaKey||e.altKey)return;
-    if(active("hang")&&/^[a-z]$/i.test(e.key))guess(e.key.toLowerCase())});
-  stops.hang=function(){};
-  reset();
-});
-
-/* ---------- SIMON ---------- */
-mk("simon","simon",function(p){
-  var C=["#ff5f8f","#8e6aa6","#ffd27a","#7ad1ff"],F=[262,330,392,523];
-  var box=el("div","gx-simon"),inf=el("span"),go=sbtn("start",start),r=row();r.appendChild(go);r.appendChild(inf);
-  p.appendChild(box);p.appendChild(r);
-  var seq=[],pos=0,lock=true,run=false,tok=0,AC=null,pads=[];
-  C.forEach(function(col,i){var b=el("button","gx-sb");b.type="button";b.style.background=col;b.style.color=col;b.setAttribute("aria-label","pad "+(i+1));
-    b.onclick=function(){press(i)};pads.push(b);box.appendChild(b)});
-  function beep(i){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state=="suspended")AC.resume();
-    var o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=F[i];g.gain.setValueAtTime(.2,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.35);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+.4)}catch(e){}}
-  function flash(i){pads[i].classList.add("lit");beep(i);setTimeout(function(){pads[i].classList.remove("lit")},300)}
-  function info(){inf.textContent="round: "+seq.length+"  |  best: "+best("simon")}
-  function next(){
-    seq.push(Math.floor(Math.random()*4));lock=true;info();var t=++tok,i=0;
-    (function step(){if(t!==tok)return;if(i>=seq.length){lock=false;pos=0;return}flash(seq[i++]);setTimeout(step,600)})();
-  }
-  function press(i){
-    if(!run||lock)return;flash(i);
-    if(i!==seq[pos]){var sc=seq.length-1;if(sc>best("simon"))setBest("simon",sc);run=false;lock=true;inf.textContent="wrong \u2020 you reached round "+sc+"  |  best: "+best("simon");go.textContent="play again";return}
-    pos++;if(pos==seq.length){lock=true;setTimeout(function(){if(run)next()},800)}
-  }
-  function start(){tok++;seq=[];run=true;go.textContent="restart";setTimeout(next,300)}
-  stops.simon=function(){tok++;run=false;lock=true;go.textContent="start"};
-  info();
 });
 
 /* ---------- CONNECT FOUR ---------- */
