@@ -608,25 +608,30 @@ img{max-width:100%;height:auto}
 </style>
 <style>
 /* What's new / change log */
-#changelog{padding-top:0}
+#changelog{position:fixed;right:16px;bottom:84px;z-index:90;width:min(340px,calc(100vw - 32px));margin:0;padding:0}
 #changelog[hidden]{display:none!important}
-.cl-card{position:relative;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:22px 24px;max-width:760px;margin:0 auto;animation:clIn .5s ease both}
-.cl-card:before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:3px;background:var(--pink,#d98da5);opacity:.8}
-.cl-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:4px}
-.cl-kicker{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--pink,#d98da5);font-weight:700}
-.cl-card h2{font-size:1.5rem;font-weight:500;margin:2px 0 10px}
-.cl-entry{padding:12px 0;border-top:1px solid var(--line)}
-.cl-entry:first-of-type{border-top:0;padding-top:4px}
-.cl-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
-.cl-ver{padding:2px 9px;border-radius:99px;border:1px solid var(--line);font-size:.72rem;font-weight:700;background:rgba(255,255,255,.05)}
-.cl-title{font-weight:650;font-size:1rem}
-.cl-date{margin-left:auto;font-size:.72rem;opacity:.65}
-.cl-list{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.92rem;line-height:1.5}
+.cl-card{position:relative;overflow:hidden;border:1px solid rgba(229,163,186,.45);border-radius:18px;background:linear-gradient(160deg,rgba(44,22,58,.98),rgba(20,10,28,.98));padding:14px 16px 14px;box-shadow:0 14px 40px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.04),0 0 22px rgba(217,141,165,.22);animation:clIn .4s cubic-bezier(.2,.9,.3,1) both}
+.cl-card:before{content:"";position:absolute;left:18px;right:18px;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--pink,#d98da5),transparent)}
+.cl-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:2px}
+.cl-kicker{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--pink,#d98da5);font-weight:700}
+.cl-x{width:26px;height:26px;padding:0;border-radius:50%;border:1px solid rgba(229,163,186,.35);background:rgba(255,255,255,.05);color:inherit;font-size:1rem;line-height:1;cursor:pointer;display:grid;place-items:center;opacity:.8}
+.cl-x:hover{opacity:1;background:rgba(229,163,186,.18)}
+.cl-card h2{font-size:1.25rem;font-weight:500;margin:0 0 8px}
+#clList{max-height:min(38vh,250px);overflow-y:auto;overscroll-behavior:contain;padding-right:4px;scrollbar-width:thin}
+.cl-entry{padding:9px 0;border-top:1px solid rgba(255,255,255,.08)}
+.cl-entry:first-of-type{border-top:0;padding-top:2px}
+.cl-top{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:5px}
+.cl-ver{padding:1px 8px;border-radius:99px;border:1px solid rgba(229,163,186,.45);font-size:.68rem;font-weight:700;background:linear-gradient(135deg,rgba(255,143,179,.22),rgba(142,106,166,.22))}
+.cl-title{font-weight:650;font-size:.92rem}
+.cl-date{margin-left:auto;font-size:.68rem;opacity:.6}
+.cl-list{margin:0;padding-left:1.1em;display:grid;gap:3px;font-size:.84rem;line-height:1.45}
 .cl-list li::marker{color:var(--pink,#d98da5)}
 .cl-foot{display:flex;justify-content:flex-end;margin-top:8px}
-.cl-card.cl-out{animation:clOut .35s ease both}
-@keyframes clIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes clOut{to{opacity:0;transform:translateY(-6px)}}
+#changelog .cl-foot .action{width:auto;min-height:34px;padding:6px 16px;font-size:.84rem}
+.cl-card.cl-out{animation:clOut .2s ease both;will-change:opacity}
+@keyframes clIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes clOut{to{opacity:0}}
+@media (max-width:760px){#changelog{left:12px;right:12px;width:auto;bottom:calc(84px + env(safe-area-inset-bottom))}}
 @media (prefers-reduced-motion:reduce){.cl-card,.cl-card.cl-out{animation:none}}
 </style>
 <style id="dtExtra">
@@ -811,7 +816,7 @@ img{max-width:100%;height:auto}
 
   <section class="section" id="changelog" hidden aria-labelledby="clTitle">
     <div class="cl-card">
-      <div class="cl-head"><span class="cl-kicker">Updates and Change-logs</span></div>
+      <div class="cl-head"><span class="cl-kicker">&#10022; fresh from Kimchi</span><button class="cl-x" id="clX" type="button" aria-label="Close">&times;</button></div>
       <h2 id="clTitle">What's new &#10022;</h2>
       <div id="clList"></div>
       <div class="cl-foot"><button class="action" id="clDone" type="button">Got it &#9825;</button></div>
@@ -2037,7 +2042,7 @@ function notify(event, extra = {}) {
 (() => {
   const HOME_VIEW = ["home", "changelog", "us"];
   const btns = [...document.querySelectorAll(".navbtn[data-go]")];
-  const sections = [...document.querySelectorAll("main.app > section")];
+  const sections = [...document.querySelectorAll("main.app > section")].filter(sec => sec.id !== "changelog");   // the update card is a corner popup, so it stays visible on every page
   const top = $("backTop");
   let currentView = "home";
 
@@ -2330,12 +2335,14 @@ $("hugBtn").onclick = () => {
     window.__clAllIds = all.map(e => e.id);
     if (fresh.length) show(fresh); else box.hidden = true;
   };
-  done.addEventListener("click", () => {
-    seenSet(Array.from(new Set(seenGet().concat(window.__clAllIds || []))));
+  const dismiss = () => {
     const card = box.querySelector(".cl-card");
     card.classList.add("cl-out");
-    setTimeout(() => { box.hidden = true; card.classList.remove("cl-out"); }, 340);
-  });
+    requestAnimationFrame(() => seenSet(Array.from(new Set(seenGet().concat(window.__clAllIds || [])))));
+    setTimeout(() => { box.hidden = true; card.classList.remove("cl-out"); }, 230);
+  };
+  done.addEventListener("click", dismiss);
+  const clX = $("clX"); if (clX) clX.addEventListener("click", dismiss);
 })();
 
 /* Notes */
