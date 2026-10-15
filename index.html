@@ -1029,18 +1029,18 @@ img{max-width:100%;height:auto}
 <linearGradient id="dtWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--dw1,#1d0f2b)"/><stop offset="1" style="stop-color:var(--dw2,#0c0711)"/></linearGradient>
 <radialGradient id="dtGlow" cx=".5" cy=".7" r=".5"><stop offset="0" style="stop-color:var(--dg,#ff9ab8)" stop-opacity=".28"/><stop offset="1" style="stop-color:var(--dg,#ff9ab8)" stop-opacity="0"/></radialGradient>
 <symbol id="gcat" viewBox="0 0 100 100">
-<path d="M72 92Q99 90 92 58Q90 50 84 56" fill="none" stroke="var(--cb)" stroke-width="9" stroke-linecap="round"/>
-<ellipse cx="50" cy="74" rx="27" ry="24" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
-<polygon points="29,30 32,5 49,21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
-<polygon points="71,30 68,5 51,21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
-<polygon points="33,25 34,13 43,22" fill="var(--co,#8b2947)"/><polygon points="67,25 66,13 57,22" fill="var(--co,#8b2947)"/>
-<circle cx="50" cy="40" r="21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
+<path d="M72 92Q99 90 92 58Q90 50 84 56" fill="none" style="stroke:var(--cb)" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="50" cy="74" rx="27" ry="24" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="29,30 32,5 49,21" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="71,30 68,5 51,21" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="33,25 34,13 43,22" style="fill:var(--co,#8b2947)"/><polygon points="67,25 66,13 57,22" style="fill:var(--co,#8b2947)"/>
+<circle cx="50" cy="40" r="21" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
 <ellipse cx="41" cy="38" rx="4.2" ry="5.5" style="fill:var(--eye)"/><ellipse cx="59" cy="38" rx="4.2" ry="5.5" style="fill:var(--eye)"/>
 <rect x="40.2" y="33" width="1.6" height="10" fill="#000"/><rect x="58.2" y="33" width="1.6" height="10" fill="#000"/>
 <polygon points="47,46 53,46 50,50" fill="#ff8fb3"/>
-<path d="M50 50Q46 55 43 52M50 50Q54 55 57 52" fill="none" stroke="var(--dl,#c9a7d6)" stroke-width=".9"/>
-<path d="M34 48L20 45M34 51L20 53M66 48L80 45M66 51L80 53" stroke="var(--dl,#c9a7d6)" stroke-width=".6"/>
-<path d="M34 58Q50 69 66 58" fill="none" stroke="var(--co,#8b2947)" stroke-width="4"/>
+<path d="M50 50Q46 55 43 52M50 50Q54 55 57 52" fill="none" style="stroke:var(--dl,#c9a7d6)" stroke-width=".9"/>
+<path d="M34 48L20 45M34 51L20 53M66 48L80 45M66 51L80 53" style="stroke:var(--dl,#c9a7d6)" stroke-width=".6"/>
+<path d="M34 58Q50 69 66 58" fill="none" style="stroke:var(--co,#8b2947)" stroke-width="4"/>
 <text x="50" y="70" text-anchor="middle" font-size="9" fill="#fff">✦</text>
 </symbol>
 </defs>
@@ -4523,6 +4523,25 @@ function add(){var v=$("stIn").value.trim().slice(0,80);if(!v)return;T.push({t:v
 $("stAdd").onclick=add;$("stIn").onkeydown=function(e){if(e.key=="Enter")add()};render();
 })();
 </script>
+<script>
+/* shared WebRTC config for date + study rooms: STUN always, TURN relay when the worker provides one */
+(function(){
+var FB=[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"},{urls:"stun:stun.cloudflare.com:3478"}],got=null;
+window.gyCfg=function(){return{config:{iceServers:got||FB}}};
+window.gyIce=function(cb){
+  if(got)return cb();
+  var done=false;function fin(l){if(done)return;done=true;if(l&&l.length)got=FB.concat(l);cb()}
+  setTimeout(function(){fin(null)},4000);
+  try{api("/turn").then(function(r){return r.ok?r.json():null}).then(function(j){fin(Array.isArray(j)?j:(j&&j.iceServers)||null)}).catch(function(){fin(null)})}catch(e){fin(null)}
+};
+window.gyIceMsg=function(c,say){
+  try{c.on("iceStateChanged",function(st){
+    if(st==="checking")say("connecting to them...");
+    else if(st==="failed")say(got?"couldn't connect, retrying...":"your networks can't reach each other directly (no relay set up)");
+  })}catch(e){}
+};
+})();
+</script>
 <script>(function(){
 var $=function(i){return document.getElementById(i)};
 var N=$("stNotes"),nt,M=$("stNoteMsg"),ts=0;try{ts=+localStorage.getItem("stNotesTs")||0}catch(e){}
@@ -4592,20 +4611,20 @@ var ICK=Object.keys(ART);
 function sym(k,x,y,w){var i=ICK.indexOf(k);if(i<0){var t=document.createElementNS(NS,"text");t.setAttribute("x",x+w/2);t.setAttribute("y",y+w*.85);t.setAttribute("font-size",w*.85);t.textContent=k;return t}var u=document.createElementNS(NS,"use");u.setAttribute("href","#dti"+i);u.setAttribute("x",x);u.setAttribute("y",y);u.setAttribute("width",w);u.setAttribute("height",w);return u}
 function ico(k){var v=document.createElementNS(NS,"svg");v.setAttribute("class","dt-ic");v.setAttribute("viewBox","0 0 32 32");v.setAttribute("aria-hidden","true");v.appendChild(sym(k,0,0,32));return v}
 function oth(){return my=="L"?"R":"L"}
+var flowerQueue=[];
 window.DTX=window.DTX||{};DTX.me=function(){return my};DTX.send=function(o){send(o)};
 function status(t){$("dtStat").textContent=t}
 function ui(){$("dtStart").hidden=!!role;$("dtJoin").hidden=!(pend&&!role);$("dtLeave").hidden=!role}
 function away(a){$("dtCat"+oth()).classList.toggle("away",a);$("dtCat"+my).classList.remove("away");pres(a)}
 function pres(a){["L","R"].forEach(function(s){var h=a&&s!=my;["dtPl","dtP","dtG","dtLab"].forEach(function(p){var e=$(p+s);if(e)e.style.display=h?"none":""})});
 var p=$("dtPres");if(p){p.textContent=a?(role?"○ waiting for them to join…":"○ nobody here yet"):"● they're here ✦";p.classList.toggle("on",!a)}
-var f=$("dtFlowSt");if(f)f.textContent=a?"🔒 bouquets unlock once they join":"they're here, pick a bouquet";
-document.querySelectorAll("#dtFlow button").forEach(function(b){b.disabled=a})}
+var f=$("dtFlowSt");if(f)f.textContent=a?"flowers can be sent anytime; they'll arrive when they join":"they're here, send a bouquet anytime ✦"}
 function draw(){["L","R"].forEach(function(s){var g=$("dtP"+s);g.textContent="";P[s].forEach(function(f,i){g.appendChild(sym(f,PX[s]+(i-1)*26-13,251,26))});$("dtLab"+s).textContent=s==my?"you ✦":"them †";var v=$("dtG"+s);v.textContent="";var bx=s=="L"?255:385;G[s].forEach(function(f,i){var a=(i-(G[s].length-1)/2),t=sym(f,bx+a*15-12,252-Math.abs(a)*3-19,24);t.setAttribute("transform","rotate("+(a*9)+" "+(bx+a*15)+" 262)");v.appendChild(t)})})}
 function pop(s,ch){var X=s=="L"?145:495,t;if(ch.indexOf("bq:")==0){t=sym(ch,X-26,60,52);t.setAttribute("class","dt-pop")}else{t=document.createElementNS(NS,"text");t.setAttribute("class","dt-pop");t.setAttribute("x",X);t.setAttribute("y",120);t.textContent=ch}$("dtFx").appendChild(t);setTimeout(function(){t.remove()},1600)}
 function bob(s){var g=$("dtCat"+s);g.classList.remove("eat");setTimeout(function(){g.classList.add("eat")},10);setTimeout(function(){g.classList.remove("eat")},700)}
 function send(o){try{conn&&conn.open&&conn.send(o)}catch(e){}}
 function sendPlate(){send({t:"plate",items:P[my]})}
-function onData(d){if(!d||typeof d!="object")return;lastPong=Date.now();if(d.t=="p"){send({t:"q"});return}if(d.t=="q")return;var s=oth();
+function onData(d){if(!d||typeof d!="object")return;lastPong=Date.now();if(d.t=="p"){send({t:"q"});return}if(d.t=="q")return;var s=oth();if($("dtCat"+s)&&$("dtCat"+s).classList.contains("away")){away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role==="host")send({t:"gs",G:G})}
 if(d.t=="gs"&&role=="guest"&&d.G){["L","R"].forEach(function(k){if(Array.isArray(d.G[k]))G[k]=d.G[k].filter(function(x){return FL.indexOf(x)>-1}).slice(-5)});draw();return}
 if(d.t=="plate"&&Array.isArray(d.items)){P[s]=d.items.filter(function(x){return F.indexOf(x)>-1}).slice(0,3);draw()}
 else if(d.t=="cat"&&window.DTX&&DTX.on)DTX.on(d)
@@ -4617,7 +4636,7 @@ var NM={"🍕":"pizza","🍝":"pasta","🍔":"burger","🍚":"rice","🍜":"rame
 Object.assign(NM,{"bq:blily":"black lilies","bq:brose":"black roses","bq:mix":"lilies & red roses","bq:night":"midnight purple","bq:moon":"moonlit lilies","bq:crim":"crimson & black","bq:tulip":"black tulips","bq:thorn":"thorn rose"});
 function tag(b,k){var n=NM[k]||"";b.title=n;b.setAttribute("aria-label",n);var l=document.createElement("span");l.className="dt-n";l.textContent=n;b.appendChild(l)}
 F.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){P[my].push(f);if(P[my].length>3)P[my].shift();draw();sendPlate()};$("dtMenu").appendChild(b)});
-FL.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){if(!(conn&&conn.open)){status("wait until they join, then give flowers ♥");return}var o=oth();G[o].push(f);if(G[o].length>5)G[o].shift();draw();pop(o,f);send({t:"gift",f:f});status("you gave them "+(NM[f]||f)+" ♥")};$("dtFlow").appendChild(b)});
+FL.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){var o=oth();G[o].push(f);if(G[o].length>5)G[o].shift();draw();pop(o,f);if(conn&&conn.open){send({t:"gift",f:f});status("you gave them "+(NM[f]||f)+" ♥")}else{flowerQueue.push(f);status("saved; it'll reach them when they connect ♥")}};$("dtFlow").appendChild(b)});
 E.forEach(function(e){var b=document.createElement("button");b.type="button";b.textContent=e;tag(b,e);b.onclick=function(){pop(my,e);send({t:"emo",e:e})};$("dtEmo").appendChild(b)});
 function chatAdd(w,m){var l=$("dtChLog");if(!l)return;var d=document.createElement("div"),b=document.createElement("b");d.className=w;b.textContent=w=="me"?"you: ":"them: ";d.appendChild(b);d.appendChild(document.createTextNode(m));l.appendChild(d);while(l.children.length>100)l.firstChild.remove();l.scrollTop=l.scrollHeight;if(w=="them"){pop(oth(),"💬");var pn=document.querySelector('.dt-pn[data-p="chat"]');if(!(pn&&pn.classList.contains("open"))){var u=$("dtUnread");u.hidden=false;u.textContent=(+u.textContent||0)+1}}}
 function chatSend(){var i=$("dtChIn"),m=i.value.trim().slice(0,300);if(!m)return;if(!(conn&&conn.open)){status("wait until they join to chat");return}send({t:"chat",m:m});chatAdd("me",m);i.value=""}
@@ -4630,25 +4649,26 @@ function lock(){try{if(role&&!wl&&navigator.wakeLock)navigator.wakeLock.request(
 function unlock(){try{wl&&wl.release()}catch(e){}wl=null}
 function store(){try{if(role=="host")localStorage.setItem("dtHost",JSON.stringify({c:code,t:Date.now()}));else localStorage.removeItem("dtHost")}catch(e){}}
 function stopHB(){clearInterval(hb);hb=0}
-function startHB(){stopHB();lastPong=Date.now();hb=setInterval(function(){if(conn&&conn.open){send({t:"p"});if(Date.now()-lastPong>30000){dead()}}},8000)}
+function startHB(){stopHB();lastPong=Date.now();hb=setInterval(function(){if(conn&&conn.open){send({t:"p"});if(window.DTX&&DTX.hi)DTX.hi();if(Date.now()-lastPong>30000){dead()}}},8000)}
 function dead(){var c=conn;conn=null;stopHB();try{c&&c.close()}catch(e){}lost()}
 function lost(){if(!role)return;away(true);if(role=="guest"){status("connection dropped, reconnecting...");later(retryGuest,1500)}else{status("they stepped away, your table is still open †");if(peer&&peer.disconnected)try{peer.reconnect()}catch(e){}}}
 function setConn(c){var old=conn;if(old&&old!==c){if(old.open&&Date.now()-lastPong<25000){c.close();return}try{old.close()}catch(e){}}
-conn=c;
-c.on("open",function(){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role=="host")send({t:"gs",G:G});startHB();lock()});
+conn=c;gyIceMsg(c,status);
+function opened(c){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role=="host")send({t:"gs",G:G});flowerQueue.splice(0).forEach(function(f){send({t:"gift",f:f})});startHB();lock()}
+c.on("open",function(){opened(c)});
 c.on("data",onData);
 c.on("close",function(){if(conn===c){conn=null;stopHB();lost()}});
-c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}})}
-function load(cb){if(window.Peer)return cb();var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";s.onload=cb;s.onerror=function(){status("couldn't load the date service, retrying...");later(function(){if(role)load(cb)},4000)};document.head.appendChild(s)}
+c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}});if(c.open)opened(c)}
+function load(cb){gyIce(function(){if(window.Peer)return cb();var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";s.onload=cb;s.onerror=function(){status("couldn't load the date service, retrying...");later(function(){if(role)load(cb)},4000)};document.head.appendChild(s)})}
 function showLink(){$("dtLink").value=location.href.split("#")[0]+"#date="+code;$("dtLinkRow").hidden=false}
 function mkHost(){if(role!="host")return;load(function(){if(role!="host")return;try{peer&&peer.destroy()}catch(e){}
-var p=peer=new Peer("gy2k-"+code);
+var p=peer=new Peer("gy2k-"+code,gyCfg());
 p.on("open",function(){retry=0;showLink();if(!(conn&&conn.open))status("waiting for them to join...")});
 p.on("connection",setConn);
 p.on("disconnected",function(){if(peer===p&&role=="host")later(function(){try{p.reconnect()}catch(e){}},1500)});
 p.on("error",function(e){if(peer!==p||role!="host")return;retry++;status("reconnecting your table...");later(function(){if(role=="host")mkHost()},Math.min(3000+retry*1500,15000))})})}
 function mkGuest(){if(role!="guest")return;load(function(){if(role!="guest")return;try{peer&&peer.destroy()}catch(e){}
-var p=peer=new Peer();
+var p=peer=new Peer(undefined,gyCfg());
 p.on("open",function(){if(peer===p)setConn(p.connect("gy2k-"+code,{reliable:true}))});
 p.on("disconnected",function(){if(peer===p&&role=="guest")try{p.reconnect()}catch(e){}});
 p.on("error",function(e){if(peer!==p||role!="guest")return;retry++;
@@ -4707,21 +4727,21 @@ function dead(){var c=conn;conn=null;stopHB();try{c&&c.close()}catch(e){}lost()}
 function later(f,ms){clearTimeout(rt);rt=setTimeout(f,ms)}
 function lost(){if(!role)return;them="";showThem();if(role=="guest"){status("connection dropped, reconnecting...");later(retryGuest,1500)}else{status("they left, your room is still open †");if(peer&&peer.disconnected)try{peer.reconnect()}catch(e){}}}
 function setConn(c){var old=conn;if(old&&old!==c){if(old.open&&Date.now()-lastPong<25000){c.close();return}try{old.close()}catch(e){}}
-conn=c;
+conn=c;gyIceMsg(c,status);
 c.on("open",function(){if(conn!==c)return;retry=0;status("studying together ✦");add("","connected, let's focus ✦","sys");send(who());if(role=="host"&&window.ST)send({t:"tm",s:ST.get()});startHB();lock();showThem()});
 c.on("data",onData);
 c.on("close",function(){if(conn===c){conn=null;stopHB();lost()}});
-c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}})}
-function load(cb){if(window.Peer)return cb();var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";s.onload=cb;s.onerror=function(){status("couldn't load the service, retrying...");later(function(){if(role)load(cb)},4000)};document.head.appendChild(s)}
+c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}});if(c.open)opened(c)}
+function load(cb){gyIce(function(){if(window.Peer)return cb();var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";s.onload=cb;s.onerror=function(){status("couldn't load the service, retrying...");later(function(){if(role)load(cb)},4000)};document.head.appendChild(s)})}
 function showLink(){$("rmLink").value=location.href.split("#")[0]+"#study="+code;$("rmLinkRow").hidden=false}
 function mkHost(){if(role!="host")return;load(function(){if(role!="host")return;try{peer&&peer.destroy()}catch(e){}
-var p=peer=new Peer("gy2k-s-"+code);
+var p=peer=new Peer("gy2k-s-"+code,gyCfg());
 p.on("open",function(){retry=0;showLink();if(!(conn&&conn.open))status("room open, waiting for them...")});
 p.on("connection",setConn);
 p.on("disconnected",function(){if(peer===p&&role=="host")later(function(){try{p.reconnect()}catch(e){}},1500)});
 p.on("error",function(){if(peer!==p||role!="host")return;retry++;status("reconnecting your room...");later(function(){if(role=="host")mkHost()},Math.min(3000+retry*1500,15000))})})}
 function mkGuest(){if(role!="guest")return;load(function(){if(role!="guest")return;try{peer&&peer.destroy()}catch(e){}
-var p=peer=new Peer();
+var p=peer=new Peer(undefined,gyCfg());
 p.on("open",function(){if(peer===p)setConn(p.connect("gy2k-s-"+code,{reliable:true}))});
 p.on("disconnected",function(){if(peer===p&&role=="guest")try{p.reconnect()}catch(e){}});
 p.on("error",function(e){if(peer!==p||role!="guest")return;retry++;if(retry>20){status("that room isn't active, ask for a new link");return}status(e.type=="peer-unavailable"?"waiting for the room to open...":"reconnecting...");later(retryGuest,Math.min(2500+retry*800,10000))})})}
