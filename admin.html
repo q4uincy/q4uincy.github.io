@@ -175,7 +175,13 @@
   @media(max-width:760px){body{padding:16px}.dashboard-header{display:grid;align-items:start}.header-actions{justify-content:flex-start}.dashboard-grid{grid-template-columns:1fr}#photosSection{grid-column:auto}.quick-nav{gap:3px}.quick-nav a{padding:8px 10px}.panel{margin-top:8vh}}
   @media(max-width:420px){body{padding:11px}.panel{padding:22px 18px;border-radius:20px}.section{padding:17px;border-radius:19px}.header-actions{display:flex}.form-actions{align-items:stretch;flex-direction:column}.form-actions button{width:100%}.form-actions .status{text-align:left}.quick-nav{display:grid;grid-template-columns:1fr 1fr}.photo-toolbar button{width:100%}}
   @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-  .sup-when{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .quick-nav{position:sticky;top:8px;z-index:5}
+.cl-form{display:grid;grid-template-columns:110px 1fr;gap:10px}
+.cl-hint{font-size:.78rem;color:var(--muted)}
+.cl-note ul{margin:0;padding-left:1.1em;font-size:.84rem;color:var(--note-text)}
+.cl-ver{display:inline-block;margin-right:6px;padding:1px 8px;border-radius:99px;border:1px solid var(--line-strong);font-size:.7rem;font-weight:700}
+@media(max-width:420px){.cl-form{grid-template-columns:1fr}}
+.sup-when{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .sup-when label{display:grid;gap:5px;font-size:.78rem;color:var(--muted);min-width:0}
   .sup-note strong{display:block;font-size:.95rem;color:var(--note-text)}
   .sup-state{display:inline-block;margin-top:2px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);background:var(--accent-soft);font-size:.7rem;color:var(--text)}
@@ -238,6 +244,7 @@
       <a href="#notesSection"><span>01</span> Regular notes</a>
       <a href="#cuteSection"><span>02</span> Cute notes</a>
       <a href="#surpriseSection"><span>✦</span> Surprises</a>
+      <a href="#changelogSection"><span>✎</span> Changelog</a>
       <a href="#photosSection"><span>03</span> Photos</a>
       <a href="#activitySection"><span>04</span> Activity</a>
       <a href="#moodSection"><span>♡</span> How she feels</a>
@@ -284,6 +291,16 @@
         <div class="form-actions"><button id="addSurprise" type="button">Schedule surprise</button><p class="status" id="supStatus" aria-live="polite"></p></div>
         <div class="list-heading"><h3>Scheduled</h3><span class="list-count" id="supCount">0</span></div>
         <div id="supList" class="list" aria-live="polite"></div>
+      </section>
+
+      <section class="section" id="changelogSection">
+        <div class="section-head"><span class="snow-icon" aria-hidden="true">✎</span><div class="section-title-group"><p class="section-kicker">WHAT'S NEW</p><h2>Change log</h2></div></div>
+        <p class="section-description">Post what changed on the site. Right after the welcome section, Laya sees it once on her next sign-in, then it stays hidden until you post the next update.</p>
+        <div class="cl-form"><input id="clVer" type="text" maxlength="12" placeholder="v1.4" aria-label="Version (optional)"><input id="clTitle" type="text" maxlength="70" placeholder="Update title, e.g. New drinks on the date page" aria-label="Update title"></div>
+        <textarea id="clItems" placeholder="One change per line&#10;New drink art on the date page&#10;Pick your own date font" aria-label="Changes, one per line"></textarea>
+        <div class="form-actions"><button id="clPost" type="button">Publish update</button><p class="status" id="clStatus" aria-live="polite"></p></div>
+        <div class="list-heading"><h3>Published updates</h3><span class="list-count" id="clCount">0</span></div>
+        <div id="clList" class="list" aria-live="polite"></div>
       </section>
 
       <section class="section" id="photosSection">
@@ -432,6 +449,7 @@
     panel.prepend(canvas);
     const fx = {panel, canvas, ctx: canvas.getContext("2d"), getMode, parts: [], w: 0, h: 0, kind: null};
     new ResizeObserver(() => sizeFx(fx)).observe(panel);
+    fx.vis = true; new IntersectionObserver(e => { fx.vis = e[0].isIntersecting; }).observe(panel);
     fxPanels.push(fx);
   }
   function sizeFx(fx) {
@@ -459,6 +477,7 @@
       fxColors = {snow: cs.getPropertyValue("--fx-snow").trim(), rain: cs.getPropertyValue("--fx-rain").trim()};
     }
     for (const fx of fxPanels) {
+      if (!fx.vis) continue;
       const mode = fx.getMode();
       if ((!fx.w || !fx.h) && fx.panel.clientWidth) sizeFx(fx);
       if (mode === "off" || !fx.w || !fx.h) {
@@ -618,7 +637,7 @@
   let allNotes = [], notesOpen = false, visibleNotes = NOTES_PAGE_SIZE;
 
   function render(notes) {
-    if (Array.isArray(notes)) allNotes = notes;
+    if (Array.isArray(notes)) { try{renderCL(notes);}catch(e){} allNotes = notes.filter(n => !String((n && n.text) || "").startsWith("[[changelog]]")); }
     notes = allNotes;
     list.innerHTML = "";
     list.hidden = !notesOpen;
@@ -1290,6 +1309,47 @@
     }catch(e){memoryStatus.textContent="Couldn't clear memories. Try again.";}
   };
   aiSync();
+
+  // ---- Change log (stored as a note starting with [[changelog]]; the main site shows it once per update) ----
+  const CL_TAG="[[changelog]]";
+  const clVer=document.getElementById("clVer"), clTitle=document.getElementById("clTitle"), clItems=document.getElementById("clItems"),
+        clStatus=document.getElementById("clStatus"), clList=document.getElementById("clList"), clCount=document.getElementById("clCount");
+  function renderCL(notes){
+    const items=(notes||[]).filter(n=>String(n.text||"").startsWith(CL_TAG)).reverse();
+    clCount.textContent=String(items.length); clList.innerHTML="";
+    if(!items.length){const e=document.createElement("div");e.className="empty-state";e.textContent="No updates yet. Post one above.";clList.appendChild(e);return;}
+    items.forEach(n=>{
+      const lines=String(n.text).slice(CL_TAG.length).replace(/\r/g,"").split("\n").map(l=>l.trim());
+      const head=(lines.shift()||"").split("|"), ver=head.length>1?head.shift().trim():"", title=head.join("|").trim()||"Update";
+      const d=document.createElement("div"); d.className="note cl-note";
+      const sm=document.createElement("small"); sm.textContent=fmt(n.date);
+      const st=document.createElement("strong");
+      if(ver){const v=document.createElement("span");v.className="cl-ver";v.textContent=ver;st.appendChild(v);}
+      st.appendChild(document.createTextNode(title));
+      const ul=document.createElement("ul"); lines.map(l=>l.replace(/^[-*\u2022]\s*/,"")).filter(Boolean).forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.appendChild(li);});
+      const b=document.createElement("button"); b.className="small"; b.textContent="Delete";
+      b.onclick=()=>{ if(confirm("Delete this update?")) clSend("/admin/delete",{id:n.id},"Deleted."); };
+      d.append(sm,st,ul,b); clList.appendChild(d);
+    });
+  }
+  async function clSend(path,extra,okMsg){
+    if(!authenticated){clStatus.textContent="Please sign in first.";return false;}
+    clStatus.textContent="Working...";
+    try{
+      const r=await fetch(api(path),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:user.value.trim(),password:pw.value,...extra})});
+      if(r.status===401){clStatus.textContent="Wrong password.";return false;}
+      if(!r.ok)throw 0;
+      render((await r.json()).notes||[]); clStatus.textContent=okMsg; return true;
+    }catch(e){clStatus.textContent="Something went wrong. Try again.";return false;}
+  }
+  document.getElementById("clPost").onclick=async()=>{
+    const title=clTitle.value.replace(/\|/g,"/").trim(), ver=clVer.value.replace(/\|/g,"/").trim();
+    const lines=clItems.value.split("\n").map(l=>l.trim()).filter(Boolean);
+    if(!title){clStatus.textContent="Add a title first.";return;}
+    if(!lines.length){clStatus.textContent="Add at least one change.";return;}
+    const text=CL_TAG+(ver?ver+"|":"")+title+"\n"+lines.map(l=>"- "+l).join("\n");
+    if(await clSend("/admin/add",{text},"Published. Laya sees it once on her next sign-in.")){clVer.value="";clTitle.value="";clItems.value="";}
+  };
 
   // ---- Scheduled surprises ----
   const SINCE = "2026-07-02";   // same "day we met" as the main site, so day numbers match the counter Laya sees
