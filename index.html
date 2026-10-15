@@ -628,6 +628,13 @@ img{max-width:100%;height:auto}
 @keyframes clOut{to{opacity:0;transform:translateY(-6px)}}
 @media (prefers-reduced-motion:reduce){.cl-card,.cl-card.cl-out{animation:none}}
 </style>
+<style id="dtExtra">
+#date .dt-pres{font:700 .78rem "Courier New",monospace;padding:3px 9px;border:1px solid #6b3a66;border-radius:3px;color:#cbb9c8;background:#150b1d}
+#date .dt-pres.on{color:#b8f0c8;border-color:#4cb85a;box-shadow:0 0 8px rgba(76,184,90,.4)}
+#date #dtFlow button:disabled{opacity:.32;cursor:not-allowed;filter:grayscale(.6);transform:none}
+#date .dt-unread{display:inline-block;min-width:18px;padding:1px 5px;border-radius:9px;background:#e0486f;color:#fff;font-size:.7rem;text-align:center}
+#date .dt-unread[hidden]{display:none}
+</style>
 </head>
 
 <body class="nav-side">
@@ -1014,7 +1021,7 @@ img{max-width:100%;height:auto}
 
   <section class="section" id="date">
     <div class="section-head"><div><div class="section-kicker">virtual date</div><h2>A table for two.</h2></div></div>
-    <div class="gm-row" style="margin:0 0 10px"><button class="smallbtn st-b" id="dtStart" type="button">start a date</button><button class="smallbtn st-b" id="dtJoin" type="button" hidden>join the date</button><button class="smallbtn st-b" id="dtLeave" type="button" hidden>leave</button><span id="dtStat">not on a date yet</span></div>
+    <div class="gm-row" style="margin:0 0 10px"><button class="smallbtn st-b" id="dtStart" type="button">start a date</button><button class="smallbtn st-b" id="dtJoin" type="button" hidden>join the date</button><button class="smallbtn st-b" id="dtLeave" type="button" hidden>leave</button><span id="dtStat">not on a date yet</span><span id="dtPres" class="dt-pres">○ nobody here yet</span></div>
     <div class="gm-row" id="dtLinkRow" hidden style="margin:0 0 10px"><input class="st-in" id="dtLink" readonly><button class="smallbtn st-b" id="dtCopy" type="button">copy link</button></div>
     <div class="dt-win"><div class="dt-bar"><span>† date_night.exe</span><span class="dt-ctl"><button type="button" id="dtTrayBtn" aria-label="food and flowers" title="food and flowers">🍽</button><button type="button" id="dtMin" aria-label="minimize" title="minimize">_</button><button type="button" id="dtFs" aria-label="fullscreen" title="fullscreen">□</button><button type="button" id="dtX" aria-label="close" title="close">×</button></span></div><div class="dt-sc">
 <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two cats at a candlelit table">
@@ -1022,18 +1029,18 @@ img{max-width:100%;height:auto}
 <linearGradient id="dtWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--dw1,#1d0f2b)"/><stop offset="1" style="stop-color:var(--dw2,#0c0711)"/></linearGradient>
 <radialGradient id="dtGlow" cx=".5" cy=".7" r=".5"><stop offset="0" style="stop-color:var(--dg,#ff9ab8)" stop-opacity=".28"/><stop offset="1" style="stop-color:var(--dg,#ff9ab8)" stop-opacity="0"/></radialGradient>
 <symbol id="gcat" viewBox="0 0 100 100">
-<path d="M72 92Q99 90 92 58Q90 50 84 56" fill="none" stroke="var(--cb)" stroke-width="9" stroke-linecap="round"/>
-<ellipse cx="50" cy="74" rx="27" ry="24" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
-<polygon points="29,30 32,5 49,21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
-<polygon points="71,30 68,5 51,21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
-<polygon points="33,25 34,13 43,22" fill="var(--co,#8b2947)"/><polygon points="67,25 66,13 57,22" fill="var(--co,#8b2947)"/>
-<circle cx="50" cy="40" r="21" fill="var(--cb)" stroke="var(--dl,#c9a7d6)" stroke-width=".8"/>
+<path d="M72 92Q99 90 92 58Q90 50 84 56" fill="none" style="stroke:var(--cb)" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="50" cy="74" rx="27" ry="24" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="29,30 32,5 49,21" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="71,30 68,5 51,21" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
+<polygon points="33,25 34,13 43,22" style="fill:var(--co,#8b2947)"/><polygon points="67,25 66,13 57,22" style="fill:var(--co,#8b2947)"/>
+<circle cx="50" cy="40" r="21" style="fill:var(--cb);stroke:var(--dl,#c9a7d6)" stroke-width=".8"/>
 <ellipse cx="41" cy="38" rx="4.2" ry="5.5" style="fill:var(--eye)"/><ellipse cx="59" cy="38" rx="4.2" ry="5.5" style="fill:var(--eye)"/>
 <rect x="40.2" y="33" width="1.6" height="10" fill="#000"/><rect x="58.2" y="33" width="1.6" height="10" fill="#000"/>
 <polygon points="47,46 53,46 50,50" fill="#ff8fb3"/>
-<path d="M50 50Q46 55 43 52M50 50Q54 55 57 52" fill="none" stroke="var(--dl,#c9a7d6)" stroke-width=".9"/>
-<path d="M34 48L20 45M34 51L20 53M66 48L80 45M66 51L80 53" stroke="var(--dl,#c9a7d6)" stroke-width=".6"/>
-<path d="M34 58Q50 69 66 58" fill="none" stroke="var(--co,#8b2947)" stroke-width="4"/>
+<path d="M50 50Q46 55 43 52M50 50Q54 55 57 52" fill="none" style="stroke:var(--dl,#c9a7d6)" stroke-width=".9"/>
+<path d="M34 48L20 45M34 51L20 53M66 48L80 45M66 51L80 53" style="stroke:var(--dl,#c9a7d6)" stroke-width=".6"/>
+<path d="M34 58Q50 69 66 58" fill="none" style="stroke:var(--co,#8b2947)" stroke-width="4"/>
 <text x="50" y="70" text-anchor="middle" font-size="9" fill="#fff">✦</text>
 </symbol>
 </defs>
@@ -1071,11 +1078,12 @@ img{max-width:100%;height:auto}
       <button type="button" class="dt-db" data-p="flow" aria-expanded="false">🌹 flowers</button>
       <button type="button" class="dt-db" data-p="cats" aria-expanded="false">🐱 my cat</button>
       <button type="button" class="dt-db" data-p="look" aria-expanded="false">🎨 colors</button>
-      <button type="button" class="dt-db" data-p="music" aria-expanded="false">♪ music</button>
+      <button type="button" class="dt-db" data-p="music" aria-expanded="false">♪ music</button><button type="button" class="dt-db" data-p="chat" aria-expanded="false">💬 chat<span id="dtUnread" class="dt-unread" hidden></span></button>
     </div>
     <div id="dtPanels">
       <div class="dt-pn" data-p="food"><div class="dt-h">tap a food to put it on your plate, then tap your plate to eat it</div><div class="dt-menu" id="dtMenu"></div></div>
-      <div class="dt-pn" data-p="flow"><div class="dt-h" id="dtFlowH">† give Laya flowers</div><div class="dt-menu" id="dtFlow"></div><div class="dt-h" style="margin-top:12px">say something</div><div class="dt-menu" id="dtEmo"></div></div>
+      <div class="dt-pn" data-p="flow"><div class="dt-h" id="dtFlowH">† give Laya flowers</div><div class="dt-h" id="dtFlowSt"></div><div class="dt-menu" id="dtFlow"></div><div class="dt-h" style="margin-top:12px">say something</div><div class="dt-menu" id="dtEmo"></div></div>
+      <div class="dt-pn" data-p="chat"><div class="dt-h">chat with them</div><div class="rm-log" id="dtChLog" style="height:160px"></div><div class="gm-row rm-send" style="margin:0"><input class="st-in" id="dtChIn" maxlength="300" placeholder="say something..." autocomplete="off"><button class="smallbtn st-b" id="dtChSend" type="button">send</button></div></div>
       <div class="dt-pn" data-p="cats"><div class="dt-h">fur</div><div class="dt-sw" id="dtFur"></div><div class="dt-h">eyes</div><div class="dt-sw" id="dtEye"></div><div class="dt-h">collar</div><div class="dt-sw" id="dtCol"></div><button type="button" class="dt-chip" id="dtCatReset">reset my cat</button><div class="dt-h" style="margin-top:10px;opacity:.75">they see your cat in these colors too ✦</div></div>
       <div class="dt-pn" data-p="look"><div class="dt-h">mood</div><div class="dt-sw" id="dtTh"></div><div class="dt-h">brightness <span id="dtBrV"></span></div><input type="range" class="dt-rng" id="dtBr" min="60" max="120" value="100" aria-label="brightness"><div class="dt-sw" style="margin-top:12px"><button type="button" class="dt-chip" id="dtScan">scanlines</button><button type="button" class="dt-chip" id="dtCalm">calm (no animation)</button></div><div class="dt-h" style="margin-top:12px">font</div><div class="dt-sw" id="dtFont"></div></div>
       <div class="dt-pn" data-p="music"><div class="dt-h">built-in songs ♪</div><div class="dt-sw" id="dtTr"></div><div class="dt-h">my songs</div><div class="dt-sw" id="dtMy"></div><div class="dt-sw"><button type="button" class="dt-chip" id="dtPrev">⏮ prev</button><button type="button" class="dt-chip" id="dtNext">next ⏭</button><button type="button" class="dt-chip" id="dtAuto" aria-pressed="true">play next automatically</button></div><div class="dt-sw"><button type="button" class="dt-chip" id="dtStop">■ stop</button><span class="dt-h" style="margin:0">volume</span><input type="range" class="dt-rng" id="dtVol" min="0" max="100" value="50" aria-label="volume"></div><div class="dt-h" id="dtNow">nothing playing</div></div>
@@ -4525,7 +4533,7 @@ function push(){ts=Date.now();loc();M.textContent="saving...";post("/study/save"
 function pull(){if(document.activeElement===N)return;try{if(typeof getToken!="function"||!getToken())return}catch(e){return}if(!ts&&N.value)ts=1;post("/study/get").then(function(d){if(d.ts>ts){N.value=d.text;ts=d.ts;loc();M.textContent="synced ✦"}else if(ts>d.ts&&N.value!=d.text)push()}).catch(function(){})}
 N.oninput=function(){ts=Date.now();loc();M.textContent="typing...";clearTimeout(nt);nt=setTimeout(push,800)};
 setTimeout(pull,1500);setInterval(pull,20000);document.addEventListener("visibilitychange",function(){if(!document.hidden)pull()});
-var F=["🍕","🍝","🍔","🍚","🍜","🧁","🍰","🥐","🍓","🍣","🍪","☕","🥤","🥛","🧋","🫖","🍊","🍸","🍫","🍩","🍟"],FL=["🌷","🌹","🪻","🌸","💐","🌺","🌻","🌼","🪷","🥀"],G={L:[],R:[]},E=["♥","🦇","✦","👋"],
+var F=["🍕","🍝","🍔","🍚","🍜","🧁","🍰","🥐","🍓","🍣","🍪","☕","🥤","🥛","🧋","🫖","🍊","🍸","🍫","🍩","🍟"],FL=["bq:blily","bq:brose","bq:mix","bq:night","bq:moon","bq:crim","bq:tulip","bq:thorn"],G={L:[],R:[]},E=["♥","🦇","✦","👋"],
 NS="http://www.w3.org/2000/svg",P={L:[],R:[]},my="L",peer=null,conn=null,pend=null,PX={L:150,R:490},role=null,code=null,retry=0,rt=0,hb=0,lastPong=0,wl=null;
 
 var STEM='<path d="M16 16v14" stroke="#3a9a4a" stroke-width="2"/><path d="M16 26q-6-1-7-6 6 0 7 6z" fill="#4cb85a"/>';
@@ -4563,32 +4571,58 @@ var ART={
 "🪷":'<path d="M16 6q-6 6 0 14 6-8 0-14z" fill="#ff9cc2"/><path d="M8 9q-1 9 8 11-7-5-8-11zM24 9q1 9-8 11 7-5 8-11z" fill="#ffc2d8"/><path d="M4 23q12 8 24 0" stroke="#4cb8a8" stroke-width="2" fill="none"/>',
 "🥀":'<path d="M16 30V14q0-6 7-5" stroke="#3a9a4a" stroke-width="2" fill="none"/><path d="M16 24q-5 0-6-4 5 0 6 4z" fill="#4cb85a"/><circle cx="24" cy="12" r="5" fill="#8b1230"/><path d="M22 10q2 3 5 1" stroke="#4a0a1a" fill="none"/>'
 };
+(function(){var K='#16101d',O='#b393cf',S='#d98da5';
+function lily(x,y,r){var s='';for(var i=0;i<6;i++)s+='<path d="M0 0Q'+r*.55+' '+-r*.35+' 0 '+-r+'Q'+-r*.55+' '+-r*.35+' 0 0z" transform="translate('+x+' '+y+') rotate('+i*60+')" fill="'+K+'" stroke="'+O+'" stroke-width=".5"/>';return s+'<circle cx="'+x+'" cy="'+y+'" r="'+r*.2+'" fill="'+S+'"/>'}
+function rose(x,y,r,c){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+c+'" stroke="'+O+'" stroke-width=".5"/><path d="M'+(x-r*.5)+' '+y+'a'+r*.5+' '+r*.5+' 0 1 1 '+r*.5+' '+r*.5+'" stroke="'+O+'" stroke-width=".7" fill="none"/>'}
+function tul(x,y){return '<path d="M-4 3Q-5-6 0-8Q5-6 4 3Q0 6-4 3z" transform="translate('+x+' '+y+')" fill="'+K+'" stroke="'+O+'" stroke-width=".6"/><path d="M0-8L-1.500-1M0-8L1.500-1" transform="translate('+x+' '+y+')" stroke="'+O+'" stroke-width=".5" fill="none"/>'}
+function dots(a){return a.map(function(p){return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r=".9" fill="#f3e6fa"/>'}).join('')}
+var LV='<path d="M10 17Q4 11 7 5Q12 10 13 17zM22 17Q28 11 25 5Q20 10 19 17z" fill="#1f3a34"/>',WR='<path d="M16 31L7 16h18z" fill="#2b1a3d" stroke="'+O+'" stroke-width=".8"/><path d="M11 22h10" stroke="#8b2947" stroke-width="1.800"/>';
+function bq(f){return LV+f+WR}
+ART["bq:blily"]=bq(lily(16,8,7)+lily(8.5,12,5.500)+lily(23.5,12,5.500));
+ART["bq:brose"]=bq(rose(16,8,5.500,K)+rose(9,12,4.500,K)+rose(23,12,4.500,K));
+ART["bq:mix"]=bq(lily(10,10,6)+lily(22,10,6)+rose(16,7,4.500,'#9b1236'));
+ART["bq:night"]=bq(lily(16,7,6.500)+rose(9,12,4,'#4a2a7a')+rose(23,12,4,'#4a2a7a')+dots([[5,6],[27,6],[16,1.500]]));
+ART["bq:moon"]=bq(dots([[6,8],[26,8],[9,4],[23,4],[16,2.500],[5,13],[27,13]])+lily(16,9,7));
+ART["bq:crim"]=bq(rose(10,11,5,'#6a1230')+rose(22,11,5,'#7a1f3d')+lily(16,6,6));
+ART["bq:tulip"]=bq(tul(16,9)+tul(9,12)+tul(23,12));
+ART["bq:thorn"]=bq(rose(16,9,7,K)+rose(8.500,13,4,'#9b1236')+rose(23.500,13,4,'#9b1236')+dots([[4,5],[28,5]]));
+})();
 var ICK=Object.keys(ART);
 (function(){var d=document.createElementNS(NS,"svg");d.setAttribute("width","0");d.setAttribute("height","0");d.style.cssText="position:absolute;pointer-events:none";var h="";ICK.forEach(function(k,i){h+='<symbol id="dti'+i+'" viewBox="0 0 32 32">'+ART[k]+'</symbol>'});d.innerHTML=h;document.body.appendChild(d)})();
 function sym(k,x,y,w){var i=ICK.indexOf(k);if(i<0){var t=document.createElementNS(NS,"text");t.setAttribute("x",x+w/2);t.setAttribute("y",y+w*.85);t.setAttribute("font-size",w*.85);t.textContent=k;return t}var u=document.createElementNS(NS,"use");u.setAttribute("href","#dti"+i);u.setAttribute("x",x);u.setAttribute("y",y);u.setAttribute("width",w);u.setAttribute("height",w);return u}
 function ico(k){var v=document.createElementNS(NS,"svg");v.setAttribute("class","dt-ic");v.setAttribute("viewBox","0 0 32 32");v.setAttribute("aria-hidden","true");v.appendChild(sym(k,0,0,32));return v}
 function oth(){return my=="L"?"R":"L"}
+var flowerQueue=[];
 window.DTX=window.DTX||{};DTX.me=function(){return my};DTX.send=function(o){send(o)};
 function status(t){$("dtStat").textContent=t}
 function ui(){$("dtStart").hidden=!!role;$("dtJoin").hidden=!(pend&&!role);$("dtLeave").hidden=!role}
-function away(a){$("dtCat"+oth()).classList.toggle("away",a);$("dtCat"+my).classList.remove("away")}
+function away(a){$("dtCat"+oth()).classList.toggle("away",a);$("dtCat"+my).classList.remove("away");pres(a)}
+function pres(a){["L","R"].forEach(function(s){var h=a&&s!=my;["dtPl","dtP","dtG","dtLab"].forEach(function(p){var e=$(p+s);if(e)e.style.display=h?"none":""})});
+var p=$("dtPres");if(p){p.textContent=a?(role?"○ waiting for them to join…":"○ nobody here yet"):"● they're here ✦";p.classList.toggle("on",!a)}
+var f=$("dtFlowSt");if(f)f.textContent=a?"flowers can be sent anytime; they'll arrive when they join":"they're here, send a bouquet anytime ✦"}
 function draw(){["L","R"].forEach(function(s){var g=$("dtP"+s);g.textContent="";P[s].forEach(function(f,i){g.appendChild(sym(f,PX[s]+(i-1)*26-13,251,26))});$("dtLab"+s).textContent=s==my?"you ✦":"them †";var v=$("dtG"+s);v.textContent="";var bx=s=="L"?255:385;G[s].forEach(function(f,i){var a=(i-(G[s].length-1)/2),t=sym(f,bx+a*15-12,252-Math.abs(a)*3-19,24);t.setAttribute("transform","rotate("+(a*9)+" "+(bx+a*15)+" 262)");v.appendChild(t)})})}
-function pop(s,ch){var t=document.createElementNS(NS,"text");t.setAttribute("class","dt-pop");t.setAttribute("x",s=="L"?145:495);t.setAttribute("y",120);t.textContent=ch;$("dtFx").appendChild(t);setTimeout(function(){t.remove()},1600)}
+function pop(s,ch){var X=s=="L"?145:495,t;if(ch.indexOf("bq:")==0){t=sym(ch,X-26,60,52);t.setAttribute("class","dt-pop")}else{t=document.createElementNS(NS,"text");t.setAttribute("class","dt-pop");t.setAttribute("x",X);t.setAttribute("y",120);t.textContent=ch}$("dtFx").appendChild(t);setTimeout(function(){t.remove()},1600)}
 function bob(s){var g=$("dtCat"+s);g.classList.remove("eat");setTimeout(function(){g.classList.add("eat")},10);setTimeout(function(){g.classList.remove("eat")},700)}
 function send(o){try{conn&&conn.open&&conn.send(o)}catch(e){}}
 function sendPlate(){send({t:"plate",items:P[my]})}
-function onData(d){if(!d||typeof d!="object")return;lastPong=Date.now();if(d.t=="p"){send({t:"q"});return}if(d.t=="q")return;var s=oth();
+function onData(d){if(!d||typeof d!="object")return;lastPong=Date.now();if(d.t=="p"){send({t:"q"});return}if(d.t=="q")return;var s=oth();if($("dtCat"+s)&&$("dtCat"+s).classList.contains("away")){away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role==="host")send({t:"gs",G:G})}
 if(d.t=="gs"&&role=="guest"&&d.G){["L","R"].forEach(function(k){if(Array.isArray(d.G[k]))G[k]=d.G[k].filter(function(x){return FL.indexOf(x)>-1}).slice(-5)});draw();return}
 if(d.t=="plate"&&Array.isArray(d.items)){P[s]=d.items.filter(function(x){return F.indexOf(x)>-1}).slice(0,3);draw()}
 else if(d.t=="cat"&&window.DTX&&DTX.on)DTX.on(d)
 else if(d.t=="eat"){bob(s);pop(s,"♥")}
 else if(d.t=="emo"&&E.indexOf(d.e)>-1)pop(s,d.e)
-else if(d.t=="gift"&&FL.indexOf(d.f)>-1){G[my].push(d.f);if(G[my].length>5)G[my].shift();draw();pop(my,d.f);status("they gave you "+d.f+" ♥")}}
+else if(d.t=="chat"&&typeof d.m=="string")chatAdd("them",d.m.slice(0,300))
+else if(d.t=="gift"&&FL.indexOf(d.f)>-1){G[my].push(d.f);if(G[my].length>5)G[my].shift();draw();pop(my,d.f);status("they gave you "+(NM[d.f]||d.f)+" ♥")}}
 var NM={"🍕":"pizza","🍝":"pasta","🍔":"burger","🍚":"rice","🍜":"ramen","🧁":"cupcake","🍰":"cake","🥐":"croissant","🍓":"strawberry","🍣":"sushi","🍪":"cookie","☕":"coffee","🥤":"fanta","🥛":"strawberry almond milk","🧋":"strawberry boba","🫖":"chai","🍊":"orange slush","🍸":"mint margarita","🍫":"chocolate","🍩":"donut","🍟":"fries","🌷":"tulip","🌹":"rose","🪻":"hyacinth","🌸":"blossom","💐":"bouquet","🌺":"hibiscus","🌻":"sunflower","🌼":"daisy","🪷":"lotus","🥀":"wilted rose","♥":"heart","🦇":"bat","✦":"sparkle","👋":"wave"};
+Object.assign(NM,{"bq:blily":"black lilies","bq:brose":"black roses","bq:mix":"lilies & red roses","bq:night":"midnight purple","bq:moon":"moonlit lilies","bq:crim":"crimson & black","bq:tulip":"black tulips","bq:thorn":"thorn rose"});
 function tag(b,k){var n=NM[k]||"";b.title=n;b.setAttribute("aria-label",n);var l=document.createElement("span");l.className="dt-n";l.textContent=n;b.appendChild(l)}
 F.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){P[my].push(f);if(P[my].length>3)P[my].shift();draw();sendPlate()};$("dtMenu").appendChild(b)});
-FL.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){if(!(conn&&conn.open)){status("wait until they join, then give flowers ♥");return}var o=oth();G[o].push(f);if(G[o].length>5)G[o].shift();draw();pop(o,f);send({t:"gift",f:f});status("you gave them "+f+" ♥")};$("dtFlow").appendChild(b)});
+FL.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){var o=oth();G[o].push(f);if(G[o].length>5)G[o].shift();draw();pop(o,f);if(conn&&conn.open){send({t:"gift",f:f});status("you gave them "+(NM[f]||f)+" ♥")}else{flowerQueue.push(f);status("saved; it'll reach them when they connect ♥")}};$("dtFlow").appendChild(b)});
 E.forEach(function(e){var b=document.createElement("button");b.type="button";b.textContent=e;tag(b,e);b.onclick=function(){pop(my,e);send({t:"emo",e:e})};$("dtEmo").appendChild(b)});
+function chatAdd(w,m){var l=$("dtChLog");if(!l)return;var d=document.createElement("div"),b=document.createElement("b");d.className=w;b.textContent=w=="me"?"you: ":"them: ";d.appendChild(b);d.appendChild(document.createTextNode(m));l.appendChild(d);while(l.children.length>100)l.firstChild.remove();l.scrollTop=l.scrollHeight;if(w=="them"){pop(oth(),"💬");var pn=document.querySelector('.dt-pn[data-p="chat"]');if(!(pn&&pn.classList.contains("open"))){var u=$("dtUnread");u.hidden=false;u.textContent=(+u.textContent||0)+1}}}
+function chatSend(){var i=$("dtChIn"),m=i.value.trim().slice(0,300);if(!m)return;if(!(conn&&conn.open)){status("wait until they join to chat");return}send({t:"chat",m:m});chatAdd("me",m);i.value=""}
+$("dtChSend").onclick=chatSend;$("dtChIn").onkeydown=function(e){if(e.key=="Enter"){e.preventDefault();chatSend()}};
+document.querySelector('.dt-db[data-p="chat"]').addEventListener("click",function(){var u=$("dtUnread");u.hidden=true;u.textContent=""});
 function eat(s){if(s!=my||!P[my].length)return;P[my].pop();draw();bob(my);pop(my,"♥");send({t:"eat"});sendPlate()}
 $("dtPlL").onclick=function(){eat("L")};$("dtPlR").onclick=function(){eat("R")};
 function later(f,ms){clearTimeout(rt);rt=setTimeout(f,ms)}
@@ -4596,15 +4630,16 @@ function lock(){try{if(role&&!wl&&navigator.wakeLock)navigator.wakeLock.request(
 function unlock(){try{wl&&wl.release()}catch(e){}wl=null}
 function store(){try{if(role=="host")localStorage.setItem("dtHost",JSON.stringify({c:code,t:Date.now()}));else localStorage.removeItem("dtHost")}catch(e){}}
 function stopHB(){clearInterval(hb);hb=0}
-function startHB(){stopHB();lastPong=Date.now();hb=setInterval(function(){if(conn&&conn.open){send({t:"p"});if(Date.now()-lastPong>30000){dead()}}},8000)}
+function startHB(){stopHB();lastPong=Date.now();hb=setInterval(function(){if(conn&&conn.open){send({t:"p"});if(window.DTX&&DTX.hi)DTX.hi();if(Date.now()-lastPong>30000){dead()}}},8000)}
 function dead(){var c=conn;conn=null;stopHB();try{c&&c.close()}catch(e){}lost()}
 function lost(){if(!role)return;away(true);if(role=="guest"){status("connection dropped, reconnecting...");later(retryGuest,1500)}else{status("they stepped away, your table is still open †");if(peer&&peer.disconnected)try{peer.reconnect()}catch(e){}}}
 function setConn(c){var old=conn;if(old&&old!==c){if(old.open&&Date.now()-lastPong<25000){c.close();return}try{old.close()}catch(e){}}
 conn=c;
-c.on("open",function(){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role=="host")send({t:"gs",G:G});startHB();lock()});
+function opened(c){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role=="host")send({t:"gs",G:G});flowerQueue.splice(0).forEach(function(f){send({t:"gift",f:f})});startHB();lock()}
+c.on("open",function(){opened(c)});
 c.on("data",onData);
 c.on("close",function(){if(conn===c){conn=null;stopHB();lost()}});
-c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}})}
+c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}});if(c.open)opened(c)}
 function load(cb){if(window.Peer)return cb();var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";s.onload=cb;s.onerror=function(){status("couldn't load the date service, retrying...");later(function(){if(role)load(cb)},4000)};document.head.appendChild(s)}
 function showLink(){$("dtLink").value=location.href.split("#")[0]+"#date="+code;$("dtLinkRow").hidden=false}
 function mkHost(){if(role!="host")return;load(function(){if(role!="host")return;try{peer&&peer.destroy()}catch(e){}
@@ -4625,7 +4660,7 @@ function check(){if(!role)return;lock();
 if(conn&&conn.open){var t0=Date.now();send({t:"p"});setTimeout(function(){if(conn&&conn.open&&lastPong<t0)dead()},5000);return}
 if(role=="host"){if(!peer||peer.destroyed)mkHost();else if(peer.disconnected)try{peer.reconnect()}catch(e){}}
 else retryGuest()}
-function reset(){P={L:[],R:[]};G={L:[],R:[]};draw();away(true);if(window.DTX&&DTX.rs)DTX.rs()}
+function reset(){var cl=$("dtChLog");if(cl)cl.textContent="";P={L:[],R:[]};G={L:[],R:[]};draw();away(true);if(window.DTX&&DTX.rs)DTX.rs()}
 function leave(){role=null;code=null;clearTimeout(rt);stopHB();unlock();try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}conn=peer=null;pend=null;store();my="L";reset();$("dtLinkRow").hidden=true;status("not on a date yet");try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}ui()}
 function host(){role="host";code=Math.random().toString(36).slice(2,8);my="L";retry=0;reset();store();ui();lock();status("setting the table...");mkHost()}
 function join(c){role="guest";code=c;pend=null;my="R";retry=0;reset();store();ui();lock();status("knocking...");mkGuest()}
@@ -4677,7 +4712,7 @@ conn=c;
 c.on("open",function(){if(conn!==c)return;retry=0;status("studying together ✦");add("","connected, let's focus ✦","sys");send(who());if(role=="host"&&window.ST)send({t:"tm",s:ST.get()});startHB();lock();showThem()});
 c.on("data",onData);
 c.on("close",function(){if(conn===c){conn=null;stopHB();lost()}});
-c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}})}
+c.on("error",function(){if(conn===c){conn=null;stopHB();lost()}});if(c.open)opened(c)}
 function load(cb){if(window.Peer)return cb();var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";s.onload=cb;s.onerror=function(){status("couldn't load the service, retrying...");later(function(){if(role)load(cb)},4000)};document.head.appendChild(s)}
 function showLink(){$("rmLink").value=location.href.split("#")[0]+"#study="+code;$("rmLinkRow").hidden=false}
 function mkHost(){if(role!="host")return;load(function(){if(role!="host")return;try{peer&&peer.destroy()}catch(e){}
@@ -4827,7 +4862,7 @@ $("dtNext").onclick=function(){myPlay(myI<0?0:(myI+1)%MY.length)};
 $("dtPrev").onclick=function(){myPlay(myI<=0?MY.length-1:myI-1)};
 $("dtAuto").onclick=function(){auto=!auto;this.setAttribute("aria-pressed",auto)};
 function who(){var v="";try{v=sessionStorage.getItem("layaPeriod")||localStorage.getItem("layaPeriod")||""}catch(e){}return v=="1"?"laya":"kimchi"}
-function names(){$("dtFlowH").textContent="† give "+(who()=="kimchi"?"Laya":"Kimchi")+" flowers"}
+function names(){$("dtFlowH").textContent="† give "+(who()=="kimchi"?"Laya":"Kimchi")+" a bouquet"}
 applyTheme();applyLook();applyFont();applyCats();names();
 })();
 </script>
@@ -5268,5 +5303,5 @@ $("lxYSave").onclick=function(){var n=$("stNotes"),t=$("lxYOut").textContent;if(
 })();
 </script>
 <script>if("serviceWorker"in navigator&&/^https?:/.test(location.protocol))addEventListener("load",function(){navigator.serviceWorker.register("sw.js").then(function(r){try{r.update()}catch(e){}}).catch(function(){})});</script>
-</body>
+</body> 
 </html>
