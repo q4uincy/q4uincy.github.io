@@ -19,6 +19,7 @@ try{var raf=window.requestAnimationFrame.bind(window);window.requestAnimationFra
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
+<link rel="preconnect" href="https://laya-site.manilimelight769.workers.dev" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&family=UnifrakturCook:wght@700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&family=UnifrakturCook:wght@700&display=swap"></noscript>
@@ -1021,7 +1022,7 @@ img{max-width:100%;height:auto}
 
   <section class="section" id="date">
     <div class="section-head"><div><div class="section-kicker">virtual date</div><h2>A table for two.</h2></div></div>
-    <div class="gm-row" style="margin:0 0 10px"><button class="smallbtn st-b" id="dtStart" type="button">start a date</button><button class="smallbtn st-b" id="dtJoin" type="button" hidden>join the date</button><button class="smallbtn st-b" id="dtLeave" type="button" hidden>leave</button><span id="dtStat">not on a date yet</span><span id="dtPres" class="dt-pres">○ nobody here yet</span></div>
+    <div class="gm-row" style="margin:0 0 10px"><button class="smallbtn st-b" id="dtStart" type="button">start a date</button><button class="smallbtn st-b" id="dtJoin" type="button" hidden>join the date</button><button class="smallbtn st-b" id="dtLeave" type="button" hidden>leave</button><button class="smallbtn st-b" id="dtSwap" type="button" hidden>switch sides</button><span id="dtStat">not on a date yet</span><span id="dtPres" class="dt-pres">○ nobody here yet</span></div>
     <div class="gm-row" id="dtLinkRow" hidden style="margin:0 0 10px"><input class="st-in" id="dtLink" readonly><button class="smallbtn st-b" id="dtCopy" type="button">copy link</button></div>
     <div class="dt-win"><div class="dt-bar"><span>† date_night.exe</span><span class="dt-ctl"><button type="button" id="dtTrayBtn" aria-label="food and flowers" title="food and flowers">🍽</button><button type="button" id="dtMin" aria-label="minimize" title="minimize">_</button><button type="button" id="dtFs" aria-label="fullscreen" title="fullscreen">□</button><button type="button" id="dtX" aria-label="close" title="close">×</button></span></div><div class="dt-sc">
 <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two cats at a candlelit table">
@@ -1072,6 +1073,7 @@ img{max-width:100%;height:auto}
 <g id="dtGL" pointer-events="none" text-anchor="middle" font-size="20"></g>
 <g id="dtGR" pointer-events="none" text-anchor="middle" font-size="20"></g>
 <g id="dtFx" pointer-events="none" text-anchor="middle"></g>
+<g id="dtBub" pointer-events="none"></g>
 </svg></div></div>
     <div class="dt-dock" id="dtDock" role="toolbar" aria-label="date options">
       <button type="button" class="dt-db" data-p="food" aria-expanded="false">🍽 food</button>
@@ -1122,7 +1124,7 @@ img{max-width:100%;height:auto}
       <p>Currently playing if Spotify knows what he's listening to; otherwise a random song from <em>delusions</em>.</p>
     </div>
     <div class="card">
-      <img id="songArt" class="music-art" alt="Album artwork">
+      <img id="songArt" class="music-art" alt="Album artwork" decoding="async">
       <div class="card-title" id="songTitle">Loading...</div>
       <p id="songText">Checking Spotify...</p>
       <div id="songBox" style="margin-top:14px"></div>
@@ -1222,7 +1224,7 @@ img{max-width:100%;height:auto}
       <div class="gothic-place-meta" id="gothicPlaceCount">Your next dark little discovery</div>
       <div class="gothic-place-card" aria-live="polite">
         <div class="gothic-photo-note hidden" id="gothicPhotoNote">Loading photo…</div>
-        <img class="gothic-place-preview hidden" id="gothicPlaceImage" alt="Photograph of the discovered place" referrerpolicy="no-referrer">
+        <img class="gothic-place-preview hidden" id="gothicPlaceImage" alt="Photograph of the discovered place" referrerpolicy="no-referrer" decoding="async" loading="lazy">
         <h3 class="gothic-place-name" id="gothicPlaceName">Ready to wander?</h3>
         <div class="gothic-place-meta" id="gothicPlaceLocation">✦ somewhere atmospheric</div>
         <p class="gothic-place-description" id="gothicPlaceDescription">Tap below to discover a gothic place.</p>
@@ -1465,6 +1467,15 @@ html.lite .gw-card img{transition:none}
 .dt-fl{transform-box:fill-box;transform-origin:50% 100%;animation:dtFlame 1.2s ease-in-out infinite alternate}
 .dt-tw text{font-size:14px;animation:cdTwinkle 2.6s ease-in-out infinite}.dt-tw text:nth-child(2n){animation-delay:-1.1s}.dt-tw text:nth-child(3n){animation-delay:-1.9s}
 .dt-bat{animation:dtBat 9s ease-in-out infinite alternate}
+.dt-bub{position:relative;box-sizing:border-box;max-width:100%;padding:7px 13px 8px;border-radius:20px;border:2px solid var(--dl,#c9a7d6);background:linear-gradient(160deg,#fff3fb 0%,#f6d3ff 50%,#c9d8ff 100%);color:#3b1d4d;font:700 14px/1.25 var(--dfont,'Courier New',monospace);text-align:center;overflow-wrap:anywhere;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),0 6px 16px rgba(0,0,0,.35),0 0 14px rgba(255,143,179,.45);transform-origin:50% 100%;animation:dtBubIn .35s cubic-bezier(.3,1.6,.5,1) both}
+.dt-bub::before{content:"";position:absolute;left:9px;right:9px;top:3px;height:36%;border-radius:14px;background:linear-gradient(rgba(255,255,255,.75),rgba(255,255,255,0));pointer-events:none}
+.dt-bub::after{content:"\2726";position:absolute;right:8px;top:1px;font-size:9px;color:#ff8fb3}
+.dt-bub.lg{font-size:15.5px;-webkit-line-clamp:2}.dt-bub.md{font-size:13.5px;-webkit-line-clamp:3}.dt-bub.sm{font-size:11.5px;-webkit-line-clamp:5}
+.dt-bubw{width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
+.dt-bubd circle{fill:#f6d3ff;stroke:var(--dl,#c9a7d6);stroke-width:1.5;animation:dtBubIn .35s .08s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:center}
+@keyframes dtBubIn{from{opacity:0;transform:scale(.4) translateY(10px)}to{opacity:1;transform:none}}
+.dt-calm .dt-bub,.dt-calm .dt-bubd circle{animation:none}
+@media (prefers-reduced-motion:reduce){.dt-bub,.dt-bubd circle{animation:none}}
 .dt-pop{font-size:28px;animation:dtFloat 1.6s ease-out forwards}
 @keyframes dtBob{0%,100%{transform:translateY(0)}40%{transform:translateY(-14px)}}
 @keyframes dtFlame{from{transform:scale(1,.9) rotate(-3deg)}to{transform:scale(.9,1.12) rotate(3deg)}}
@@ -2024,7 +2035,7 @@ function notify(event, extra = {}) {
 
 /* Navigation: one page at a time. Home shows the hero plus the "us" cards; every other tab shows only its own section. */
 (() => {
-  const HOME_VIEW = ["home", "us"];
+  const HOME_VIEW = ["home", "changelog", "us"];
   const btns = [...document.querySelectorAll(".navbtn[data-go]")];
   const sections = [...document.querySelectorAll("main.app > section")];
   const top = $("backTop");
@@ -4614,7 +4625,7 @@ function oth(){return my=="L"?"R":"L"}
 var flowerQueue=[];
 window.DTX=window.DTX||{};DTX.me=function(){return my};DTX.send=function(o){send(o)};
 function status(t){$("dtStat").textContent=t}
-function ui(){$("dtStart").hidden=!!role;$("dtJoin").hidden=!(pend&&!role);$("dtLeave").hidden=!role}
+function ui(){$("dtStart").hidden=!!role;$("dtJoin").hidden=!(pend&&!role);$("dtLeave").hidden=!role;$("dtSwap").hidden=!role}
 function away(a){$("dtCat"+oth()).classList.toggle("away",a);$("dtCat"+my).classList.remove("away");pres(a)}
 function pres(a){["L","R"].forEach(function(s){var h=a&&s!=my;["dtPl","dtP","dtG","dtLab"].forEach(function(p){var e=$(p+s);if(e)e.style.display=h?"none":""})});
 var p=$("dtPres");if(p){p.textContent=a?(role?"○ waiting for them to join…":"○ nobody here yet"):"● they're here ✦";p.classList.toggle("on",!a)}
@@ -4623,11 +4634,15 @@ function draw(){["L","R"].forEach(function(s){var g=$("dtP"+s);g.textContent="";
 function pop(s,ch){var X=s=="L"?145:495,t;if(ch.indexOf("bq:")==0){t=sym(ch,X-26,60,52);t.setAttribute("class","dt-pop")}else{t=document.createElementNS(NS,"text");t.setAttribute("class","dt-pop");t.setAttribute("x",X);t.setAttribute("y",120);t.textContent=ch}$("dtFx").appendChild(t);setTimeout(function(){t.remove()},1600)}
 function bob(s){var g=$("dtCat"+s);g.classList.remove("eat");setTimeout(function(){g.classList.add("eat")},10);setTimeout(function(){g.classList.remove("eat")},700)}
 function send(o){try{conn&&conn.open&&conn.send(o)}catch(e){}}
+function swapLocal(){var t=P.L;P.L=P.R;P.R=t;t=G.L;G.L=G.R;G.R=t;my=oth();draw();away(false);if(window.DTX){if(DTX.ac)DTX.ac();if(DTX.hi)DTX.hi()}sendPlate()}
+var lastSwap=0;
 function sendPlate(){send({t:"plate",items:P[my]})}
 function onData(d){if(!d||typeof d!="object")return;lastPong=Date.now();if(d.t=="p"){send({t:"q"});return}if(d.t=="q")return;var s=oth();if($("dtCat"+s)&&$("dtCat"+s).classList.contains("away")){away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role==="host")send({t:"gs",G:G})}
 if(d.t=="gs"&&role=="guest"&&d.G){["L","R"].forEach(function(k){if(Array.isArray(d.G[k]))G[k]=d.G[k].filter(function(x){return FL.indexOf(x)>-1}).slice(-5)});draw();return}
 if(d.t=="plate"&&Array.isArray(d.items)){P[s]=d.items.filter(function(x){return F.indexOf(x)>-1}).slice(0,3);draw()}
 else if(d.t=="cat"&&window.DTX&&DTX.on)DTX.on(d)
+else if(d.t=="swap")swapLocal()
+else if(d.t=="seat"&&role=="guest"&&(d.s=="L"||d.s=="R")&&my==d.s)swapLocal()
 else if(d.t=="eat"){bob(s);pop(s,"♥")}
 else if(d.t=="emo"&&E.indexOf(d.e)>-1)pop(s,d.e)
 else if(d.t=="chat"&&typeof d.m=="string")chatAdd("them",d.m.slice(0,300))
@@ -4638,7 +4653,14 @@ function tag(b,k){var n=NM[k]||"";b.title=n;b.setAttribute("aria-label",n);var l
 F.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){P[my].push(f);if(P[my].length>3)P[my].shift();draw();sendPlate()};$("dtMenu").appendChild(b)});
 FL.forEach(function(f){var b=document.createElement("button");b.type="button";b.appendChild(ico(f));tag(b,f);b.onclick=function(){var o=oth();G[o].push(f);if(G[o].length>5)G[o].shift();draw();pop(o,f);if(conn&&conn.open){send({t:"gift",f:f});status("you gave them "+(NM[f]||f)+" ♥")}else{flowerQueue.push(f);status("saved; it'll reach them when they connect ♥")}};$("dtFlow").appendChild(b)});
 E.forEach(function(e){var b=document.createElement("button");b.type="button";b.textContent=e;tag(b,e);b.onclick=function(){pop(my,e);send({t:"emo",e:e})};$("dtEmo").appendChild(b)});
-function chatAdd(w,m){var l=$("dtChLog");if(!l)return;var d=document.createElement("div"),b=document.createElement("b");d.className=w;b.textContent=w=="me"?"you: ":"them: ";d.appendChild(b);d.appendChild(document.createTextNode(m));l.appendChild(d);while(l.children.length>100)l.firstChild.remove();l.scrollTop=l.scrollHeight;if(w=="them"){pop(oth(),"💬");var pn=document.querySelector('.dt-pn[data-p="chat"]');if(!(pn&&pn.classList.contains("open"))){var u=$("dtUnread");u.hidden=false;u.textContent=(+u.textContent||0)+1}}}
+var BUBT={L:0,R:0};
+function bubble(s,m){var g=$("dtBub");if(!g||!m)return;m=String(m).trim();if(!m)return;var X=s=="L"?145:495;clearTimeout(BUBT[s]);var o=g.querySelector('[data-s="'+s+'"]');if(o)o.remove();
+var q=document.createElementNS(NS,"g");q.setAttribute("data-s",s);q.style.transition="opacity .4s";
+var fo=document.createElementNS(NS,"foreignObject");fo.setAttribute("x",X-95);fo.setAttribute("y",4);fo.setAttribute("width",190);fo.setAttribute("height",92);
+var w=document.createElement("div");w.className="dt-bubw";var b=document.createElement("div"),n=m.length;b.className="dt-bub "+(n>90?"sm":n>40?"md":"lg");b.textContent=m;w.appendChild(b);fo.appendChild(w);q.appendChild(fo);
+var dg=document.createElementNS(NS,"g");dg.setAttribute("class","dt-bubd");[[X+7,102,4.6],[X+2,111,3.3],[X-2,118,2.3]].forEach(function(c){var e=document.createElementNS(NS,"circle");e.setAttribute("cx",c[0]);e.setAttribute("cy",c[1]);e.setAttribute("r",c[2]);dg.appendChild(e)});q.appendChild(dg);g.appendChild(q);
+BUBT[s]=setTimeout(function(){q.style.opacity="0";setTimeout(function(){q.remove()},450)},Math.min(14000,Math.max(5000,2500+n*70)))}
+function chatAdd(w,m){try{bubble(w=="me"?my:oth(),m)}catch(e){}var l=$("dtChLog");if(!l)return;var d=document.createElement("div"),b=document.createElement("b");d.className=w;b.textContent=w=="me"?"you: ":"them: ";d.appendChild(b);d.appendChild(document.createTextNode(m));l.appendChild(d);while(l.children.length>100)l.firstChild.remove();l.scrollTop=l.scrollHeight;if(w=="them"){pop(oth(),"💬");var pn=document.querySelector('.dt-pn[data-p="chat"]');if(!(pn&&pn.classList.contains("open"))){var u=$("dtUnread");u.hidden=false;u.textContent=(+u.textContent||0)+1}}}
 function chatSend(){var i=$("dtChIn"),m=i.value.trim().slice(0,300);if(!m)return;if(!(conn&&conn.open)){status("wait until they join to chat");return}send({t:"chat",m:m});chatAdd("me",m);i.value=""}
 $("dtChSend").onclick=chatSend;$("dtChIn").onkeydown=function(e){if(e.key=="Enter"){e.preventDefault();chatSend()}};
 document.querySelector('.dt-db[data-p="chat"]').addEventListener("click",function(){var u=$("dtUnread");u.hidden=true;u.textContent=""});
@@ -4654,7 +4676,7 @@ function dead(){var c=conn;conn=null;stopHB();try{c&&c.close()}catch(e){}lost()}
 function lost(){if(!role)return;away(true);if(role=="guest"){status("connection dropped, reconnecting...");later(retryGuest,1500)}else{status("they stepped away, your table is still open †");if(peer&&peer.disconnected)try{peer.reconnect()}catch(e){}}}
 function setConn(c){var old=conn;if(old&&old!==c){if(old.open&&Date.now()-lastPong<25000){c.close();return}try{old.close()}catch(e){}}
 conn=c;gyIceMsg(c,status);
-function opened(c){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role=="host")send({t:"gs",G:G});flowerQueue.splice(0).forEach(function(f){send({t:"gift",f:f})});startHB();lock()}
+function opened(c){if(conn!==c)return;retry=0;status("together ✦ enjoy your date");away(false);sendPlate();if(window.DTX&&DTX.hi)DTX.hi();if(role=="host"){send({t:"seat",s:my});send({t:"gs",G:G})}flowerQueue.splice(0).forEach(function(f){send({t:"gift",f:f})});startHB();lock()}
 c.on("open",function(){opened(c)});
 c.on("data",onData);
 c.on("close",function(){if(conn===c){conn=null;stopHB();lost()}});
@@ -4679,10 +4701,11 @@ function check(){if(!role)return;lock();
 if(conn&&conn.open){var t0=Date.now();send({t:"p"});setTimeout(function(){if(conn&&conn.open&&lastPong<t0)dead()},5000);return}
 if(role=="host"){if(!peer||peer.destroyed)mkHost();else if(peer.disconnected)try{peer.reconnect()}catch(e){}}
 else retryGuest()}
-function reset(){var cl=$("dtChLog");if(cl)cl.textContent="";P={L:[],R:[]};G={L:[],R:[]};draw();away(true);if(window.DTX&&DTX.rs)DTX.rs()}
+function reset(){var cl=$("dtChLog");if(cl)cl.textContent="";var bg=$("dtBub");if(bg)bg.textContent="";P={L:[],R:[]};G={L:[],R:[]};draw();away(true);if(window.DTX&&DTX.rs)DTX.rs()}
 function leave(){role=null;code=null;clearTimeout(rt);stopHB();unlock();try{conn&&conn.close()}catch(e){}try{peer&&peer.destroy()}catch(e){}conn=peer=null;pend=null;store();my="L";reset();$("dtLinkRow").hidden=true;status("not on a date yet");try{history.replaceState(null,"",location.pathname+location.search)}catch(e){}ui()}
 function host(){role="host";code=Math.random().toString(36).slice(2,8);my="L";retry=0;reset();store();ui();lock();status("setting the table...");mkHost()}
 function join(c){role="guest";code=c;pend=null;my="R";retry=0;reset();store();ui();lock();status("knocking...");mkGuest()}
+$("dtSwap").onclick=function(){if(!(conn&&conn.open)){status("they need to be at the table first ✦");return}if(Date.now()-lastSwap<800)return;lastSwap=Date.now();swapLocal();send({t:"swap"});status("switched sides ✦")};
 $("dtStart").onclick=host;$("dtLeave").onclick=leave;$("dtJoin").onclick=function(){join(pend)};
 $("dtCopy").onclick=function(){var i=$("dtLink");i.select();try{navigator.clipboard.writeText(i.value)}catch(e){try{document.execCommand("copy")}catch(x){}}$("dtCopy").textContent="copied ✦"};
 document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});
@@ -4832,7 +4855,7 @@ function swatches(id,list,key){list.forEach(function(it){var b=el("button","dt-s
 b.onclick=function(){var c=mine(),n={f:c.f,e:c.e,c:c.c};n[key]=it[1];PR.cat=n;save();applyCats();DX.hi()};$(id).appendChild(b)})}
 swatches("dtFur",FUR,"f");swatches("dtEye",EYE,"e");swatches("dtCol",COL,"c");
 $("dtCatReset").onclick=function(){PR.cat=null;save();applyCats();DX.hi()};
-DX.rs=function(){them=null;applyCats();names()};
+DX.rs=function(){them=null;applyCats();names()};DX.ac=applyCats;
 DX.on=function(d){if(HEX.test(d.f)&&HEX.test(d.e)&&HEX.test(d.c)){them={f:d.f,e:d.e,c:d.c};applyCats()}};
 DX.hi=function(){var c=mine();DX.send({t:"cat",f:c.f,e:c.e,c:c.c})};
 var AC=null,master=null,dry=null,verb=null,bus=null,rain=null,cur=null,nT=0,bi=0,tm=0;
