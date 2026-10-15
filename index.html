@@ -421,7 +421,7 @@ html.lite *, html.lite *::before, html.lite *::after { backdrop-filter: none !im
 .login-links { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
 .login-links a, .login-links button { text-decoration: none; }
 .dt-ic{width:30px;height:30px;display:block;overflow:visible}
-#dtMenu button,#dtFlow button{min-width:60px}
+#dtMenu button,#dtFlow button{min-width:68px}
 #date.dt-hasfont :is(.dt-n,.dt-h,.dt-bar,.dt-db,.dt-chip,#dtStat,.dt-pn button){font-family:var(--dfont)!important}
 #date.dt-hasfont :is(#dtLabL,#dtLabR){font-family:var(--dfont)}
 </style>
@@ -947,7 +947,8 @@ img{max-width:100%;height:auto}
       <div class="gm-row"><span>† study sounds</span><span id="snMsg"></span></div>
       <div class="gm-row" id="snBtns" style="flex-wrap:wrap"></div>
       <div class="gm-row"><span>volume</span><input class="dt-rng" id="snVol" type="range" min="0" max="100" value="40" aria-label="Sound volume" style="flex:1;max-width:260px"><span id="snVolN">40%</span></div>
-      <div class="gm-row" style="flex-wrap:wrap"><input class="st-in" id="snName" maxlength="30" placeholder="name (optional)" style="max-width:150px"><input class="st-in" id="snUrl" maxlength="500" placeholder="paste a direct audio link (.mp3 / .m4a / .ogg)..." autocomplete="off"><button class="smallbtn st-b" id="snAdd" type="button">add</button></div>
+      <div class="gm-row" style="flex-wrap:wrap"><input class="st-in" id="snName" maxlength="30" placeholder="name (optional)" style="max-width:150px"><input class="st-in" id="snUrl" maxlength="500" placeholder="paste a youtube / spotify link, or a direct audio link..." autocomplete="off"><button class="smallbtn st-b" id="snAdd" type="button">add</button></div>
+      <div id="snEmbed" hidden style="margin-top:10px"></div>
     </div>
   </section>
 
@@ -1467,8 +1468,8 @@ html.lite .dt-fl,html.lite .dt-tw text,html.lite .dt-bat{animation:none}
 .rm-log div{margin:0 0 5px;word-break:break-word}.rm-log b{color:#ff9ab8}.rm-log .them b{color:#9fe0ff}.rm-log .sys{opacity:.55;font-style:italic}
 .rm-send{padding:8px;background:#120a1a;border-top:1px solid rgba(201,167,214,.25)}.rm-send .st-in{flex:1;min-width:0}
 .rm-snd.on{box-shadow:0 0 10px #8b2947}
-#dtMenu button,#dtFlow button,#dtEmo button{display:inline-flex;flex-direction:column;align-items:center;gap:2px;height:auto;min-width:56px;padding:5px 6px}
-.dt-n{font:.56rem "Courier New",monospace;opacity:.8;white-space:nowrap;line-height:1}
+#dtMenu button,#dtFlow button,#dtEmo button{display:inline-flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;height:auto;width:68px;min-width:68px;min-height:60px;padding:5px 3px}
+.dt-n{font:.56rem "Courier New",monospace;opacity:.8;white-space:normal;text-align:center;overflow-wrap:anywhere;word-break:break-word;line-height:1.15;max-width:100%}
 .dt-bar{align-items:center}
 .dt-ctl button{background:none;border:0;color:inherit;font:inherit;letter-spacing:0;padding:0 7px;line-height:1.6;cursor:pointer}
 .dt-ctl button:hover{background:rgba(255,255,255,.14)}
@@ -2271,14 +2272,17 @@ $("hugBtn").onclick = () => {
   const seenGet = () => { try { const v = JSON.parse(localStorage.getItem(KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
   const seenSet = ids => { try { localStorage.setItem(KEY, JSON.stringify(ids.slice(-80))); } catch (e) {} };
   const isCL = n => String((n && n.text) || "").startsWith(TAG);
-  const idOf = n => String(n.id || n.date || n.text).slice(0, 80);
+  const oldIdOf = n => String(n.id || n.date || n.text).slice(0, 80);
+  const hash = str => { let h = 5381; str = String(str || ""); for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
+  /* id + date + text hash, so a new update can never be mistaken for one she already dismissed */
+  const idOf = n => (String(n.id || "") + "|" + String(n.date || "") + "|" + hash(n.text)).slice(0, 80);
   function parse(n) {
     const lines = String(n.text).slice(TAG.length).replace(/\r/g, "").split("\n").map(l => l.trim());
     const head = (lines.shift() || "").split("|");
     const ver = head.length > 1 ? head.shift().trim() : "";
     const title = head.join("|").trim() || "Update";
     const items = lines.map(l => l.replace(/^[-*\u2022]\s*/, "")).filter(Boolean);
-    return { id: idOf(n), ver, title, items, date: n.date };
+    return { id: idOf(n), oldId: oldIdOf(n), ver, title, items, date: n.date };
   }
   function show(entries) {
     listEl.innerHTML = "";
@@ -2302,7 +2306,8 @@ $("hugBtn").onclick = () => {
     if (!getToken()) return;
     const all = (Array.isArray(notes) ? notes : []).filter(isCL).map(parse);   // oldest first
     const seen = new Set(seenGet());
-    const fresh = all.filter(e => !seen.has(e.id)).reverse().slice(0, 3);       // newest first
+    const force = /[?&]cl=1\b/.test(location.search);                          // add ?cl=1 to the address to preview the latest updates again
+    const fresh = all.filter(e => force || !(seen.has(e.id) || seen.has(e.oldId))).reverse().slice(0, 3);  // newest first
     window.__clAllIds = all.map(e => e.id);
     if (fresh.length) show(fresh); else box.hidden = true;
   };
@@ -2356,10 +2361,10 @@ $("hugBtn").onclick = () => {
   });
   lessBtn.addEventListener("click", () => { visibleCount = 1; drawNotes(); });
 
-  api("/notes")
+  api("/notes", { cache: "no-store" })
     .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => { try { window.__clRender && window.__clRender(data.notes); } catch (e) {} renderNotes(data.notes && data.notes.length ? data.notes : localNotes); })
-    .catch(() => renderNotes(localNotes));
+    .catch(() => { try { window.__clRender && window.__clRender(localNotes); } catch (e) {} renderNotes(localNotes); });
 })();
 
 /* Send message */
@@ -4916,6 +4921,40 @@ else{src.buffer=buf("pink");f.type="lowpass";f.frequency.value=1500;g.gain.value
 var h=A.createOscillator(),hg=A.createGain();h.frequency.value=100;hg.gain.value=.03;h.connect(hg);hg.connect(master);h.start();nodes.push(h)}
 src.connect(f);f.connect(g);g.connect(master);src.start();
 return function(){nodes.forEach(function(n){try{n.stop()}catch(e){}})}}
+function embedInfo(u){
+var m;try{
+var url=new URL(u),h=url.hostname.replace(/^(www|m)\./,"");
+if(h=="open.spotify.com"){
+m=url.pathname.match(/\/(?:intl-[a-z-]+\/)?(?:embed\/)?(track|album|playlist|episode|show|artist)\/([A-Za-z0-9]+)/);
+if(m)return{k:"spotify",type:m[1],src:"https://open.spotify.com/embed/"+m[1]+"/"+m[2]+"?utm_source=generator&theme=0",h:(m[1]=="track"||m[1]=="episode")?152:352};
+return{k:"bad"}}
+if(h=="youtube.com"||h=="music.youtube.com"||h=="youtu.be"||h=="youtube-nocookie.com"||h=="spotify.link"||h=="spoti.fi"){
+if(h=="spotify.link"||h=="spoti.fi")return{k:"bad"};
+var id="",list=url.searchParams.get("list")||"";
+if(h=="youtu.be")id=url.pathname.slice(1).split("/")[0];
+else if(url.pathname=="/watch")id=url.searchParams.get("v")||"";
+else if((m=url.pathname.match(/^\/(?:shorts|embed|live|v)\/([\w-]{11})/)))id=m[1];
+if(!/^[\w-]{11}$/.test(id))id="";
+if(list&&!/^[\w-]+$/.test(list))list="";
+if(!id&&!list)return{k:"bad"};
+var q="autoplay=1&loop=1&playsinline=1&rel=0&enablejsapi=1";
+var src=id?"https://www.youtube-nocookie.com/embed/"+id+"?"+q+(list?"&list="+list:"&playlist="+id):"https://www.youtube-nocookie.com/embed/videoseries?list="+list+"&"+q;
+return{k:"youtube",src:src}}
+}catch(e){}
+return null}
+var ytFrame=null;
+function ytVol(){if(!ytFrame||!ytFrame.contentWindow)return;try{ytFrame.contentWindow.postMessage(JSON.stringify({event:"command",func:"setVolume",args:[Math.round(vol*100)]}),"https://www.youtube-nocookie.com")}catch(e){}}
+function embed(it){
+var e=embedInfo(it.u),box=$("snEmbed"),f=document.createElement("iframe"),sp=e.k=="spotify";
+f.title=sp?"Spotify player":"YouTube player";
+f.allow="autoplay; encrypted-media; clipboard-write; fullscreen; picture-in-picture";
+f.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
+f.style.cssText="border:0;border-radius:12px;width:100%;max-width:420px;display:block;"+(sp?"height:"+e.h+"px":"aspect-ratio:16/9");
+f.src=e.src;
+box.textContent="";box.appendChild(f);box.hidden=false;
+if(sp){msg("press play on the Spotify player below")}
+else{ytFrame=f;f.addEventListener("load",function(){setTimeout(ytVol,400);setTimeout(ytVol,1500)})}
+return function(){if(ytFrame===f)ytFrame=null;try{f.src="about:blank"}catch(x){}try{f.remove()}catch(x){}box.textContent="";box.hidden=true}}
 function link(item,btn){
 var A=ctx(),a=new Audio(),done=0,fallback=0;
 a.loop=true;a.preload="auto";a.crossOrigin="anonymous";
@@ -4943,24 +4982,41 @@ BUILT.forEach(function(x){var b=document.createElement("button");b.type="button"
 custom.forEach(function(it,i){
 var w=document.createElement("span");w.style.cssText="display:inline-flex;align-items:center;gap:2px";
 var b=document.createElement("button");b.type="button";b.className="smallbtn st-b sn-b";b.textContent=it.n||"my sound";b.title=it.u;
-b.onclick=function(){play("c:"+it.u,b,function(){return link(it,b)})};if(cur&&cur.key=="c:"+it.u)b.classList.add("on");
+b.onclick=function(){play("c:"+it.u,b,function(){var ei=embedInfo(it.u);return ei&&ei.k!="bad"?embed(it):link(it,b)})};if(cur&&cur.key=="c:"+it.u)b.classList.add("on");
 var x=document.createElement("button");x.type="button";x.className="st-x";x.textContent="\u00d7";x.setAttribute("aria-label","remove "+(it.n||"sound"));
 x.onclick=function(){if(cur&&cur.key=="c:"+it.u)stopAll();custom.splice(i,1);saveC();render()};
 w.appendChild(b);w.appendChild(x);box.appendChild(w)});
 var off=document.createElement("button");off.type="button";off.className="smallbtn st-b";off.textContent="off";off.onclick=function(){stopAll();msg("")};box.appendChild(off)}
 $("snVol").value=Math.round(vol*100);$("snVolN").textContent=Math.round(vol*100)+"%";
-$("snVol").addEventListener("input",function(){vol=this.value/100;$("snVolN").textContent=this.value+"%";if(master)master.gain.value=vol*vol;if(cur&&cur.b2)cur.b2.volume=Math.min(1,vol*vol*2);try{localStorage.setItem(KV,String(vol))}catch(e){}});
+$("snVol").addEventListener("input",function(){vol=this.value/100;$("snVolN").textContent=this.value+"%";if(master)master.gain.value=vol*vol;if(cur&&cur.b2)cur.b2.volume=Math.min(1,vol*vol*2);ytVol();try{localStorage.setItem(KV,String(vol))}catch(e){}});
 $("snAdd").addEventListener("click",function(){
 var u=$("snUrl").value.trim(),n=$("snName").value.trim();
 if(!/^https?:\/\/\S+$/i.test(u)){msg("paste a full link starting with https://");return}
-if(/youtube\.com|youtu\.be|spotify\.com/i.test(u)){msg("YouTube/Spotify links won't play here, use a direct audio file link");return}
+var ei=embedInfo(u);
+if(ei&&ei.k=="bad"){msg("couldn't read that link. Paste a normal youtube or spotify song/playlist link (not a short spotify.link)");return}
 if(custom.some(function(x){return x.u==u})){msg("already added");return}
 if(custom.length>=20){msg("remove one first (max 20)");return}
-if(!n){try{n=decodeURIComponent(new URL(u).pathname.split("/").pop()||"").replace(/\.[a-z0-9]+$/i,"").slice(0,24)}catch(e){}}
-custom.push({n:n||"my sound",u:u});saveC();$("snUrl").value="";$("snName").value="";msg("added \u2726");render()});
+var auto=!n;
+if(!n){if(ei)n=ei.k=="spotify"?"spotify "+ei.type:"youtube";else{try{n=decodeURIComponent(new URL(u).pathname.split("/").pop()||"").replace(/\.[a-z0-9]+$/i,"").slice(0,24)}catch(e){}}}
+var entry={n:n||"my sound",u:u};custom.push(entry);saveC();$("snUrl").value="";$("snName").value="";msg("added \u2726");render();
+if(ei&&auto&&window.fetch){
+var oe=ei.k=="spotify"?"https://open.spotify.com/oembed?url="+encodeURIComponent(u):"https://www.youtube.com/oembed?format=json&url="+encodeURIComponent(u);
+fetch(oe).then(function(r){return r.ok?r.json():null}).then(function(d){
+if(d&&d.title&&custom.indexOf(entry)>-1){entry.n=String(d.title).slice(0,24);saveC();render()}}).catch(function(){})}});
 render();
 })();
 </script>
+<style id="pickerFix">
+/* date room pickers (food / flowers / emoji): bigger icons, readable labels, even grid */
+#date .dt-menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px;max-width:760px;margin-top:12px}
+#date .dt-menu button#dtMenu,#date #dtMenu button,#date #dtFlow button,#date #dtEmo button{width:100%;min-width:0;min-height:84px;padding:9px 6px 8px;gap:6px;justify-content:flex-start;border-radius:8px}
+#date #dtMenu button .dt-ic,#date #dtFlow button .dt-ic,#date #dtEmo button .dt-ic{width:38px;height:38px;flex:none}
+#date .dt-menu button .dt-n{font-size:.8rem;font-weight:600;line-height:1.2;letter-spacing:.01em;opacity:1;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:normal;overflow-wrap:break-word;word-break:normal;hyphens:auto;text-align:center;max-width:100%}
+#date .dt-pn .dt-h{font-size:.92rem;line-height:1.45;margin:2px 0 8px}
+#date .dt-menu button:hover,#date .dt-menu button:focus-visible{border-color:#e6cfdc;outline:none;transform:translateY(-1px)}
+@media(max-width:520px){#date .dt-menu{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}#date .dt-menu button .dt-n{font-size:.74rem}}
+html[data-pal] #date .dt-menu button .dt-n{color:var(--p-text)}
+</style>
 <style id="palettes">
 /* ===== Colour palettes (switch with the 🎨 button). Midnight = original look, no overrides. ===== */
 html[data-pal="clear"]{--p-bg:#0a0a0d;--p-glow:#1c1c26;--p-surface:#14141a;--p-raised:#1b1b23;--p-inset:#0e0e13;--p-acc:#ffd6e6;--p-acc2:#b4416a;--p-text:#ffffff;--p-muted:#d6d6df;--p-line:rgba(255,255,255,.18);--p-line2:#9a9aaa;--p-btn:#f4ecff;--p-btntxt:#16101f}
@@ -5211,6 +5267,6 @@ $("lxYQ").addEventListener("keydown",function(e){if(e.key=="Enter")yask()});
 $("lxYSave").onclick=function(){var n=$("stNotes"),t=$("lxYOut").textContent;if(!n||!t)return;n.value=(n.value+"\n\n— lecture —\n"+t).slice(0,5000);n.dispatchEvent(new Event("input",{bubbles:true}));ym("added to your study notes ✦")};
 })();
 </script>
-<script>if("serviceWorker"in navigator&&/^https?:/.test(location.protocol))addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})});</script>
+<script>if("serviceWorker"in navigator&&/^https?:/.test(location.protocol))addEventListener("load",function(){navigator.serviceWorker.register("sw.js").then(function(r){try{r.update()}catch(e){}}).catch(function(){})});</script>
 </body>
 </html>
