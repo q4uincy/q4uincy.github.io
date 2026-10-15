@@ -2,7 +2,7 @@
    - pages: network first (you always get the newest version online), cached copy when offline
    - css/js/images/books: instant from cache, refreshed quietly in the background
    - your Cloudflare worker (login, chat, AI) is never cached or touched */
-const V = "laya-v1";
+const V = "laya-v2";
 const SHELL = ["./", "index.html", "phone.css", "extras.css", "extras.js", "notes.js", "wall-swipe.js", "reader-themes.js", "manifest.webmanifest", "icons/apple-touch-icon.png", "icons/favicon-48.png"];
 const FONT_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com"];
 
